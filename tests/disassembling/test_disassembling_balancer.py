@@ -48,9 +48,7 @@ def test_integration_proportional(local_node_eth, accounts):
     balancer_disassembler = BalancerDisassembler(
         w3=w3,
         avatar_safe_address=avatar_safe.address,
-        roles_mod_address=roles_contract.address,
         role=role,
-        signer_address=disassembler_address,
     )
     # ----------------------------------------------------------------------------------------------------------------
     # Composable
@@ -67,11 +65,11 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 8_999_999_999_999_000_000
 
-    txn_transactable = balancer_disassembler.proportional(
+    txn_transactable = balancer_disassembler.exact_bpt_proportional(
         arguments=[{"bpt_address": GHO_USDT_USDC_bpt_address, "amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 0.01}]
     )
 
-    balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
+    balancer_disassembler.send(roles_mod_address=roles_contract.address,txns=txn_transactable, private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 4499999999999500000
@@ -93,11 +91,11 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = balancer_disassembler.proportional(
+    txn_transactable = balancer_disassembler.exact_bpt_proportional(
         arguments=[{"bpt_address": rETH_WETH_bpt_address, "amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 1}]
     )
 
-    balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
+    balancer_disassembler.send(roles_mod_address=roles_contract.address,txns=txn_transactable, private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 40500000 or bpt_token_balance_after == 40499999
@@ -119,11 +117,11 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = balancer_disassembler.proportional(
+    txn_transactable = balancer_disassembler.exact_bpt_proportional(
         arguments=[{"bpt_address": BAL_WETH_bpt_address,"amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 1}]
     )
 
-    balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
+    balancer_disassembler.send(roles_mod_address=roles_contract.address, txns=txn_transactable, private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 40500000 or bpt_token_balance_after == 40499999
@@ -145,11 +143,11 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = balancer_disassembler.proportional(
+    txn_transactable = balancer_disassembler.exact_bpt_proportional(
         arguments=[{"bpt_address": DAI_USDC_USDT_bpt_address,"amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 1}]
     )
 
-    balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
+    balancer_disassembler.send(roles_mod_address=roles_contract.address, txns=txn_transactable, private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 40500000 or bpt_token_balance_after == 40499999
@@ -171,11 +169,11 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = balancer_disassembler.proportional(
+    txn_transactable = balancer_disassembler.exact_bpt_proportional(
         arguments=[{"bpt_address": auraBAL_STABLE_bpt_address,"amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 1}]
     )
 
-    balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
+    balancer_disassembler.send(roles_mod_address=roles_contract.address, txns=txn_transactable, private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 40500000 or bpt_token_balance_after == 40499999

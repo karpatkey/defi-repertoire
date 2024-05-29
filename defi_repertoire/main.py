@@ -73,7 +73,7 @@ for protocol in DisassemblyProtocols:
             #  3) Just use POST.
             #
             # For the time being the option 3) is implemented
-            url = f"/txn_data/disassembly/{protocol}/{function_name}/"
+            url = f"/txn_data/disassembling/{protocol}/{function_name}/"
 
             # @app.get(url)
             @app.post(url)

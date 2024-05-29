@@ -3,20 +3,18 @@ from decimal import Decimal
 from defabipedia.aura import Abis
 
 from typing_extensions import TypedDict
-from web3 import Web3
 from web3.types import ChecksumAddress
 
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import aura
 from roles_royce.toolshed.disassembling.disassembling_balancer import (
     BalancerDisassembler,
-    Disassembler,
     validate_percentage,
 )
 from roles_royce.utils import to_checksum_address
 
 from .disassembler import Disassembler, validate_percentage
-from .disassembling_balancer import BalancerDisassembler
+from defi_repertoire.disassembling.balancer.balancer import BalancerDisassembler
 
 
 class Exit1ArgumentElement(TypedDict):

@@ -7,45 +7,13 @@ from web3.exceptions import ContractLogicError
 
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols import balancer
-from roles_royce.protocols.base import Address
 from roles_royce.utils import to_checksum_address
 
-from .disassembler import Disassembler, validate_percentage
+from defi_repertoire.transaction_builder import TransactionBuilder
+from defi_repertoire.disassembling.balancer.arg_types import ProportionalArgs
 
 
-class Exit11ArgumentElement(TypedDict):
-    bpt_address: str
-    amount_to_redeem: int
-    max_slippage: float
-
-
-class Exit12ArgumemntElement(TypedDict):
-    bpt_address: str
-    max_slippage: float
-    token_out_address: str
-
-
-class Exit13ArgumentElement(TypedDict):
-    bpt_address: str
-
-
-class Exit21ArgumentElement(TypedDict):
-    gauge_address: str
-    max_slippage: float
-
-
-class Exit22ArgumentElement(TypedDict):
-    gauge_address: str
-    max_slippage: float
-    token_out_address: str
-
-
-class Exit23ArgumentElement(TypedDict):
-    gauge_address: str
-    max_slippage: float
-
-
-class BalancerDisassembler(Disassembler):
+class BalancerDisassembler(TransactionBuilder):
     # def get_bpt_amount_to_redeem_from_gauge(self, gauge_address: Address, fraction: float | Decimal) -> int:
     #     gauge_contract = self.w3.eth.contract(address=gauge_address, abi=Abis[self.blockchain].Gauge.abi)
     #
@@ -56,8 +24,8 @@ class BalancerDisassembler(Disassembler):
     #
     #     return int(Decimal(bpt_contract.functions.balanceOf(self.avatar_safe_address).call()) * Decimal(fraction))
 
-    def proportional(
-        self, arguments: list[Exit11ArgumentElement], amount_to_redeem: int = None
+    def exact_bpt_proportional(
+            self, arguments: list[ProportionalArgs], amount_to_redeem: int = None
     ) -> list[Transactable]:
         """
         Withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
