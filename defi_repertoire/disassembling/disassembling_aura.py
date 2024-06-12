@@ -1,20 +1,21 @@
 from decimal import Decimal
 
 from defabipedia.aura import Abis
-
 from typing_extensions import TypedDict
+from web3 import Web3
 from web3.types import ChecksumAddress
 
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import aura
 from roles_royce.toolshed.disassembling.disassembling_balancer import (
     BalancerDisassembler,
+    Disassembler,
     validate_percentage,
 )
 from roles_royce.utils import to_checksum_address
 
 from .disassembler import Disassembler, validate_percentage
-from defi_repertoire.disassembling.balancer.balancer import BalancerDisassembler
+from .disassembling_balancer import BalancerDisassembler
 
 
 class Exit1ArgumentElement(TypedDict):
@@ -219,7 +220,7 @@ class AuraDisassembler(Disassembler):
         txns = []
 
         for element in exit_arguments:
-            aura_rewards_address = to_checksum_address(element[0]["value"])
+            aura_rewards_address = to_checksum_address(element["rewards_address"])
 
             bpt_address, amount_to_redeem = self.aura_contracts_helper(
                 aura_rewards_address=aura_rewards_address, fraction=fraction
