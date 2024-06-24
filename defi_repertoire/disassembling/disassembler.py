@@ -8,20 +8,34 @@ from roles_royce import roles
 from roles_royce.generic_method import Transactable
 from roles_royce.utils import to_checksum_address
 
+from typing import Protocol, Callable, List
 
-@dataclass
-class Disassembler:
+
+class GenericTxProto(Protocol):
     w3: Web3
     avatar_safe_address: Address | ChecksumAddress | str
-    roles_mod_address: Address | ChecksumAddress | str
-    role: int
-    blockchain: Blockchain = field(init=False)
-    signer_address: Address | ChecksumAddress | str | None = None
+    blockchain: Blockchain
 
-    def __post_init__(self):
-        self.avatar_safe_address = to_checksum_address(self.avatar_safe_address)
-        self.roles_mod_address = to_checksum_address(self.roles_mod_address)
+
+class GenericTxContext:
+    def __init__(self, w3: Web3, avatar_safe_address: Address | ChecksumAddress | str):
+        self.w3 = w3
+        self.avatar_safe_address = to_checksum_address(avatar_safe_address)
         self.blockchain = Chain.get_blockchain_from_web3(self.w3)
+
+
+class SpecificTxContext:
+    def __init__(self,
+                 roles_mod_address: Address | ChecksumAddress | str,
+                 role: int,
+                 signer_address: Address | ChecksumAddress | str | None = None
+                 ):
+        self.roles_mod_address = to_checksum_address(roles_mod_address)
+        self.role = role
+        self.signer_address = to_checksum_address(signer_address)
+
+
+class Disassembler:
 
     def send(self, txns: list[Transactable], private_key: str, w3: Web3 = None) -> TxReceipt:
         """Executes the multisend batched transaction built from the transactables.
@@ -42,10 +56,10 @@ class Disassembler:
         )
 
     def check(
-        self,
-        txns: list[Transactable],
-        block: int | str = "latest",
-        from_address: Address | ChecksumAddress | str | None = None,
+            self,
+            txns: list[Transactable],
+            block: int | str = "latest",
+            from_address: Address | ChecksumAddress | str | None = None,
     ) -> bool:
         """Checks whether the multisend batched transaction built from the transactables is successfully executed with static call.
 

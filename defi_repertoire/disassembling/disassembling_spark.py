@@ -6,18 +6,24 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import spark
 from roles_royce.protocols import cowswap
 
-from .disassembler import Disassembler, validate_percentage
+from .disassembler import Disassembler, GenericTxContext, validate_percentage
 
 
-@dataclass
-class SparkDisassembler(Disassembler):
-    def get_amount_to_redeem_sdai(self, fraction: Decimal) -> int:
-        sdai = ContractSpecs[self.blockchain].sDAI.contract(self.w3)
-        balance = sdai.functions.balanceOf(self.avatar_safe_address).call()
-        return int(Decimal(balance) * Decimal(fraction))
-    
+def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) -> int:
+    sdai = ContractSpecs[ctx.blockchain].sDAI.contract(ctx.w3)
+    balance = sdai.functions.balanceOf(ctx.avatar_safe_address).call()
+    return int(Decimal(balance) * Decimal(fraction))
 
-    def exit_1(self, percentage: float, exit_arguments: list[dict] = None, amount_to_redeem: int = None) -> list[Transactable]:
+
+class Exit1:
+    inputs = ["sDAI"]
+    outputs = ["DAI"]
+    op_type = RedeemOperation #
+
+    @classmethod
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+                 amount_to_redeem: int = None) -> list[Transactable]:
+
         """Withdraw funds from Spark with proxy.
 
         Args:
@@ -25,23 +31,30 @@ class SparkDisassembler(Disassembler):
             exit_arguments (list[str]): List of Spark token addresses to withdraw from.
             amount_to_redeem (int, optional): Amount of Spark tokens to withdraw. Defaults to None.
 
-        Returns 
+        Returns
             list[Transactable]: List of transactions to exit Spark.
         """
 
         fraction = validate_percentage(percentage)
 
-        txns = []
         if amount_to_redeem is None:
-            amount_to_redeem = self.get_amount_to_redeem_sdai(fraction)
+            amount_to_redeem = get_amount_to_redeem_sdai(ctx, fraction)
 
-        exit_sdai = spark.RedeemSDAIforDAI(blockchain=self.blockchain, amount=amount_to_redeem, avatar=self.avatar_safe_address,)
+        exit_sdai = spark.RedeemSDAIforDAI(blockchain=ctx.blockchain,
+                                           amount=amount_to_redeem,
+                                           avatar=ctx.avatar_safe_address, )
+        return [exit_sdai]
 
-        txns.append(exit_sdai)
 
-        return txns
-    
-    def exit_2(self, percentage: float, exit_arguments: list[dict], amount_to_redeem: int = None) -> list[Transactable]:
+class Exit2:
+    inputs = ["sDAI"]
+    outputs = ["USDC"]
+    op_type = SwapOperation
+
+    @classmethod
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+                 amount_to_redeem: int = None) -> list[Transactable]:
+
         """
         Swaps sDAI for USDC. Approves the Cowswap relayer to spend the sDAI if needed, then creates the order using
         the Cow's order API and creates the sign_order transaction.
@@ -64,25 +77,22 @@ class SparkDisassembler(Disassembler):
         fraction = validate_percentage(percentage)
 
         if amount_to_redeem is None:
-            amount_to_redeem = self.get_amount_to_redeem_sdai(fraction)
+            amount_to_redeem = get_amount_to_redeem_sdai(ctx, fraction)
 
         if amount_to_redeem == 0:
             return []
-        
-        if 'anvil' in self.w3.client_version:
+
+        if 'anvil' in ctx.w3.client_version:
             fork = True
         else:
             fork = False
 
-        return cowswap.create_order_and_swap(w3=self.w3,
-                                             avatar=self.avatar_safe_address,
-                                             sell_token=ContractSpecs[self.blockchain].sDAI.address,
-                                             buy_token=Addresses[self.blockchain].USDC,
+        return cowswap.create_order_and_swap(w3=ctx.w3,
+                                             avatar=ctx.avatar_safe_address,
+                                             sell_token=ContractSpecs[ctx.blockchain].sDAI.address,
+                                             buy_token=Addresses[ctx.blockchain].USDC,
                                              amount=amount_to_redeem,
                                              kind=cowswap.SwapKind.SELL,
                                              max_slippage=max_slippage,
                                              valid_duration=20 * 60,
                                              fork=fork)
-
-    
-

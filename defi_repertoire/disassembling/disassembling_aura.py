@@ -14,7 +14,7 @@ from roles_royce.toolshed.disassembling.disassembling_balancer import (
 )
 from roles_royce.utils import to_checksum_address
 
-from .disassembler import Disassembler, validate_percentage
+from .disassembler import Disassembler, validate_percentage, GenericTxContext
 from .disassembling_balancer import BalancerDisassembler
 
 
@@ -33,34 +33,41 @@ class Exit22ArgumentElement(TypedDict):
     token_out_address: str
 
 
-class AuraDisassembler(Disassembler):
-    def aura_contracts_helper(self, aura_rewards_address: ChecksumAddress, fraction: float | Decimal) -> (str, int):
-        aura_rewards_contract = self.w3.eth.contract(
-            address=aura_rewards_address, abi=Abis[self.blockchain].BaseRewardPool.abi
-        )
-        aura_token_amount = aura_rewards_contract.functions.balanceOf(self.avatar_safe_address).call()
-        bpt_address = aura_rewards_contract.functions.asset().call()
+def aura_contracts_helper(ctx: GenericTxContext, aura_rewards_address: ChecksumAddress, fraction: float | Decimal) -> (
+str, int):
+    aura_rewards_contract = ctx.w3.eth.contract(
+        address=aura_rewards_address, abi=Abis[ctx.blockchain].BaseRewardPool.abi
+    )
+    aura_token_amount = aura_rewards_contract.functions.balanceOf(ctx.avatar_safe_address).call()
+    bpt_address = aura_rewards_contract.functions.asset().call()
 
-        amount_to_redeem = int(Decimal(aura_token_amount) * Decimal(fraction))
+    amount_to_redeem = int(Decimal(aura_token_amount) * Decimal(fraction))
 
-        return bpt_address, amount_to_redeem
+    return bpt_address, amount_to_redeem
 
-    def exit_1(self, percentage: float, exit_arguments: list[Exit1ArgumentElement]) -> list[Transactable]:
-        """Withdraw funds from Aura.
 
-        Args:
-            percentage (float): Percentage of liquidity to remove from Aura.
-            exit_arguments (list[dict]): List of dictionaries with the Aura rewards addresses to withdraw from.
-                arg_dicts = [
-                        {
-                            "rewards_address": "0xsOmEAddResS"
-                        }
-                ]
+class Withdraw:
+    """Withdraw funds from Aura.
 
-        Returns:
-            list[Transactable]: List of transactions to execute.
-        """
+    Args:
+        percentage (float): Percentage of liquidity to remove from Aura.
+        exit_arguments (list[dict]): List of dictionaries with the Aura rewards addresses to withdraw from.
+            arg_dicts = [
+                    {
+                        "rewards_address": "0xsOmEAddResS"
+                    }
+            ]
 
+    Returns:
+        list[Transactable]: List of transactions to execute.
+    """
+    inputs = ["AURAVaultToken"]
+    outputs = ["??"], # also a list of bpt_addresses (to chain it with Balancer ?)
+    op_type = WithdrawOperation
+
+    @classmethod
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+                 amount_to_redeem: int = None) -> list[Transactable]:
         fraction = validate_percentage(percentage)
 
         txns = []
@@ -68,9 +75,10 @@ class AuraDisassembler(Disassembler):
         for element in exit_arguments:
             aura_rewards_address = to_checksum_address(element["rewards_address"])
 
-            bpt_address, amount_to_redeem = self.aura_contracts_helper(
-                aura_rewards_address=aura_rewards_address, fraction=fraction
-            )
+            bpt_address, amount_to_redeem = aura_contracts_helper(ctx,
+                                                                  aura_rewards_address=aura_rewards_address,
+                                                                  fraction=fraction
+                                                                  )
             if amount_to_redeem == 0:
                 return []
             withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
@@ -78,25 +86,32 @@ class AuraDisassembler(Disassembler):
             )
             txns.append(withdraw_aura)
 
-        return txns
+        return txns, {"bpt_address" : bpt_address}
 
-    def exit_2_1(self, percentage: float, exit_arguments: list[Exit21ArgumentElement]) -> list[Transactable]:
-        """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way
-        (not used for pools in recovery mode!).
+class Withdraw2:
+    """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way
+    (not used for pools in recovery mode!).
 
-        Args:
-            percentage (float): Percentage of liquidity to remove from Aura.
-            exit_arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-                arg_dicts = [
-                    {
-                        "rewards_address": 0xsOmEAddResS",
-                        "max_slippage": 1.27
-                    }
-                ]
+    Args:
+        percentage (float): Percentage of liquidity to remove from Aura.
+        exit_arguments (list[dict]): List of dictionaries with the withdrawal parameters.
+            arg_dicts = [
+                {
+                    "rewards_address": 0xsOmEAddResS",
+                    "max_slippage": 1.27
+                }
+            ]
 
-        Returns:
-            list[Transactable]: List of transactions to execute.
-        """
+    Returns:
+        list[Transactable]: List of transactions to execute.
+    """
+    inputs = ["??"]
+    outputs = ["??"]
+    op_type = WithdrawOperation
+
+    @classmethod
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+                 amount_to_redeem: int = None) -> list[Transactable]:
 
         fraction = validate_percentage(percentage)
 
@@ -106,7 +121,7 @@ class AuraDisassembler(Disassembler):
             aura_rewards_address = to_checksum_address(element["rewards_address"])
             max_slippage = element["max_slippage"]
 
-            bpt_address, amount_to_redeem = self.aura_contracts_helper(
+            bpt_address, amount_to_redeem = aura_contracts_helper(ctx,
                 aura_rewards_address=aura_rewards_address, fraction=fraction
             )
 
@@ -115,14 +130,6 @@ class AuraDisassembler(Disassembler):
 
             withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
                 reward_address=aura_rewards_address, amount=amount_to_redeem
-            )
-
-            balancer_disassembler = BalancerDisassembler(
-                w3=self.w3,
-                avatar_safe_address=self.avatar_safe_address,
-                roles_mod_address=self.roles_mod_address,
-                role=self.role,
-                signer_address=self.signer_address,
             )
 
             withdraw_balancer = balancer_disassembler.exit_1_1(
@@ -165,7 +172,7 @@ class AuraDisassembler(Disassembler):
             max_slippage = element["max_slippage"]
             token_out_address = to_checksum_address(element["token_out_address"])
 
-            bpt_address, amount_to_redeem = self.aura_contracts_helper(
+            bpt_address, amount_to_redeem = aura_contracts_helper(
                 aura_rewards_address=aura_rewards_address, fraction=fraction
             )
 
