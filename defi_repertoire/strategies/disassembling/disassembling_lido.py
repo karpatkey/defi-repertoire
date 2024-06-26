@@ -7,7 +7,7 @@ from roles_royce.protocols import cowswap
 from roles_royce.protocols.eth import lido
 
 from ..base import GenericTxContext, SwapOperation, UnstakeOperation, UnwrapOperation, StrategyAmountArguments, \
-    StrategyAmountWithSlippageArguments
+    StrategyAmountWithSlippageArguments, register
 
 
 def get_amount_to_redeem(ctx: GenericTxContext, address: Address, fraction: float | Decimal) -> int:
@@ -31,8 +31,11 @@ def get_amount_to_redeem(ctx: GenericTxContext, address: Address, fraction: floa
     return int(Decimal(contract.functions.balanceOf(ctx.avatar_safe_address).call()) * Decimal(fraction))
 
 
+@register
 class LidoUnstakeStETH:
     op_type = UnstakeOperation
+    kind = "disassembly"
+    protocol = "lido"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
@@ -71,8 +74,11 @@ class LidoUnstakeStETH:
         return txns
 
 
+@register
 class LidoUnwrapAndUnstakeWstETH:
     op_type = UnwrapOperation
+    kind = "disassembly"
+    protocol = "lido"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
@@ -115,8 +121,11 @@ class LidoUnwrapAndUnstakeWstETH:
         txns.append(request_withdrawal)
         return txns
 
-
+@register
 class SwapStETHforETH:  # TODO: why to have a specific class ?
+    kind = "disassembly"
+    protocol = "lido"
+
     """
     Swaps stETH for ETH. Approves the Cowswap relayer to spend the stETH if needed, then creates the order using the
     Cow's order API and creates the sign_order transaction.
