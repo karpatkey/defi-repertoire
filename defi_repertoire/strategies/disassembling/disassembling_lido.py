@@ -5,9 +5,9 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols.base import Address
 from roles_royce.protocols import cowswap
 from roles_royce.protocols.eth import lido
-from .disassembling_swaps import SwapCurve
 
-from .disassembler import UnstakeOperation, UnwrapOperation, SwapOperation, validate_percentage, GenericTxContext
+from .disassembler import validate_percentage
+from ..base import GenericTxContext, SwapOperation, UnstakeOperation, UnwrapOperation
 
 
 def get_amount_to_redeem(ctx: GenericTxContext, address: Address, fraction: float | Decimal) -> int:
@@ -201,7 +201,7 @@ class CurveSwap:
         Returns:
             list[ Transactable]:  List of transactions to execute.
         """
-        txns = SwapCurve.get_txns(
+        txns = SwapOnCurve.get_txns(
             ctx=ctx,
             percentage=percentage,
             arguments=arguments,
@@ -210,10 +210,3 @@ class CurveSwap:
 
         return txns
 
-
-operations = [
-    LidoUnstakeStETH,
-    LidoUnwrapAndUnstakeWstETH,
-    CurveSwap,
-    SwapStETHforETH,
-]

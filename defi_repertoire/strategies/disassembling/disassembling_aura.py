@@ -11,9 +11,10 @@ from roles_royce.toolshed.disassembling.disassembling_balancer import (
 )
 from roles_royce.utils import to_checksum_address
 
-from .disassembler import validate_percentage, GenericTxContext, WithdrawOperation
+from .disassembler import validate_percentage
+from ..base import GenericTxContext, WithdrawOperation
 from . import disassembling_balancer as balancer
-
+from defi_repertoire.strategies import register
 
 class Exit1ArgumentElement(TypedDict):
     rewards_address: str
@@ -42,7 +43,7 @@ def aura_contracts_helper(ctx: GenericTxContext, aura_rewards_address: ChecksumA
 
     return bpt_address, amount_to_redeem
 
-
+@register
 class Withdraw:
     """Withdraw funds from Aura.
 
@@ -59,6 +60,8 @@ class Withdraw:
         list[Transactable]: List of transactions to execute.
     """
     op_type = WithdrawOperation
+    kind = "disassembly"
+    protocol = "aura"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit1ArgumentElement],
@@ -83,7 +86,7 @@ class Withdraw:
 
         return txns
 
-
+@register
 class Withdraw2:
     """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way
     (not used for pools in recovery mode!).
@@ -103,6 +106,8 @@ class Withdraw2:
     """
     op_type = WithdrawOperation
     name = "widraw_aura_balancer"
+    kind = "disassembly"
+    protocol = "aura"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit21ArgumentElement],
@@ -247,9 +252,3 @@ class Withdraw2:
     #             txns.append(transactable)
     #
     #     return txns
-
-
-operations = [
-    Withdraw,
-    Withdraw2,
-]

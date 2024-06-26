@@ -1,13 +1,15 @@
 from collections import defaultdict
 import enum
 import os
-from typing import Type, get_type_hints
+from typing import get_type_hints
 from fastapi import FastAPI
-from .disassembling import Disassembler, DISASSEMBLERS, GenericTxContext
+from defi_repertoire.strategies.base import GenericTxContext, STRATEGIES
+from defi_repertoire.strategies import disassembling, swaps
 from defabipedia.types import Chain, Blockchain
 from web3 import Web3
 
-DisassemblyProtocols = enum.StrEnum('DisassemblyProtocols', {name: name for name in DISASSEMBLERS.keys()})
+Protocols = enum.StrEnum('Protocols', {s.protocol: s.protocol for s in STRATEGIES})
+StrategyKinds = enum.StrEnum('StrategyKinds', {s.kind: s.kind for s in STRATEGIES})
 BlockchainOption = enum.StrEnum('BlockchainOption', {name: name for name in Chain._by_name.values()})
 
 ENDPOINTS = {
@@ -54,20 +56,19 @@ async def root():
 async def status():
     return {"message": "Ok"}
 
+for strategy in STRATEGIES:
 
-for protocol in DisassemblyProtocols:
-    operations = DISASSEMBLERS[protocol]
     functions = []
-    for op in operations:
-        name = str.lower(op.__name__)
-        functions.append((name, op.get_txns))
-        REGISTERED_OPS[protocol][name] = op
+    name = str.lower(strategy.__name__)
+    kind = strategy.kind
+    protocol = strategy.protocol
+    functions.append((name, strategy.get_txns))
+    REGISTERED_OPS[protocol][name] = strategy
 
     for function_name, function in functions:
         arguments_type = get_type_hints(function)["arguments"]
 
-
-        def make_closure(protocol, function_name, arg_type):
+        def make_closure(kind, protocol, function_name, arg_type):
             # As exit arguments is a custom type (a dict) and FastAPI does not support complex types
             # in the querystring (https://github.com/tiangolo/fastapi/discussions/7919)
             # We have mainly two options:
@@ -77,7 +78,7 @@ for protocol in DisassemblyProtocols:
             #  3) Just use POST.
             #
             # For the time being the option 3) is implemented
-            url = f"/txn_data/disassembly/{protocol}/{function_name}/"
+            url = f"/txn_data/{kind}/{protocol}/{function_name}/"
 
             # @app.get(url)
             @app.post(url)
@@ -98,4 +99,4 @@ for protocol in DisassemblyProtocols:
                 return {"data": transactables}
 
 
-        make_closure(protocol, function_name, arguments_type)
+        make_closure(kind, protocol, function_name, arguments_type)

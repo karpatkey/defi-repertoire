@@ -1,31 +1,9 @@
-from dataclasses import dataclass, field
-from collections import defaultdict
-
-from defabipedia.types import Blockchain, Chain
 from web3 import Web3
 from web3.types import Address, ChecksumAddress, TxParams, TxReceipt
 
+from defi_repertoire.strategies.base import GenericTxContext
 from roles_royce import roles
 from roles_royce.generic_method import Transactable
-from roles_royce.utils import to_checksum_address
-
-from typing import Protocol, Callable, List, NewType
-
-BlockOperation = NewType('BlockOperation', str)
-SwapOperation = NewType('SwapOperation', BlockOperation)
-WithdrawOperation = NewType('WithdrawOperation', BlockOperation)
-UnstakeOperation = NewType('UnstakeOperation', BlockOperation)
-UnwrapOperation = NewType('UnwrapOperation', BlockOperation)
-RedeemOperation = NewType('RedeemOperation', BlockOperation)
-TransactableChain = NewType('TransactableChain', list[Transactable])
-
-
-class GenericTxContext:
-    def __init__(self, w3: Web3, avatar_safe_address: Address | ChecksumAddress | str):
-        self.w3 = w3
-        self.avatar_safe_address = to_checksum_address(avatar_safe_address)
-        self.blockchain = Chain.get_blockchain_from_web3(self.w3)
-        self.ctx = defaultdict(dict)
 
 
 class Disassembler:

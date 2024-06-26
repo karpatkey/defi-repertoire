@@ -4,13 +4,11 @@ from defabipedia.balancer import Abis
 from defabipedia.types import Chain
 from pytest import approx
 
-from roles_royce.constants import ETHAddr
-from roles_royce.evm_utils import erc20_abi
-from roles_royce.roles_modifier import GasStrategies, set_gas_strategy
-from defi_repertoire.disassembling import Disassembler, GenericTxContext
-from defi_repertoire.disassembling import disassembling_balancer as balancer
+from defi_repertoire.strategies.disassembling import Disassembler
+from defi_repertoire.strategies.base import GenericTxContext
+from defi_repertoire.strategies.disassembling import disassembling_balancer as balancer
 from tests.roles import apply_presets, deploy_roles, setup_common_roles
-from tests.utils import create_simple_safe, steal_token, top_up_address
+from tests.utils import create_simple_safe, steal_token
 from tests.fork_fixtures import accounts
 from tests.fork_fixtures import local_node_eth
 

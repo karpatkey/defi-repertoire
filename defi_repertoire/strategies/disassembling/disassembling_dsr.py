@@ -4,7 +4,8 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols.base import Address
 from roles_royce.protocols.eth import maker
 
-from .disassembler import GenericTxContext, validate_percentage, WithdrawOperation
+from .disassembler import validate_percentage
+from ..base import GenericTxContext, WithdrawOperation, register
 
 
 def get_amount_to_redeem(ctx: GenericTxContext, fraction: Decimal | float, proxy_address: Address = None) -> int:
@@ -18,6 +19,7 @@ def get_amount_to_redeem(ctx: GenericTxContext, fraction: Decimal | float, proxy
     amount_to_redeem = pie * chi
     return int(Decimal(amount_to_redeem) * Decimal(fraction))
 
+@register
 class WithdrawWithProxy:
     """Withdraw funds from DSR with proxy.
 
@@ -30,6 +32,8 @@ class WithdrawWithProxy:
         list[Transactable]: List of transactions to exit DSR.
     """
     op_type = WithdrawOperation
+    kind = "disassembly"
+    protocol = "dsr"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
@@ -53,6 +57,7 @@ class WithdrawWithProxy:
 
             return txns
 
+@register
 class WithdrawWithoutProxy:
     """Withdraw funds from DSR without proxy.
 
@@ -65,6 +70,8 @@ class WithdrawWithoutProxy:
         list[Transactable]: List of transactions to exit DSR.
     """
     op_type = WithdrawOperation
+    kind = "disassembly"
+    protocol = "dsr"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
@@ -84,9 +91,3 @@ class WithdrawWithoutProxy:
         txns.append(exit_dai)
 
         return txns
-
-
-operations = [
-    WithdrawWithProxy,
-    WithdrawWithoutProxy
-]

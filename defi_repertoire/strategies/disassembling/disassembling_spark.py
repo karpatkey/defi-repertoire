@@ -6,7 +6,8 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import spark
 from roles_royce.protocols import cowswap
 
-from .disassembler import GenericTxContext, validate_percentage, RedeemOperation, SwapOperation
+from .disassembler import validate_percentage
+from ..base import GenericTxContext, SwapOperation, RedeemOperation, register
 
 
 def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) -> int:
@@ -14,9 +15,11 @@ def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) 
     balance = sdai.functions.balanceOf(ctx.avatar_safe_address).call()
     return int(Decimal(balance) * Decimal(fraction))
 
-
+@register
 class Exit1:
     op_type = RedeemOperation  #
+    kind = "disassembly"
+    protocol = "spark"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
@@ -46,8 +49,11 @@ class Exit1:
 class Exit2Arguments(TypedDict):
     max_slippage: float
 
+@register
 class Exit2:
     op_type = SwapOperation
+    kind = "disassembly"
+    protocol = "spark"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit2Arguments],
@@ -94,9 +100,3 @@ class Exit2:
                                              max_slippage=max_slippage,
                                              valid_duration=20 * 60,
                                              fork=fork)
-
-
-operations = [
-    Exit1,
-    Exit2
-]

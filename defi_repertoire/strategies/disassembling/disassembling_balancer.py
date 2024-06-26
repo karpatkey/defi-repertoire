@@ -10,7 +10,8 @@ from roles_royce.protocols import balancer
 from roles_royce.protocols.base import Address
 from roles_royce.utils import to_checksum_address
 
-from .disassembler import validate_percentage, GenericTxContext, WithdrawOperation
+from .disassembler import validate_percentage
+from ..base import GenericTxContext, WithdrawOperation, register
 
 
 class Exit11ArgumentElement(TypedDict):
@@ -55,7 +56,7 @@ def get_bpt_amount_to_redeem(ctx: GenericTxContext, bpt_address: Address, fracti
 
     return int(Decimal(bpt_contract.functions.balanceOf(ctx.avatar_safe_address).call()) * Decimal(fraction))
 
-
+@register
 class WithdrawAllAssetsProportional:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
@@ -75,6 +76,8 @@ class WithdrawAllAssetsProportional:
         list[Transactable]: List of transactions to execute.
     """
     op_type = WithdrawOperation
+    kind = "disassembly"
+    protocol = "balancer"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit11ArgumentElement] = None,
@@ -122,6 +125,7 @@ class WithdrawAllAssetsProportional:
             txns.append(withdraw_balancer)
         return txns
 
+@register
 class WithdrawSingle:
     """
     Withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
@@ -142,6 +146,8 @@ class WithdrawSingle:
         list[Transactable]: List of transactions to execute.
     """
     op_type = WithdrawOperation
+    kind = "disassembly"
+    protocol = "balancer"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit12ArgumemntElement],
@@ -187,6 +193,7 @@ class WithdrawSingle:
             txns.append(withdraw_balancer)
         return txns
 
+@register
 class WithdrawAllAssetsProportionalPoolsInRecovery:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
@@ -204,6 +211,8 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
     Returns:
         list[Transactable]: List of transactions to execute."""
     op_type = WithdrawOperation
+    kind = "disassembly"
+    protocol = "balancer"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit13ArgumentElement],
@@ -397,9 +406,3 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
                 txns.append(transactable)
 
         return txns
-
-
-operations = [
-    WithdrawAllAssetsProportional,
-    WithdrawSingle,
-]

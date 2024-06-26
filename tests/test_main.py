@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, ANY
 from defi_repertoire.main import app
 from defabipedia.types import Chain
-from defi_repertoire.disassembling.disassembling_balancer import WithdrawAllAssetsProportional
+from defi_repertoire.strategies.disassembling import WithdrawAllAssetsProportional
 
 client = TestClient(app)
 

@@ -21,7 +21,8 @@ from roles_royce.protocols.swap_pools.swap_methods import (
     SwapUniswapV3,
     WrapNativeToken,
 )
-from .disassembler import GenericTxContext, validate_percentage, SwapOperation
+from defi_repertoire.strategies.disassembling.disassembler import validate_percentage
+from defi_repertoire.strategies.base import GenericTxContext, SwapOperation, register
 
 
 def get_amount_to_redeem(ctx: GenericTxContext, token_in_address: Address, fraction: float | Decimal) -> int:
@@ -121,7 +122,7 @@ def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_
     else:
         raise ValueError("Protocol not supported")
 
-
+@register
 class SwapCowswap:
     """Make a swap on CowSwap with best amount out
         Args:
@@ -139,6 +140,8 @@ class SwapCowswap:
         list[ Transactable]:  List of transactions to execute.
     """
     op_type = SwapOperation
+    kind = "swap"
+    protocol = "cowswap"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
@@ -185,7 +188,7 @@ class SwapCowswap:
 
         return txns
 
-
+@register
 class SwapBalancer:
     """Make a swap on Balancer with best amount out
     Args:
@@ -203,6 +206,8 @@ class SwapBalancer:
         list[ Transactable]:  List of transactions to execute.
     """
     op_type = SwapOperation
+    kind = "swap"
+    protocol = "balancer"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
@@ -257,9 +262,12 @@ class SwapBalancer:
             txns.append(swap_balancer)
         return txns
 
-
-class SwapCurve:
+@register
+class SwapOnCurve:
     op_type = SwapOperation
+    kind = "swap"
+    protocol = "balancer"
+
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
@@ -331,8 +339,12 @@ class SwapCurve:
             txns.append(swap_curve)
         return txns
 
+@register
 class SwapUniswapV3:
     op_type = SwapOperation
+    kind = "swap"
+    protocol = "uniswapv3"
+
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
@@ -403,11 +415,3 @@ class SwapUniswapV3:
             txns.append(approve_uniswapV3)
             txns.append(swap_uniswapV3)
         return txns
-
-
-operations = [
-    SwapCowswap,
-    SwapBalancer,
-    SwapCurve,
-    SwapUniswapV3,
-]
