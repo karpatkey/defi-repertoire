@@ -56,47 +56,44 @@ async def root():
 async def status():
     return {"message": "Ok"}
 
+
 for strategy in STRATEGIES:
-
-    functions = []
-    name = str.lower(strategy.__name__)
-    kind = strategy.kind
+    function = strategy.get_txns
+    function_name = strategy.__name__
     protocol = strategy.protocol
-    functions.append((name, strategy.get_txns))
-    REGISTERED_OPS[protocol][name] = strategy
+    kind = strategy.kind
+    REGISTERED_OPS[protocol][function_name] = strategy
 
-    for function_name, function in functions:
-        arguments_type = get_type_hints(function)["arguments"]
+    arguments_type = get_type_hints(function)["arguments"]
 
-        def make_closure(kind, protocol, function_name, arg_type):
-            # As exit arguments is a custom type (a dict) and FastAPI does not support complex types
-            # in the querystring (https://github.com/tiangolo/fastapi/discussions/7919)
-            # We have mainly two options:
-            #  1) Use a json string in the querystring, but we will not have the schema documentation and validation.
-            #  2) Use a request body. As GET requests body are not supported in all the languages, then we also let POST for the endpoint
-            #     even if the semantic is of a GET.
-            #  3) Just use POST.
-            #
-            # For the time being the option 3) is implemented
-            url = f"/txn_data/{kind}/{protocol}/{function_name}/"
+    def make_closure(kind, protocol, function_name, arg_type):
+        # As exit arguments is a custom type (a dict) and FastAPI does not support complex types
+        # in the querystring (https://github.com/tiangolo/fastapi/discussions/7919)
+        # We have mainly two options:
+        #  1) Use a json string in the querystring, but we will not have the schema documentation and validation.
+        #  2) Use a request body. As GET requests body are not supported in all the languages, then we also let POST for the endpoint
+        #     even if the semantic is of a GET.
+        #  3) Just use POST.
+        #
+        # For the time being the option 3) is implemented
+        url = f"/txn_data/{kind}/{protocol}/{function_name}/"
 
-            # @app.get(url)
-            @app.post(url)
-            def transaction_data(blockchain: BlockchainOption,
-                                 avatar_safe_address: str,
-                                 percentage: float,
-                                 arguments: arg_type,
-                                 amount_to_redeem: int | None = None):
-                blockchain = Chain.get_blockchain_by_name(blockchain)
-                transactables = get_transactables(blockchain=blockchain,
-                                                  protocol=protocol,
-                                                  avatar_safe_address=avatar_safe_address,
-                                                  op_name=function_name,
-                                                  arguments=arguments,
-                                                  percentage=percentage,
-                                                  amount_to_redeem=amount_to_redeem,
-                                                  )
-                return {"data": transactables}
+        # @app.get(url)
+        @app.post(url)
+        def transaction_data(blockchain: BlockchainOption,
+                             avatar_safe_address: str,
+                             percentage: float,
+                             arguments: arg_type,
+                             amount_to_redeem: int | None = None):
+            blockchain = Chain.get_blockchain_by_name(blockchain)
+            transactables = get_transactables(blockchain=blockchain,
+                                              protocol=protocol,
+                                              avatar_safe_address=avatar_safe_address,
+                                              op_name=function_name,
+                                              arguments=arguments,
+                                              percentage=percentage,
+                                              amount_to_redeem=amount_to_redeem,
+                                              )
+            return {"data": transactables}
 
-
-        make_closure(kind, protocol, function_name, arguments_type)
+    make_closure(kind, protocol, function_name, arguments_type)
