@@ -2,19 +2,16 @@ from decimal import Decimal
 
 from defabipedia.aura import Abis
 from typing_extensions import TypedDict
-from web3 import Web3
 from web3.types import ChecksumAddress
 
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import aura
 from roles_royce.toolshed.disassembling.disassembling_balancer import (
-    BalancerDisassembler,
-    Disassembler,
     validate_percentage,
 )
 from roles_royce.utils import to_checksum_address
 
-from .disassembler import Disassembler, validate_percentage, GenericTxContext, WithdrawOperation
+from .disassembler import validate_percentage, GenericTxContext, WithdrawOperation
 from . import disassembling_balancer as balancer
 
 
@@ -61,8 +58,6 @@ class Withdraw:
     Returns:
         list[Transactable]: List of transactions to execute.
     """
-    inputs = ["AURAVaultToken"]
-    outputs = ["??"],  # also a list of bpt_addresses (to chain it with Balancer ?)
     op_type = WithdrawOperation
 
     @classmethod
@@ -106,8 +101,6 @@ class Withdraw2:
     Returns:
         list[Transactable]: List of transactions to execute.
     """
-    inputs = ["??"]
-    outputs = ["??"]
     op_type = WithdrawOperation
     name = "widraw_aura_balancer"
 

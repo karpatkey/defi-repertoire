@@ -122,23 +122,6 @@ def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_
         raise ValueError("Protocol not supported")
 
 
-from typing import NewType, Protocol
-
-BlockOperation = NewType('BlockOperation', str)
-TransactableChain = NewType('TransactableChain', list[Transactable])
-
-
-class PipeBlock(Protocol):
-    inputs: list
-    outputs: list
-    op_type: BlockOperation
-
-    @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> TransactableChain:
-        return ...
-
-
 class SwapCowswap:
     """Make a swap on CowSwap with best amount out
         Args:
@@ -155,8 +138,6 @@ class SwapCowswap:
     Returns:
         list[ Transactable]:  List of transactions to execute.
     """
-    inputs = ["AnyToken"]  # o una lista de tokens que se sabe que se pueden swapear, dinamicamente?
-    outputs = ["AnyToken"]
     op_type = SwapOperation
 
     @classmethod
@@ -221,8 +202,6 @@ class SwapBalancer:
     Returns:
         list[ Transactable]:  List of transactions to execute.
     """
-    inputs = [list("AnyToken")]  # TODO: o una lista de tokens que se sabe que se pueden swapear, dinamicamente?
-    outputs = [list("AnyToken")]
     op_type = SwapOperation
 
     @classmethod
@@ -280,6 +259,7 @@ class SwapBalancer:
 
 
 class SwapCurve:
+    op_type = SwapOperation
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
@@ -352,7 +332,7 @@ class SwapCurve:
         return txns
 
 class SwapUniswapV3:
-    api_name = ""
+    op_type = SwapOperation
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:

@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from decimal import Decimal
 from defabipedia.lido import ContractSpecs
 from defabipedia.tokens import EthereumTokenAddr
@@ -33,8 +32,6 @@ def get_amount_to_redeem(ctx: GenericTxContext, address: Address, fraction: floa
 
 
 class LidoUnstakeStETH:
-    inputs = ["stETH"]
-    outputs = ["ETH"]  # is ETH the output? or there is a wait period?
     op_type = UnstakeOperation
 
     @classmethod
@@ -84,9 +81,7 @@ class LidoUnstakeStETH:
 
 
 class LidoUnwrapAndUnstakeWstETH:
-    inputs = ["wstETH"]
-    outputs = ["ETH"]  # is ETH the output? or there is a wait period?
-    op_type = UnwrapOperation  # ??
+    op_type = UnwrapOperation
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
@@ -154,8 +149,6 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
     Returns:
         list[ Transactable]: List of transactions to execute
     """
-    inputs = ["wstETH"]
-    outputs = ["ETH"]
     op_type = SwapOperation
 
     @classmethod
@@ -188,8 +181,6 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
 
 
 class CurveSwap:
-    inputs = ["wstETH"]
-    outputs = ["ETH"]
     op_type = SwapOperation
 
     @classmethod

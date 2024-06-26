@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from decimal import Decimal
 from defabipedia.maker import ContractSpecs
 from roles_royce.generic_method import Transactable
@@ -30,11 +29,7 @@ class WithdrawWithProxy:
     Returns
         list[Transactable]: List of transactions to exit DSR.
     """
-    inputs = ["??"]
-    outputs = ["DAI??"]
     op_type = WithdrawOperation
-    exit_name = "exit_1_1"
-    withdraw_name = "dsr_with_proxy"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
@@ -69,9 +64,8 @@ class WithdrawWithoutProxy:
     Returns
         list[Transactable]: List of transactions to exit DSR.
     """
-    inputs = ["?? DSR TOKENS ?"]
-    outputs = ["DAI??"]
     op_type = WithdrawOperation
+
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:

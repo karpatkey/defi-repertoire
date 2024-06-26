@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from decimal import Decimal
 from typing import TypedDict
 from defabipedia.spark import ContractSpecs
@@ -17,8 +16,6 @@ def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) 
 
 
 class Exit1:
-    inputs = ["sDAI"]
-    outputs = ["DAI"]
     op_type = RedeemOperation  #
 
     @classmethod
@@ -50,8 +47,6 @@ class Exit2Arguments(TypedDict):
     max_slippage: float
 
 class Exit2:
-    inputs = ["sDAI"]
-    outputs = ["USDC"]
     op_type = SwapOperation
 
     @classmethod

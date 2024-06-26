@@ -74,10 +74,7 @@ class WithdrawAllAssetsProportional:
     Returns:
         list[Transactable]: List of transactions to execute.
     """
-    inputs = ["BPTToken??"]
-    outputs = ["??"],  # also a list of bpt_addresses (to chain it with Balancer ?)
     op_type = WithdrawOperation
-
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit11ArgumentElement] = None,
@@ -144,8 +141,6 @@ class WithdrawSingle:
     Returns:
         list[Transactable]: List of transactions to execute.
     """
-    inputs = ["BPTToken??"]
-    outputs = ["??"],  # also a list of bpt_addresses (to chain it with Balancer ?)
     op_type = WithdrawOperation
 
     @classmethod
@@ -208,8 +203,6 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
 
     Returns:
         list[Transactable]: List of transactions to execute."""
-    inputs = ["BPTToken??"]
-    outputs = ["??"],  # also a list of bpt_addresses (to chain it with Balancer ?)
     op_type = WithdrawOperation
 
     @classmethod
