@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, ANY
 from defi_repertoire.main import app
 from defabipedia.types import Chain
-from defi_repertoire.strategies.disassembling import WithdrawAllAssetsProportional
+from defi_repertoire.strategies.disassembling.disassembling_balancer import WithdrawAllAssetsProportional
 
 client = TestClient(app)
 
@@ -28,8 +28,8 @@ def test_disassembly_balancer():
             response = client.post(
                 "/txn_data/disassembly/balancer/withdrawallassetsproportional/?"
                 "blockchain=ethereum&"
-                "percentage=0.1&"
-                "avatar_safe_address=0x849D52316331967b6fF1198e5E32A0eB168D039d&",
+                "avatar_safe_address=0x849D52316331967b6fF1198e5E32A0eB168D039d&"
+                "amount_to_redeem=10&",
                 json=[
                     {
                         "bpt_address": "0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF",
@@ -38,10 +38,9 @@ def test_disassembly_balancer():
                 ]
             )
             exit_strategy.assert_called_with(ctx=ANY,
-                                             percentage=0.1,
                                              arguments=[
                                                  {'bpt_address': '0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF',
                                                   'max_slippage': 0.2}],
-                                             amount_to_redeem=None)
+                                             amount_to_redeem=10)
             assert response.status_code == 200
             assert response.json() == {"data": [tx_data]}

@@ -10,7 +10,6 @@ from roles_royce.protocols import balancer
 from roles_royce.protocols.base import Address
 from roles_royce.utils import to_checksum_address
 
-from .disassembler import validate_percentage
 from ..base import GenericTxContext, WithdrawOperation, register
 
 
@@ -56,13 +55,13 @@ def get_bpt_amount_to_redeem(ctx: GenericTxContext, bpt_address: Address, fracti
 
     return int(Decimal(bpt_contract.functions.balanceOf(ctx.avatar_safe_address).call()) * Decimal(fraction))
 
+
 @register
 class WithdrawAllAssetsProportional:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
 
     Args:
-        percentage (float): Percentage of liquidity to remove.
         arguments (list[dict]): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
@@ -70,7 +69,7 @@ class WithdrawAllAssetsProportional:
                     "max_slippage": 1.25
                 }
             ]
-        amount_to_redeem (int, optional): Amount of BPT to redeem. Defaults to None. If None, the 'percentage' of the balance of the BPT will be redeemed.
+        amount_to_redeem (int, optional): Amount of BPT to redeem.
 
     Returns:
         list[Transactable]: List of transactions to execute.
@@ -80,10 +79,7 @@ class WithdrawAllAssetsProportional:
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit11ArgumentElement] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
-
-        fraction = validate_percentage(percentage)
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit11ArgumentElement], amount_to_redeem: int) -> list[Transactable]:
 
         txns = []
 
@@ -94,8 +90,6 @@ class WithdrawAllAssetsProportional:
             bpt_contract = ctx.w3.eth.contract(address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi)
 
             amount = amount_to_redeem
-            if amount is None:  # The amount to redeem might be calculated in a previous step
-                amount = get_bpt_amount_to_redeem(ctx, bpt_address, fraction)
 
             if amount == 0:
                 return []
@@ -125,13 +119,13 @@ class WithdrawAllAssetsProportional:
             txns.append(withdraw_balancer)
         return txns
 
+
 @register
 class WithdrawSingle:
     """
     Withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
 
     Args:
-        percentage (float): Percentage of liquidity to remove.
         arguments (list[dict]): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
@@ -140,7 +134,7 @@ class WithdrawSingle:
                     "token_out_address": "0xAnoThERAdDResS"
                 }
             ]
-        amount_to_redeem (int, optional): Amount of BPT to redeem. Defaults to None. If None, the 'percentage' of the balance of the BPT will be redeemed.
+        amount_to_redeem (int, optional): Amount of BPT to redeem.
 
     Returns:
         list[Transactable]: List of transactions to execute.
@@ -150,10 +144,8 @@ class WithdrawSingle:
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit12ArgumemntElement],
-                 amount_to_redeem: int = None) -> list[Transactable]:
-
-        fraction = validate_percentage(percentage)
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit12ArgumemntElement],
+                 amount_to_redeem: int) -> list[Transactable]:
 
         txns = []
 
@@ -164,8 +156,6 @@ class WithdrawSingle:
 
             bpt_contract = ctx.w3.eth.contract(address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi)
             amount = amount_to_redeem
-            if amount is None:  # The amount to redeem might be calculated in a previous step
-                amount = get_bpt_amount_to_redeem(ctx, bpt_address, fraction)
 
             if amount == 0:
                 return []
@@ -193,20 +183,20 @@ class WithdrawSingle:
             txns.append(withdraw_balancer)
         return txns
 
+
 @register
 class WithdrawAllAssetsProportionalPoolsInRecovery:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
 
     Args:
-        percentage (float): Percentage of liquidity to remove from Balancer.
         arguments (list[dict]): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
                     "bpt_address": "0xsOmEAddResS"
                 }
             ]
-        amount_to_redeem (int, optional): Amount of BPT to redeem. Defaults to None. If None, the 'percentage' of the balance of the BPT will be redeemed.
+        amount_to_redeem (int, optional): Amount of BPT to redeem.
 
     Returns:
         list[Transactable]: List of transactions to execute."""
@@ -215,10 +205,8 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit13ArgumentElement],
-                 amount_to_redeem: int = None) -> list[Transactable]:
-
-        fraction = validate_percentage(percentage)
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit13ArgumentElement],
+                 amount_to_redeem: int) -> list[Transactable]:
 
         txns = []
         for element in arguments:
@@ -236,8 +224,6 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             bpt_pool_id = "0x" + bpt_contract.functions.getPoolId().call().hex()
 
             amount = amount_to_redeem
-            if amount is None:  # The amount to redeem might be calculated in a previous step
-                amount = get_bpt_amount_to_redeem(ctx, bpt_address, fraction)
 
             if amount == 0:
                 return []
@@ -251,13 +237,12 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
         return txns
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit21ArgumentElement],
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit21ArgumentElement],
+                 amount_to_redeem: int) -> list[Transactable]:
         """
         Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
 
         Args:
-            percentage (float): Percentage of liquidity to remove.
             arguments (list[dict]): List of dictionaries with the withdrawal parameters.
                 e.g.= [
                         {
@@ -265,13 +250,11 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
                             "max_slippage": 1.25
                         }
                     ]
-            amount_to_redeem (int, optional): Amount of BPT to redeem. Defaults to None. IfNone, the 'percentage' of the
-                balance of the BPT will be redeemed.
+            amount_to_redeem (int, optional): Amount of BPT to redeem.
 
         Returns:
             list[Transactable]: List of transactions to execute.
         """
-        fraction = validate_percentage(percentage)
 
         txns = []
         for element in arguments:
@@ -279,8 +262,6 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             max_slippage = element["max_slippage"] / 100
 
             amount = amount_to_redeem
-            if amount is None:  # The amount to redeem might be calculated in a previous step
-                amount = get_bpt_amount_to_redeem_from_gauge(ctx, gauge_address, fraction)
 
             if amount == 0:
                 return []
@@ -297,23 +278,21 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             bpt_address = gauge_contract.functions.lp_token().call()
 
             withdraw_balancer = WithdrawSingle.get_txns(ctx=ctx,
-                percentage=fraction,
-                arguments=[{"bpt_address": bpt_address, "max_slippage": max_slippage}],
-                amount_to_redeem=amount,
-            )
+                                                        arguments=[{"bpt_address": bpt_address, "max_slippage": max_slippage}],
+                                                        amount_to_redeem=amount,
+                                                        )
             for transactable in withdraw_balancer:
                 txns.append(transactable)
 
         return txns
 
     def exit_2_2(
-            self, percentage: float, arguments: list[Exit22ArgumentElement], amount_to_redeem: Optional[int] = None
+            self, arguments: list[Exit22ArgumentElement], amount_to_redeem: int
     ) -> list[Transactable]:
         """
         Unstake from gauge and withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
 
         Args:
-            percentage (float): Percentage of liquidity to remove.
             arguments (list[dict]): List of dictionaries with the withdrawal parameters.
                 arg_dicts = [
                     {
@@ -322,12 +301,11 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
                         "max_slippage": 1.25
                     }
                 ]
-            amount_to_redeem (int, optional): Amount of BPT to redeem. Defaults to None. If None, the 'percentage' of the balance of the BPT will be redeemed.
+            amount_to_redeem (int, optional): Amount of BPT to redeem.
 
         Returns:
             list[Transactable]: List of transactions to execute.
         """
-        fraction = validate_percentage(percentage)
 
         txns = []
         for element in arguments:
@@ -337,8 +315,6 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             max_slippage = element["max_slippage"] / 100
 
             amount = amount_to_redeem
-            if amount is None:  # The amount to redeem might be calculated in a previous step
-                amount = self.get_bpt_amount_to_redeem_from_gauge(gauge_address, fraction)
 
             if amount == 0:
                 return []
@@ -350,7 +326,6 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             bpt_address = gauge_contract.functions.lp_token().call()
 
             withdraw_balancer = self.exit_1_2(
-                percentage=fraction,
                 arguments=[
                     {"bpt_address": bpt_address, "token_out_address": token_out_address, "max_slippage": max_slippage}
                 ],
@@ -362,33 +337,29 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
         return txns
 
     def exit_2_3(
-            self, percentage: float, arguments: list[Exit23ArgumentElement], amount_to_redeem: Optional[int] = None
+            self, arguments: list[Exit23ArgumentElement], amount_to_redeem: int
     ) -> list[Transactable]:
         """
         Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
 
         Args:
-            percentage (float): Percentage of liquidity to remove.
             arguments (list[dict]): List of dictionaries with the withdrawal parameters.
                 arg_dicts = [
                     {
                         "gauge_address": "0xsOmEAddResS",
                     }
                 ]
-            amount_to_redeem (int, optional): Amount of BPT to redeem. Defaults to None. If None, the 'percentage' of the balance of the BPT will be redeemed.
+            amount_to_redeem (int, optional): Amount of BPT to redeem.
 
         Returns:
             list[Transactable]: List of transactions to execute.
         """
-        fraction = validate_percentage(percentage)
 
         txns = []
         for element in arguments:
             gauge_address = to_checksum_address(element["gauge_address"])
 
             amount = amount_to_redeem
-            if amount is None:  # The amount to redeem might be calculated in a previous step
-                amount = self.get_bpt_amount_to_redeem_from_gauge(gauge_address, fraction)
 
             if amount == 0:
                 return []
@@ -400,7 +371,7 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             bpt_address = gauge_contract.functions.lp_token().call()
 
             withdraw_balancer = self.exit_1_3(
-                percentage=fraction, arguments=[{"bpt_address": bpt_address}], amount_to_redeem=amount
+                arguments=[{"bpt_address": bpt_address}], amount_to_redeem=amount
             )
             for transactable in withdraw_balancer:
                 txns.append(transactable)

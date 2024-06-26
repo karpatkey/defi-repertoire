@@ -6,12 +6,8 @@ from web3.types import ChecksumAddress
 
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import aura
-from roles_royce.toolshed.disassembling.disassembling_balancer import (
-    validate_percentage,
-)
-from roles_royce.utils import to_checksum_address
 
-from .disassembler import validate_percentage
+from roles_royce.utils import to_checksum_address
 from ..base import GenericTxContext, WithdrawOperation
 from . import disassembling_balancer as balancer
 from defi_repertoire.strategies import register
@@ -43,12 +39,17 @@ def aura_contracts_helper(ctx: GenericTxContext, aura_rewards_address: ChecksumA
 
     return bpt_address, amount_to_redeem
 
+def aura_to_bpt_address(ctx: GenericTxContext, aura_rewards_address: ChecksumAddress) -> str:
+    aura_rewards_contract = ctx.w3.eth.contract(
+        address=aura_rewards_address, abi=Abis[ctx.blockchain].BaseRewardPool.abi
+    )
+    return aura_rewards_contract.functions.asset().call()
+
 @register
 class Withdraw:
     """Withdraw funds from Aura.
 
     Args:
-        percentage (float): Percentage of liquidity to remove from Aura.
         arguments (list[dict]): List of dictionaries with the Aura rewards addresses to withdraw from.
             arg_dicts = [
                     {
@@ -64,18 +65,14 @@ class Withdraw:
     protocol = "aura"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit1ArgumentElement],
-                 amount_to_redeem: int = None) -> list[Transactable]:
-        fraction = validate_percentage(percentage)
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit1ArgumentElement],
+                 amount_to_redeem: int) -> list[Transactable]:
 
         txns = []
         for element in arguments:
             aura_rewards_address = to_checksum_address(element["rewards_address"])
 
-            bpt_address, amount_to_redeem = aura_contracts_helper(ctx,
-                                                                  aura_rewards_address=aura_rewards_address,
-                                                                  fraction=fraction
-                                                                  )
+            bpt_address = aura_to_bpt_address(aura_rewards_address)
             ctx.ctx["aura"]["aura_to_bpt"][aura_rewards_address] = bpt_address
             if amount_to_redeem == 0:
                 return []
@@ -92,7 +89,6 @@ class Withdraw2:
     (not used for pools in recovery mode!).
 
     Args:
-        percentage (float): Percentage of liquidity to remove from Aura.
         arguments (list[dict]): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
@@ -110,18 +106,18 @@ class Withdraw2:
     protocol = "aura"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit21ArgumentElement],
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit21ArgumentElement],
+                 amount_to_redeem: int) -> list[Transactable]:
 
         if amount_to_redeem == 0:
             return []
 
-        fraction = validate_percentage(percentage)
         txns = []
 
         for element in arguments:
             aura_reward_address = to_checksum_address(element["rewards_address"])
-            aura_txns = Withdraw.get_txns(ctx, percentage, arguments=[{"rewards_address": aura_reward_address}],
+            aura_txns = Withdraw.get_txns(ctx,
+                                          arguments=[{"rewards_address": aura_reward_address}],
                                           amount_to_redeem=amount_to_redeem)
             txns.extend(aura_txns)
 
@@ -131,7 +127,6 @@ class Withdraw2:
 
             bal_txns = balancer.WithdrawAllAssetsProportional.get_txns(
                 ctx=ctx,
-                percentage=100,
                 arguments=[{"bpt_address": bpt_address, "max_slippage": max_slippage}],
                 amount_to_redeem=amount_to_redeem,
             )
@@ -139,12 +134,11 @@ class Withdraw2:
 
         return txns
 
-    # def exit_2_2(self, percentage: float, arguments: list[Exit22ArgumentElement]) -> list[Transactable]:
+    # def exit_2_2(self, arguments: list[Exit22ArgumentElement]) -> list[Transactable]:
     #     """Withdraw funds from Aura and then from the Balancer pool withdrawing a single asset specified by the
     #     token index.
     #
     #     Args:
-    #         percentage (float): Percentage of liquidity to remove from Aura.
     #         arguments (list[dict]): List of dictionaries with the withdrawal parameters.
     #             arg_dicts = [
     #                 {
@@ -200,7 +194,7 @@ class Withdraw2:
     #
     #     return txns
     #
-    # def exit_2_3(self, percentage: float, arguments: list[Exit1ArgumentElement]) -> list[Transactable]:
+    # def exit_2_3(self, arguments: list[Exit1ArgumentElement]) -> list[Transactable]:
     #     """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way when
     #     pool is in recovery mode.
     #

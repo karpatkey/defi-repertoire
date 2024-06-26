@@ -21,7 +21,6 @@ from roles_royce.protocols.swap_pools.swap_methods import (
     SwapUniswapV3,
     WrapNativeToken,
 )
-from defi_repertoire.strategies.disassembling.disassembler import validate_percentage
 from defi_repertoire.strategies.base import GenericTxContext, SwapOperation, register
 
 
@@ -126,7 +125,6 @@ def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_
 class SwapCowswap:
     """Make a swap on CowSwap with best amount out
         Args:
-        percentage (float): Percentage of token to remove.
         arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
@@ -135,7 +133,7 @@ class SwapCowswap:
                     "token_out_address": "FillMewithTokenAddress"
                 }
             ]
-        amount_to_redeem (int, optional): Amount of wallet token to redeem. Defaults to None.
+        amount_to_redeem (int): Amount of wallet token to redeem.
     Returns:
         list[ Transactable]:  List of transactions to execute.
     """
@@ -144,15 +142,11 @@ class SwapCowswap:
     protocol = "cowswap"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
+                 amount_to_redeem: int) -> list[Transactable]:
         max_slippage = arguments[0]["max_slippage"] / 100
         token_in = arguments[0]["token_in_address"]
         token_out = arguments[0]["token_out_address"]
-        fraction = validate_percentage(percentage)
-
-        if amount_to_redeem is None:
-            amount_to_redeem = get_amount_to_redeem(ctx.w3, ctx.avatar_safe_address, token_in, fraction)
 
         txns = []
 
@@ -165,8 +159,6 @@ class SwapCowswap:
             fork = False
 
         if token_in == NATIVE:
-            if amount_to_redeem is not None:
-                amount_to_redeem = get_amount_to_redeem(ctx.w3, ctx.avatar_safe_address, token_in, fraction)
             wraptoken = WrapNativeToken(blockchain=ctx.blockchain, eth_amount=amount_to_redeem)
             txns.append(wraptoken)
             token_in = get_wrapped_token(ctx.blockchain)
@@ -192,7 +184,6 @@ class SwapCowswap:
 class SwapBalancer:
     """Make a swap on Balancer with best amount out
     Args:
-        percentage (float): Percentage of token to remove.
         arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
@@ -210,16 +201,12 @@ class SwapBalancer:
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
+                 amount_to_redeem: int) -> list[Transactable]:
         for element in arguments:
             max_slippage = element["max_slippage"] / 100
             token_in = element["token_in_address"]
             token_out = element["token_out_address"]
-            fraction = validate_percentage(percentage)
-
-            if amount_to_redeem is None:
-                amount_to_redeem = get_amount_to_redeem(ctx.w3, ctx.avatar_safe_address, token_in, fraction)
 
             txns = []
 
@@ -238,8 +225,6 @@ class SwapBalancer:
             best_quote = max(quotes)
             amount_out_min_slippage = int(Decimal(best_quote) * Decimal(1 - max_slippage))
             if token_in == NATIVE:
-                if amount_to_redeem is not None:
-                    amount_to_redeem = get_amount_to_redeem(ctx, token_in, fraction)
                 wraptoken = WrapNativeToken(blockchain=ctx.blockchain, eth_amount=amount_to_redeem)
                 txns.append(wraptoken)
                 token_in = get_wrapped_token(ctx.blockchain)
@@ -269,12 +254,11 @@ class SwapOnCurve:
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
+                 amount_to_redeem: int) -> list[Transactable]:
 
         """Make a swap on Curve with best amount out
         Args:
-            percentage (float): Percentage of token to remove.
             arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
                 arg_dicts = [
                     {
@@ -283,7 +267,7 @@ class SwapOnCurve:
                         "token_out_address": "FillMewithTokenAddress"
                     }
                 ]
-            amount_to_redeem (int, optional): Amount of wallet token to redeem. Defaults to None.
+            amount_to_redeem (int, optional): Amount of wallet token to redeem.
         Returns:
             list[ Transactable]:  List of transactions to execute.
         """
@@ -291,10 +275,6 @@ class SwapOnCurve:
             max_slippage = element["max_slippage"] / 100
             token_in = element["token_in_address"]
             token_out = element["token_out_address"]
-            fraction = validate_percentage(percentage)
-
-            if amount_to_redeem is None:
-                amount_to_redeem = get_amount_to_redeem(ctx, token_in, fraction)
 
             txns = []
 
@@ -313,8 +293,6 @@ class SwapOnCurve:
             amount_out_min_slippage = int(Decimal(best_quote) * Decimal(1 - max_slippage))
 
             if token_in == NATIVE:
-                if amount_to_redeem is not None:
-                    amount_to_redeem = get_amount_to_redeem(ctx, token_in, fraction)
                 eth_amount = amount_to_redeem
             else:
                 eth_amount = 0
@@ -346,11 +324,10 @@ class SwapUniswapV3:
     protocol = "uniswapv3"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
+                 amount_to_redeem: int) -> list[Transactable]:
         """Make a swap on UniswapV3 with best amount out
         Args:
-            percentage (float): Percentage of token to remove.
             arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
                 arg_dicts = [
                     {
@@ -359,7 +336,7 @@ class SwapUniswapV3:
                         "token_out_address": "FillMewithTokenAddress"
                     }
                 ]
-            amount_to_redeem (int, optional): Amount of wallet token to redeem. Defaults to None.
+            amount_to_redeem (int): Amount of wallet token to redeem.
         Returns:
             list[ Transactable]:  List of transactions to execute.
         """
@@ -367,10 +344,6 @@ class SwapUniswapV3:
             max_slippage = element["max_slippage"] / 100
             token_in = element["token_in_address"]
             token_out = element["token_out_address"]
-            fraction = validate_percentage(percentage)
-
-            if amount_to_redeem is None:
-                amount_to_redeem = get_amount_to_redeem(ctx, token_in, fraction)
 
             txns = []
 
@@ -388,8 +361,6 @@ class SwapUniswapV3:
             best_quote = max(quotes)
             amount_out_min_slippage = int(Decimal(best_quote) * Decimal(1 - max_slippage))
             if token_in == NATIVE:
-                if amount_to_redeem is not None:
-                    amount_to_redeem = get_amount_to_redeem(ctx, token_in, fraction)
                 wraptoken = WrapNativeToken(blockchain=ctx.blockchain, eth_amount=amount_to_redeem)
                 txns.append(wraptoken)
                 token_in = get_wrapped_token(ctx.blockchain)

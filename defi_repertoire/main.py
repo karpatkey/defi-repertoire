@@ -32,12 +32,11 @@ def get_transactables(blockchain: Blockchain,
                       op_name,
                       arguments: dict,
                       avatar_safe_address,
-                      percentage,
                       amount_to_redeem):
     w3 = get_endpoint_for_blockchain(blockchain)
     op = REGISTERED_OPS.get(protocol).get(op_name)
     ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
-    txns = op.get_txns(ctx=ctx, percentage=percentage,
+    txns = op.get_txns(ctx=ctx,
                        arguments=arguments,
                        amount_to_redeem=amount_to_redeem)
 
@@ -59,7 +58,7 @@ async def status():
 
 for strategy in STRATEGIES:
     function = strategy.get_txns
-    function_name = strategy.__name__
+    function_name = str.lower(strategy.__name__)
     protocol = strategy.protocol
     kind = strategy.kind
     REGISTERED_OPS[protocol][function_name] = strategy
@@ -82,16 +81,14 @@ for strategy in STRATEGIES:
         @app.post(url)
         def transaction_data(blockchain: BlockchainOption,
                              avatar_safe_address: str,
-                             percentage: float,
                              arguments: arg_type,
-                             amount_to_redeem: int | None = None):
+                             amount_to_redeem: int):
             blockchain = Chain.get_blockchain_by_name(blockchain)
             transactables = get_transactables(blockchain=blockchain,
                                               protocol=protocol,
                                               avatar_safe_address=avatar_safe_address,
                                               op_name=function_name,
                                               arguments=arguments,
-                                              percentage=percentage,
                                               amount_to_redeem=amount_to_redeem,
                                               )
             return {"data": transactables}

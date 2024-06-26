@@ -6,7 +6,6 @@ from roles_royce.protocols.base import Address
 from roles_royce.protocols import cowswap
 from roles_royce.protocols.eth import lido
 
-from .disassembler import validate_percentage
 from ..base import GenericTxContext, SwapOperation, UnstakeOperation, UnwrapOperation
 
 
@@ -35,27 +34,18 @@ class LidoUnstakeStETH:
     op_type = UnstakeOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict], amount_to_redeem: int) -> list[Transactable]:
         """
         Unstakes stETH from Lido
 
         Args:
-            percentage (float): Percentage of the total stETH holdings to redeem.
-            amount_to_redeem (int, optional):Amount of stETH to redeem. Defaults to None. If None, the 'percentage' of
-                the balance of stETH will be redeemed.
+            amount_to_redeem (int, optional):Amount of stETH to redeem.
 
         Returns:
             list[Transactable]: List of transactions to execute.
         """
 
-        fraction = validate_percentage(percentage)
-
         txns = []
-        address = ContractSpecs[ctx.blockchain].stETH.address
-
-        if amount_to_redeem is None:
-            amount_to_redeem = get_amount_to_redeem(ctx, address, fraction)
 
         chunk_amount = amount_to_redeem
         if chunk_amount > 1000_000_000_000_000_000_000:
@@ -84,27 +74,20 @@ class LidoUnwrapAndUnstakeWstETH:
     op_type = UnwrapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict], amount_to_redeem: int) -> list[Transactable]:
 
         """
         Unwraps wstETH and unstakes for ETH on Lido
 
         Args:
-            percentage (float): Percentage of the total wstETH holdings to redeem.
-            amount_to_redeem (int, optional): Amount of wstETH to redeem. Defaults to None. If None, the 'percentage' of the balance of stETH will be redeemed.
+            amount_to_redeem (int, optional): Amount of wstETH to redeem.
 
         Returns:
             list[Transactable]: List of transactions to execute.
         """
 
-        fraction = validate_percentage(percentage)
-
         txns = []
-        address = ContractSpecs[ctx.blockchain].wstETH.address
 
-        if amount_to_redeem is None:
-            amount_to_redeem = get_amount_to_redeem(ctx, address, fraction)
         contract = ContractSpecs[ctx.blockchain].wstETH.contract(ctx.w3)
         amount_for_list = contract.functions.getWstETHByStETH(
             1_000_000_000_000_000_000_000).call()  # just to be safe that the chunk size is too big
@@ -136,7 +119,6 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
     Swaps stETH for ETH. Approves the Cowswap relayer to spend the stETH if needed, then creates the order using the
     Cow's order API and creates the sign_order transaction.
     Args:
-        percentage (float): Percentage of the total stETH holdings to swap.
         arguments (list[dict]):  List with one single dictionary with the order parameters from an already
          created order:
             arg_dicts = [
@@ -144,22 +126,17 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
                     "max_slippage": 11.25
                 }
             ]
-        amount_to_redeem (int, optional): Amount of stETH to swap. Defaults to None. If None, the 'percentage' of
-            the total stETH holdings are swapped
+        amount_to_redeem (int, optional): Amount of stETH to swap.
     Returns:
         list[ Transactable]: List of transactions to execute
     """
     op_type = SwapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
+                 amount_to_redeem: int) -> list[Transactable]:
 
         max_slippage = arguments[0]["max_slippage"] / 100
-        fraction = validate_percentage(percentage)
-
-        if amount_to_redeem is None:
-            amount_to_redeem = get_amount_to_redeem(ctx, EthereumTokenAddr.stETH, fraction)
 
         if amount_to_redeem == 0:
             return []
@@ -179,34 +156,4 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
                                              valid_duration=20 * 60,
                                              fork=fork)
 
-
-class CurveSwap:
-    op_type = SwapOperation
-
-    @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
-        """Make a swap on Curve with wsteth to ETH
-        Args:
-            percentage (float): Percentage of token to remove.
-            arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
-                arg_dicts = [
-                    {
-                        "token_in_address: "FillMewithTokenAddress",
-                        "max_slippage": 0.01,
-                        "token_out_address": "FillMewithTokenAddress"
-                    }
-                ]
-            amount_to_redeem (int, optional): Amount of wallet token to redeem. Defaults to None.
-        Returns:
-            list[ Transactable]:  List of transactions to execute.
-        """
-        txns = SwapOnCurve.get_txns(
-            ctx=ctx,
-            percentage=percentage,
-            arguments=arguments,
-            amount_to_redeem=amount_to_redeem
-        )
-
-        return txns
 

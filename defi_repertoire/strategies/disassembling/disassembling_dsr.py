@@ -36,8 +36,8 @@ class WithdrawWithProxy:
     protocol = "dsr"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
+                 amount_to_redeem: int) -> list[Transactable]:
 
             fraction = validate_percentage(percentage)
 
@@ -74,8 +74,8 @@ class WithdrawWithoutProxy:
     protocol = "dsr"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
+                 amount_to_redeem: int) -> list[Transactable]:
 
         fraction = validate_percentage(percentage)
 

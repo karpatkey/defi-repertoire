@@ -6,7 +6,6 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import spark
 from roles_royce.protocols import cowswap
 
-from .disassembler import validate_percentage
 from ..base import GenericTxContext, SwapOperation, RedeemOperation, register
 
 
@@ -15,6 +14,7 @@ def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) 
     balance = sdai.functions.balanceOf(ctx.avatar_safe_address).call()
     return int(Decimal(balance) * Decimal(fraction))
 
+
 @register
 class Exit1:
     op_type = RedeemOperation  #
@@ -22,23 +22,17 @@ class Exit1:
     protocol = "spark"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
+                 amount_to_redeem: int) -> list[Transactable]:
         """Withdraw funds from Spark with proxy.
 
         Args:
-            percentage (float): Percentage of liquidity to remove from Spark.
             arguments (list[str]): List of Spark token addresses to withdraw from.
-            amount_to_redeem (int, optional): Amount of Spark tokens to withdraw. Defaults to None.
+            amount_to_redeem (int, optional): Amount of Spark tokens to withdraw.
 
         Returns
             list[Transactable]: List of transactions to exit Spark.
         """
-
-        fraction = validate_percentage(percentage)
-
-        if amount_to_redeem is None:
-            amount_to_redeem = get_amount_to_redeem_sdai(ctx, fraction)
 
         exit_sdai = spark.RedeemSDAIforDAI(blockchain=ctx.blockchain,
                                            amount=amount_to_redeem,
@@ -49,6 +43,7 @@ class Exit1:
 class Exit2Arguments(TypedDict):
     max_slippage: float
 
+
 @register
 class Exit2:
     op_type = SwapOperation
@@ -56,14 +51,13 @@ class Exit2:
     protocol = "spark"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit2Arguments],
-                 amount_to_redeem: int = None) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit2Arguments],
+                 amount_to_redeem: int) -> list[Transactable]:
 
         """
         Swaps sDAI for USDC. Approves the Cowswap relayer to spend the sDAI if needed, then creates the order using
         the Cow's order API and creates the sign_order transaction.
         Args:
-            percentage (float): Percentage of the total sDAI holdings to swap.
             arguments (list[dict]):  List with one single dictionary with the order parameters from an already
              created order:
                 arg_dicts = [
@@ -71,20 +65,12 @@ class Exit2:
                         "max_slippage": 11.25
                     }
                 ]
-            amount_to_redeem (int, optional): Amount of sDAI to swap. Defaults to None. If None, the 'percentage' of
-                the total sDAI holdings are swapped
+            amount_to_redeem (int, optional): Amount of sDAI to swap.
         Returns:
             list[ Transactable]: List of transactions to execute.
         """
 
         max_slippage = arguments[0]["max_slippage"] / 100
-        fraction = validate_percentage(percentage)
-
-        if amount_to_redeem is None:
-            amount_to_redeem = get_amount_to_redeem_sdai(ctx, fraction)
-
-        if amount_to_redeem == 0:
-            return []
 
         if 'anvil' in ctx.w3.client_version:
             fork = True
