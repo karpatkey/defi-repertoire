@@ -5,7 +5,7 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols.base import Address
 from roles_royce.protocols.eth import maker
 
-from .disassembler import GenericTxContext, validate_percentage
+from .disassembler import GenericTxContext, validate_percentage, WithdrawOperation
 
 
 def get_amount_to_redeem(ctx: GenericTxContext, fraction: Decimal | float, proxy_address: Address = None) -> int:
@@ -24,7 +24,7 @@ class WithdrawWithProxy:
 
     Args:
         percentage (float): Percentage of liquidity to remove from DSR.
-        exit_arguments (list[str]): List of DSR token addresses to withdraw from.
+        arguments (list[str]): List of DSR token addresses to withdraw from.
         amount_to_redeem (int, optional): Amount of DSR tokens to withdraw. Defaults to None.
 
     Returns
@@ -33,9 +33,11 @@ class WithdrawWithProxy:
     inputs = ["??"]
     outputs = ["DAI??"]
     op_type = WithdrawOperation
+    exit_name = "exit_1_1"
+    withdraw_name = "dsr_with_proxy"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
 
             fraction = validate_percentage(percentage)
@@ -56,12 +58,12 @@ class WithdrawWithProxy:
 
             return txns
 
-class WithdrawWithProxy:
+class WithdrawWithoutProxy:
     """Withdraw funds from DSR without proxy.
 
     Args:
         percentage (float): Percentage of liquidity to remove from DSR.
-        exit_arguments (list[str]): List of DSR token addresses to withdraw from.
+        arguments (list[str]): List of DSR token addresses to withdraw from.
         amount_to_redeem (int, optional): Amount of DSR tokens to withdraw. Defaults to None.
 
     Returns
@@ -71,7 +73,7 @@ class WithdrawWithProxy:
     outputs = ["DAI??"]
     op_type = WithdrawOperation
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
 
         fraction = validate_percentage(percentage)
@@ -88,3 +90,9 @@ class WithdrawWithProxy:
         txns.append(exit_dai)
 
         return txns
+
+
+operations = [
+    WithdrawWithProxy,
+    WithdrawWithoutProxy
+]

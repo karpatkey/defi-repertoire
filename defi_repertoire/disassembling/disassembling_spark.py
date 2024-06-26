@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from decimal import Decimal
+from typing import TypedDict
 from defabipedia.spark import ContractSpecs
 from defabipedia.tokens import Addresses
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import spark
 from roles_royce.protocols import cowswap
 
-from .disassembler import Disassembler, GenericTxContext, validate_percentage
+from .disassembler import GenericTxContext, validate_percentage, RedeemOperation, SwapOperation
 
 
 def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) -> int:
@@ -18,17 +19,16 @@ def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) 
 class Exit1:
     inputs = ["sDAI"]
     outputs = ["DAI"]
-    op_type = RedeemOperation #
+    op_type = RedeemOperation  #
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
-
         """Withdraw funds from Spark with proxy.
 
         Args:
             percentage (float): Percentage of liquidity to remove from Spark.
-            exit_arguments (list[str]): List of Spark token addresses to withdraw from.
+            arguments (list[str]): List of Spark token addresses to withdraw from.
             amount_to_redeem (int, optional): Amount of Spark tokens to withdraw. Defaults to None.
 
         Returns
@@ -46,13 +46,16 @@ class Exit1:
         return [exit_sdai]
 
 
+class Exit2Arguments(TypedDict):
+    max_slippage: float
+
 class Exit2:
     inputs = ["sDAI"]
     outputs = ["USDC"]
     op_type = SwapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit2Arguments],
                  amount_to_redeem: int = None) -> list[Transactable]:
 
         """
@@ -60,7 +63,7 @@ class Exit2:
         the Cow's order API and creates the sign_order transaction.
         Args:
             percentage (float): Percentage of the total sDAI holdings to swap.
-            exit_arguments (list[dict]):  List with one single dictionary with the order parameters from an already
+            arguments (list[dict]):  List with one single dictionary with the order parameters from an already
              created order:
                 arg_dicts = [
                     {
@@ -73,7 +76,7 @@ class Exit2:
             list[ Transactable]: List of transactions to execute.
         """
 
-        max_slippage = exit_arguments[0]["max_slippage"] / 100
+        max_slippage = arguments[0]["max_slippage"] / 100
         fraction = validate_percentage(percentage)
 
         if amount_to_redeem is None:
@@ -96,3 +99,9 @@ class Exit2:
                                              max_slippage=max_slippage,
                                              valid_duration=20 * 60,
                                              fork=fork)
+
+
+operations = [
+    Exit1,
+    Exit2
+]

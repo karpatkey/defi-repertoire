@@ -1,14 +1,11 @@
-from dataclasses import dataclass
 from decimal import Decimal
 from time import time
 
 from defabipedia.balancer import Abis as BalancerAbis
-from defabipedia.swap_pools import EthereumSwapPools, GnosisSwapPools, SwapPoolInstances
+from defabipedia.swap_pools import SwapPoolInstances
 from defabipedia.tokens import Abis, Addresses, NATIVE
 from defabipedia.types import Chain, SwapPools, Blockchain
-from defabipedia.uniswap_v3 import ContractSpecs as UniContracts
 from web3 import Web3
-from web3.exceptions import ContractLogicError
 
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.balancer.methods_general import ApproveForVault
@@ -24,7 +21,7 @@ from roles_royce.protocols.swap_pools.swap_methods import (
     SwapUniswapV3,
     WrapNativeToken,
 )
-from .disassembler import SpecificTx, GenericTxContext, GenericTxProto, Disassembler, validate_percentage
+from .disassembler import GenericTxContext, validate_percentage, SwapOperation
 
 
 def get_amount_to_redeem(ctx: GenericTxContext, token_in_address: Address, fraction: float | Decimal) -> int:
@@ -128,7 +125,6 @@ def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_
 from typing import NewType, Protocol
 
 BlockOperation = NewType('BlockOperation', str)
-SwapOperation = NewType('SwapOperation', BlockOperation)
 TransactableChain = NewType('TransactableChain', list[Transactable])
 
 
@@ -138,7 +134,7 @@ class PipeBlock(Protocol):
     op_type: BlockOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> TransactableChain:
         return ...
 
@@ -147,7 +143,7 @@ class SwapCowswap:
     """Make a swap on CowSwap with best amount out
         Args:
         percentage (float): Percentage of token to remove.
-        exit_arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
+        arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
                     "token_in_address: "FillMewithTokenAddress",
@@ -164,11 +160,11 @@ class SwapCowswap:
     op_type = SwapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
-        max_slippage = exit_arguments[0]["max_slippage"] / 100
-        token_in = exit_arguments[0]["token_in_address"]
-        token_out = exit_arguments[0]["token_out_address"]
+        max_slippage = arguments[0]["max_slippage"] / 100
+        token_in = arguments[0]["token_in_address"]
+        token_out = arguments[0]["token_out_address"]
         fraction = validate_percentage(percentage)
 
         if amount_to_redeem is None:
@@ -213,7 +209,7 @@ class SwapBalancer:
     """Make a swap on Balancer with best amount out
     Args:
         percentage (float): Percentage of token to remove.
-        exit_arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
+        arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
                     "token_in_address: "FillMewithTokenAddress",
@@ -230,9 +226,9 @@ class SwapBalancer:
     op_type = SwapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
-        for element in exit_arguments:
+        for element in arguments:
             max_slippage = element["max_slippage"] / 100
             token_in = element["token_in_address"]
             token_out = element["token_out_address"]
@@ -285,13 +281,13 @@ class SwapBalancer:
 
 class SwapCurve:
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
 
         """Make a swap on Curve with best amount out
         Args:
             percentage (float): Percentage of token to remove.
-            exit_arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
+            arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
                 arg_dicts = [
                     {
                         "token_in_address: "FillMewithTokenAddress",
@@ -303,7 +299,7 @@ class SwapCurve:
         Returns:
             list[ Transactable]:  List of transactions to execute.
         """
-        for element in exit_arguments:
+        for element in arguments:
             max_slippage = element["max_slippage"] / 100
             token_in = element["token_in_address"]
             token_out = element["token_out_address"]
@@ -356,13 +352,14 @@ class SwapCurve:
         return txns
 
 class SwapUniswapV3:
+    api_name = ""
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
         """Make a swap on UniswapV3 with best amount out
         Args:
             percentage (float): Percentage of token to remove.
-            exit_arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
+            arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
                 arg_dicts = [
                     {
                         "token_in_address: "FillMewithTokenAddress",
@@ -374,7 +371,7 @@ class SwapUniswapV3:
         Returns:
             list[ Transactable]:  List of transactions to execute.
         """
-        for element in exit_arguments:
+        for element in arguments:
             max_slippage = element["max_slippage"] / 100
             token_in = element["token_in_address"]
             token_out = element["token_out_address"]
@@ -427,3 +424,10 @@ class SwapUniswapV3:
             txns.append(swap_uniswapV3)
         return txns
 
+
+operations = [
+    SwapCowswap,
+    SwapBalancer,
+    SwapCurve,
+    SwapUniswapV3,
+]

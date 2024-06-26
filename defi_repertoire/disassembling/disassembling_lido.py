@@ -8,10 +8,10 @@ from roles_royce.protocols import cowswap
 from roles_royce.protocols.eth import lido
 from .disassembling_swaps import SwapCurve
 
-from .disassembler import Disassembler, validate_percentage, GenericTxContext
+from .disassembler import UnstakeOperation, UnwrapOperation, SwapOperation, validate_percentage, GenericTxContext
 
 
-def get_amount_to_redeem(ctx:GenericTxContext, address: Address, fraction: float | Decimal) -> int:
+def get_amount_to_redeem(ctx: GenericTxContext, address: Address, fraction: float | Decimal) -> int:
     """
     Calculates the amount of tokens to redeem based on the percentage of the total holdings.
 
@@ -32,15 +32,13 @@ def get_amount_to_redeem(ctx:GenericTxContext, address: Address, fraction: float
     return int(Decimal(contract.functions.balanceOf(ctx.avatar_safe_address).call()) * Decimal(fraction))
 
 
-
-
-
 class LidoUnstakeStETH:
     inputs = ["stETH"]
     outputs = ["ETH"]  # is ETH the output? or there is a wait period?
     op_type = UnstakeOperation
+
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
         """
         Unstakes stETH from Lido
@@ -84,12 +82,14 @@ class LidoUnstakeStETH:
         txns.append(request_withdrawal)
         return txns
 
+
 class LidoUnwrapAndUnstakeWstETH:
     inputs = ["wstETH"]
     outputs = ["ETH"]  # is ETH the output? or there is a wait period?
     op_type = UnwrapOperation  # ??
+
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
 
         """
@@ -111,7 +111,8 @@ class LidoUnwrapAndUnstakeWstETH:
         if amount_to_redeem is None:
             amount_to_redeem = get_amount_to_redeem(ctx, address, fraction)
         contract = ContractSpecs[ctx.blockchain].wstETH.contract(ctx.w3)
-        amount_for_list = contract.functions.getWstETHByStETH(1_000_000_000_000_000_000_000).call() #just to be safe that the chunk size is too big
+        amount_for_list = contract.functions.getWstETHByStETH(
+            1_000_000_000_000_000_000_000).call()  # just to be safe that the chunk size is too big
         chunk_amount = amount_to_redeem
         if chunk_amount > amount_for_list:
             chunks = []
@@ -134,13 +135,14 @@ class LidoUnwrapAndUnstakeWstETH:
         txns.append(request_withdrawal)
         return txns
 
-class SwapStETHforETH: # TODO: why to have a specific class ?
+
+class SwapStETHforETH:  # TODO: why to have a specific class ?
     """
     Swaps stETH for ETH. Approves the Cowswap relayer to spend the stETH if needed, then creates the order using the
     Cow's order API and creates the sign_order transaction.
     Args:
         percentage (float): Percentage of the total stETH holdings to swap.
-        exit_arguments (list[dict]):  List with one single dictionary with the order parameters from an already
+        arguments (list[dict]):  List with one single dictionary with the order parameters from an already
          created order:
             arg_dicts = [
                 {
@@ -157,10 +159,10 @@ class SwapStETHforETH: # TODO: why to have a specific class ?
     op_type = SwapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
 
-        max_slippage = exit_arguments[0]["max_slippage"] / 100
+        max_slippage = arguments[0]["max_slippage"] / 100
         fraction = validate_percentage(percentage)
 
         if amount_to_redeem is None:
@@ -168,7 +170,7 @@ class SwapStETHforETH: # TODO: why to have a specific class ?
 
         if amount_to_redeem == 0:
             return []
-        
+
         if 'anvil' in ctx.w3.client_version:
             fork = True
         else:
@@ -185,16 +187,14 @@ class SwapStETHforETH: # TODO: why to have a specific class ?
                                              fork=fork)
 
 
-
 class CurveSwap:
     inputs = ["wstETH"]
     outputs = ["ETH"]
     op_type = SwapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[dict] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
-
         """Make a swap on Curve with wsteth to ETH
         Args:
             percentage (float): Percentage of token to remove.
@@ -213,8 +213,16 @@ class CurveSwap:
         txns = SwapCurve.get_txns(
             ctx=ctx,
             percentage=percentage,
-            exit_arguments=exit_arguments,
+            arguments=arguments,
             amount_to_redeem=amount_to_redeem
         )
 
         return txns
+
+
+operations = [
+    LidoUnstakeStETH,
+    LidoUnwrapAndUnstakeWstETH,
+    CurveSwap,
+    SwapStETHforETH,
+]

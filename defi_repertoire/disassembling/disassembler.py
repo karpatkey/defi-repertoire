@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from collections import defaultdict
 
 from defabipedia.types import Blockchain, Chain
 from web3 import Web3
@@ -8,13 +9,15 @@ from roles_royce import roles
 from roles_royce.generic_method import Transactable
 from roles_royce.utils import to_checksum_address
 
-from typing import Protocol, Callable, List
+from typing import Protocol, Callable, List, NewType
 
-
-class GenericTxProto(Protocol):
-    w3: Web3
-    avatar_safe_address: Address | ChecksumAddress | str
-    blockchain: Blockchain
+BlockOperation = NewType('BlockOperation', str)
+SwapOperation = NewType('SwapOperation', BlockOperation)
+WithdrawOperation = NewType('WithdrawOperation', BlockOperation)
+UnstakeOperation = NewType('UnstakeOperation', BlockOperation)
+UnwrapOperation = NewType('UnwrapOperation', BlockOperation)
+RedeemOperation = NewType('RedeemOperation', BlockOperation)
+TransactableChain = NewType('TransactableChain', list[Transactable])
 
 
 class GenericTxContext:
@@ -22,22 +25,13 @@ class GenericTxContext:
         self.w3 = w3
         self.avatar_safe_address = to_checksum_address(avatar_safe_address)
         self.blockchain = Chain.get_blockchain_from_web3(self.w3)
-
-
-class SpecificTxContext:
-    def __init__(self,
-                 roles_mod_address: Address | ChecksumAddress | str,
-                 role: int,
-                 signer_address: Address | ChecksumAddress | str | None = None
-                 ):
-        self.roles_mod_address = to_checksum_address(roles_mod_address)
-        self.role = role
-        self.signer_address = to_checksum_address(signer_address)
+        self.ctx = defaultdict(dict)
 
 
 class Disassembler:
 
-    def send(self, txns: list[Transactable], private_key: str, w3: Web3 = None) -> TxReceipt:
+    def send(self, ctx: GenericTxContext, roles_mod_address: str, role, txns: list[Transactable], private_key: str,
+             w3: Web3 = None) -> TxReceipt:
         """Executes the multisend batched transaction built from the transactables.
 
         Args:
@@ -50,9 +44,9 @@ class Disassembler:
             Transaction receipt as a TxReceipt object
         """
         if w3 is None:
-            w3 = self.w3
+            w3 = ctx.w3
         return roles.send(
-            txns, role=self.role, private_key=private_key, roles_mod_address=self.roles_mod_address, web3=w3
+            txns, role=role, private_key=private_key, roles_mod_address=roles_mod_address, web3=w3
         )
 
     def check(

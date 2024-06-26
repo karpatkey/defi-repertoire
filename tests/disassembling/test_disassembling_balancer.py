@@ -7,7 +7,8 @@ from pytest import approx
 from roles_royce.constants import ETHAddr
 from roles_royce.evm_utils import erc20_abi
 from roles_royce.roles_modifier import GasStrategies, set_gas_strategy
-from defi_repertoire.disassembling import BalancerDisassembler
+from defi_repertoire.disassembling import Disassembler, GenericTxContext
+from defi_repertoire.disassembling import disassembling_balancer as balancer
 from tests.roles import apply_presets, deploy_roles, setup_common_roles
 from tests.utils import create_simple_safe, steal_token, top_up_address
 from tests.fork_fixtures import accounts
@@ -45,11 +46,8 @@ def test_integration_proportional(local_node_eth, accounts):
     private_key = accounts[1].key
     role = 1
 
-    balancer_disassembler = BalancerDisassembler(
-        w3=w3,
-        avatar_safe_address=avatar_safe.address,
-        role=role,
-    )
+    ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe.address)
+    disassembler = Disassembler()
     # ----------------------------------------------------------------------------------------------------------------
     # Composable
     GHO_USDT_USDC_bpt_address = "0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF"
@@ -65,11 +63,19 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 8_999_999_999_999_000_000
 
-    txn_transactable = balancer_disassembler.exact_bpt_proportional(
-        arguments=[{"bpt_address": GHO_USDT_USDC_bpt_address, "amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 0.01}]
+    txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
+        ctx=ctx,
+        percentage=25,
+        arguments=[{"bpt_address": GHO_USDT_USDC_bpt_address,
+                    "max_slippage": 0.01}],
+        amount_to_redeem=int(Decimal(bpt_token_balance) / Decimal(2))
     )
 
-    balancer_disassembler.send(roles_mod_address=roles_contract.address,txns=txn_transactable, private_key=private_key)
+    disassembler.send(ctx=ctx,
+                      roles_mod_address=roles_contract.address,
+                      role=role,
+                      txns=txn_transactable,
+                      private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 4499999999999500000
@@ -91,11 +97,19 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = balancer_disassembler.exact_bpt_proportional(
-        arguments=[{"bpt_address": rETH_WETH_bpt_address, "amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 1}]
+    txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
+        ctx=ctx,
+        percentage=100,
+        arguments=[
+            {"bpt_address": rETH_WETH_bpt_address, "max_slippage": 1}],
+        amount_to_redeem=int(Decimal(bpt_token_balance) / Decimal(2))
     )
 
-    balancer_disassembler.send(roles_mod_address=roles_contract.address,txns=txn_transactable, private_key=private_key)
+    disassembler.send(ctx=ctx,
+                      roles_mod_address=roles_contract.address,
+                      role=role,
+                      txns=txn_transactable,
+                      private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 40500000 or bpt_token_balance_after == 40499999
@@ -117,11 +131,12 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = balancer_disassembler.exact_bpt_proportional(
-        arguments=[{"bpt_address": BAL_WETH_bpt_address,"amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 1}]
+    txn_transactable = disassembler.exact_bpt_proportional(
+        arguments=[
+            {"bpt_address": BAL_WETH_bpt_address, "amount_to_redeem": int(Decimal(bpt_token_balance) / Decimal(2)), "max_slippage": 1}]
     )
 
-    balancer_disassembler.send(roles_mod_address=roles_contract.address, txns=txn_transactable, private_key=private_key)
+    disassembler.send(roles_mod_address=roles_contract.address, txns=txn_transactable, private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 40500000 or bpt_token_balance_after == 40499999
@@ -143,11 +158,12 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = balancer_disassembler.exact_bpt_proportional(
-        arguments=[{"bpt_address": DAI_USDC_USDT_bpt_address,"amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 1}]
+    txn_transactable = disassembler.exact_bpt_proportional(
+        arguments=[
+            {"bpt_address": DAI_USDC_USDT_bpt_address, "amount_to_redeem": int(Decimal(bpt_token_balance) / Decimal(2)), "max_slippage": 1}]
     )
 
-    balancer_disassembler.send(roles_mod_address=roles_contract.address, txns=txn_transactable, private_key=private_key)
+    disassembler.send(roles_mod_address=roles_contract.address, txns=txn_transactable, private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 40500000 or bpt_token_balance_after == 40499999
@@ -169,16 +185,16 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = balancer_disassembler.exact_bpt_proportional(
-        arguments=[{"bpt_address": auraBAL_STABLE_bpt_address,"amount_to_redeem": int(Decimal(bpt_token_balance)/Decimal(2)), "max_slippage": 1}]
+    txn_transactable = disassembler.exact_bpt_proportional(
+        arguments=[{"bpt_address": auraBAL_STABLE_bpt_address, "amount_to_redeem": int(Decimal(bpt_token_balance) / Decimal(2)),
+                    "max_slippage": 1}]
     )
 
-    balancer_disassembler.send(roles_mod_address=roles_contract.address, txns=txn_transactable, private_key=private_key)
+    disassembler.send(roles_mod_address=roles_contract.address, txns=txn_transactable, private_key=private_key)
 
     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
     assert bpt_token_balance_after == 40500000 or bpt_token_balance_after == 40499999
     assert bpt_token_balance_after == approx(int(Decimal(bpt_token_balance) / Decimal(2)))
-
 
 # def test_integration_exit_1_2(local_node_eth, accounts):
 #     w3 = local_node_eth.w3
@@ -232,7 +248,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #
 #     txn_transactable = balancer_disassembler.exit_1_2(
 #         percentage=30,
-#         exit_arguments=[
+#         arguments=[
 #             {"bpt_address": GHO_USDT_USDC_bpt_address, "token_out_address": ETHAddr.GHO, "max_slippage": 0.01}
 #         ],
 #     )
@@ -268,7 +284,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #
 #     txn_transactable = balancer_disassembler.exit_1_2(
 #         percentage=30,
-#         exit_arguments=[{"bpt_address": rETH_WETH_bpt_address, "token_out_address": ETHAddr.WETH, "max_slippage": 1}],
+#         arguments=[{"bpt_address": rETH_WETH_bpt_address, "token_out_address": ETHAddr.WETH, "max_slippage": 1}],
 #     )
 #
 #     balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
@@ -301,7 +317,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #
 #     txn_transactable = balancer_disassembler.exit_1_2(
 #         percentage=30,
-#         exit_arguments=[{"bpt_address": BAL_WETH_bpt_address, "token_out_address": ETHAddr.BAL, "max_slippage": 1}],
+#         arguments=[{"bpt_address": BAL_WETH_bpt_address, "token_out_address": ETHAddr.BAL, "max_slippage": 1}],
 #     )
 #
 #     balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
@@ -334,7 +350,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #
 #     txn_transactable = balancer_disassembler.exit_1_2(
 #         percentage=30,
-#         exit_arguments=[
+#         arguments=[
 #             {"bpt_address": DAI_USDC_USDT_bpt_address, "token_out_address": ETHAddr.DAI, "max_slippage": 1}
 #         ],
 #     )
@@ -369,7 +385,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #
 #     txn_transactable = balancer_disassembler.exit_1_2(
 #         percentage=30,
-#         exit_arguments=[
+#         arguments=[
 #             {"bpt_address": auraBAL_STABLE_bpt_address, "token_out_address": ETHAddr.AURABAL, "max_slippage": 1}
 #         ],
 #     )
@@ -445,7 +461,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #     USDC_balance = USDC_contract.functions.balanceOf(avatar_safe_address).call()
 #     assert USDC_balance == 0
 #
-#     txn_transactable = balancer_disassembler.exit_1_3(percentage=50, exit_arguments=[{"bpt_address": DOLA_USDC_BPT}])
+#     txn_transactable = balancer_disassembler.exit_1_3(percentage=50, arguments=[{"bpt_address": DOLA_USDC_BPT}])
 #
 #     balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
 #
@@ -490,7 +506,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #     assert USDT_balance == 0
 #
 #     txn_transactable = balancer_disassembler.exit_1_3(
-#         percentage=50, exit_arguments=[{"bpt_address": GHO_USDT_USDC_bpt_address}]
+#         percentage=50, arguments=[{"bpt_address": GHO_USDT_USDC_bpt_address}]
 #     )
 #
 #     balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
@@ -535,7 +551,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #     assert RETH_balance == 0
 #
 #     txn_transactable = balancer_disassembler.exit_1_3(
-#         percentage=50, exit_arguments=[{"bpt_address": RETH_BADGER_bpt_address}]
+#         percentage=50, arguments=[{"bpt_address": RETH_BADGER_bpt_address}]
 #     )
 #
 #     balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
@@ -616,7 +632,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #     assert bpt_gauge_balance == 4_000_000_000
 #
 #     txn_transactable = balancer_disassembler.exit_2_1(
-#         percentage=50, exit_arguments=[{"gauge_address": RETH_WETH_BPT_gauge, "max_slippage": 0.01}]
+#         percentage=50, arguments=[{"gauge_address": RETH_WETH_BPT_gauge, "max_slippage": 0.01}]
 #     )
 #
 #     set_gas_strategy(GasStrategies.AGGRESIVE)
@@ -696,7 +712,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #
 #     txn_transactable = balancer_disassembler.exit_2_2(
 #         percentage=50,
-#         exit_arguments=[
+#         arguments=[
 #             {"gauge_address": RETH_WETH_BPT_gauge, "max_slippage": 0.01, "token_out_address": ETHAddr.rETH}
 #         ],
 #     )

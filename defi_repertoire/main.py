@@ -1,12 +1,11 @@
+from collections import defaultdict
 import enum
 import os
 from typing import Type, get_type_hints
 from fastapi import FastAPI
-from .disassembling import Disassembler, DISASSEMBLERS
+from .disassembling import Disassembler, DISASSEMBLERS, GenericTxContext
 from defabipedia.types import Chain, Blockchain
 from web3 import Web3
-
-FAKE_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 DisassemblyProtocols = enum.StrEnum('DisassemblyProtocols', {name: name for name in DISASSEMBLERS.keys()})
 BlockchainOption = enum.StrEnum('BlockchainOption', {name: name for name in Chain._by_name.values()})
@@ -14,6 +13,8 @@ BlockchainOption = enum.StrEnum('BlockchainOption', {name: name for name in Chai
 ENDPOINTS = {
     Chain.ETHEREUM: [os.getenv("RPC_MAINNET_URL")]
 }
+
+REGISTERED_OPS = defaultdict(dict)
 
 
 def get_endpoint_for_blockchain(blockchain: Blockchain):
@@ -24,26 +25,21 @@ def get_endpoint_for_blockchain(blockchain: Blockchain):
     return Web3(Web3.HTTPProvider(url))
 
 
-def disassembly(blockchain: Blockchain,
-                protocol,
-                exit_strategy,
-                arguments: dict,
-                avatar_safe_address,
-                percentage,
-                amount_to_redeem):
+def get_transactables(blockchain: Blockchain,
+                      protocol,
+                      op_name,
+                      arguments: dict,
+                      avatar_safe_address,
+                      percentage,
+                      amount_to_redeem):
     w3 = get_endpoint_for_blockchain(blockchain)
-    disassembler_class: Type[Disassembler] = DISASSEMBLERS.get(protocol)
+    op = REGISTERED_OPS.get(protocol).get(op_name)
+    ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
+    txns = op.get_txns(ctx=ctx, percentage=percentage,
+                       arguments=arguments,
+                       amount_to_redeem=amount_to_redeem)
 
-    disassembler = disassembler_class(w3=w3,
-                                      avatar_safe_address=avatar_safe_address,
-                                      roles_mod_address=FAKE_ADDRESS,
-                                      role=0,
-                                      signer_address=FAKE_ADDRESS)
-    exit_strategy = getattr(disassembler, exit_strategy)
-    txn_transactables = exit_strategy(percentage=percentage,
-                                      exit_arguments=arguments,
-                                      amount_to_redeem=amount_to_redeem)
-    return [txn.data for txn in txn_transactables]
+    return [txn.data for txn in txns]
 
 
 app = FastAPI()
@@ -60,15 +56,15 @@ async def status():
 
 
 for protocol in DisassemblyProtocols:
-    disassembly_class = DISASSEMBLERS[protocol]
+    operations = DISASSEMBLERS[protocol]
     functions = []
-    for attr_name in dir(disassembly_class):
-        attr = getattr(disassembly_class, attr_name)
-        if callable(attr) and not attr_name.startswith("_") and "exit_arguments" in get_type_hints(attr):
-            functions.append((attr_name, attr))
+    for op in operations:
+        name = str.lower(op.__name__)
+        functions.append((name, op.get_txns))
+        REGISTERED_OPS[protocol][name] = op
 
     for function_name, function in functions:
-        arguments_type = get_type_hints(function)["exit_arguments"]
+        arguments_type = get_type_hints(function)["arguments"]
 
 
         def make_closure(protocol, function_name, arg_type):
@@ -88,17 +84,17 @@ for protocol in DisassemblyProtocols:
             def transaction_data(blockchain: BlockchainOption,
                                  avatar_safe_address: str,
                                  percentage: float,
-                                 exit_arguments: arg_type,
+                                 arguments: arg_type,
                                  amount_to_redeem: int | None = None):
                 blockchain = Chain.get_blockchain_by_name(blockchain)
-                transactables = disassembly(blockchain=blockchain,
-                                            protocol=protocol,
-                                            avatar_safe_address=avatar_safe_address,
-                                            exit_strategy=function_name,
-                                            arguments=exit_arguments,
-                                            percentage=percentage,
-                                            amount_to_redeem=amount_to_redeem,
-                                            )
+                transactables = get_transactables(blockchain=blockchain,
+                                                  protocol=protocol,
+                                                  avatar_safe_address=avatar_safe_address,
+                                                  op_name=function_name,
+                                                  arguments=arguments,
+                                                  percentage=percentage,
+                                                  amount_to_redeem=amount_to_redeem,
+                                                  )
                 return {"data": transactables}
 
 

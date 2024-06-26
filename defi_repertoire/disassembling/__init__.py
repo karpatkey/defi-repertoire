@@ -1,16 +1,15 @@
-from .disassembler import Disassembler, validate_percentage
-from .disassembling_aura import AuraDisassembler
-from .disassembling_balancer import BalancerDisassembler
-from .disassembling_lido import LidoDisassembler
-from .disassembling_swaps import SwapDisassembler
-from .disassembling_dsr import DSRDisassembler
-from .disassembling_spark import SparkDisassembler
+from .disassembler import Disassembler, GenericTxContext, validate_percentage
+from . import disassembling_aura
+from . import disassembling_balancer
+from . import disassembling_lido
+from . import disassembling_swaps
+from . import disassembling_dsr
+from . import disassembling_spark
 
 DISASSEMBLERS = {
-    "balancer": BalancerDisassembler,
-    "aura": AuraDisassembler,
-    "lido": LidoDisassembler,
-    "swaps": SwapDisassembler,
-    "dsr": DSRDisassembler,
-    "spark": SparkDisassembler,
+    "balancer": disassembling_balancer.operations,
+    "aura": disassembling_aura.operations,
+    "lido": disassembling_lido.operations,
+    "swaps": disassembling_swaps.operations,
+    "spark": disassembling_spark.operations,
 }

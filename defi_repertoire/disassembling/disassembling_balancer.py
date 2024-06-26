@@ -10,7 +10,7 @@ from roles_royce.protocols import balancer
 from roles_royce.protocols.base import Address
 from roles_royce.utils import to_checksum_address
 
-from .disassembler import validate_percentage, GenericTxContext
+from .disassembler import validate_percentage, GenericTxContext, WithdrawOperation
 
 
 class Exit11ArgumentElement(TypedDict):
@@ -62,7 +62,7 @@ class WithdrawAllAssetsProportional:
 
     Args:
         percentage (float): Percentage of liquidity to remove.
-        exit_arguments (list[dict]): List of dictionaries with the withdrawal parameters.
+        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
                     "bpt_address": "0xsOmEAddResS",
@@ -80,14 +80,14 @@ class WithdrawAllAssetsProportional:
 
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit11ArgumentElement] = None,
                  amount_to_redeem: int = None) -> list[Transactable]:
 
         fraction = validate_percentage(percentage)
 
         txns = []
 
-        for element in exit_arguments:
+        for element in arguments:
             bpt_address = to_checksum_address(element["bpt_address"])
             max_slippage = element["max_slippage"] / 100
 
@@ -131,7 +131,7 @@ class WithdrawSingle:
 
     Args:
         percentage (float): Percentage of liquidity to remove.
-        exit_arguments (list[dict]): List of dictionaries with the withdrawal parameters.
+        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
                     "bpt_address": "0xsOmEAddResS",
@@ -149,14 +149,14 @@ class WithdrawSingle:
     op_type = WithdrawOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[dict] = None,
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit12ArgumemntElement],
                  amount_to_redeem: int = None) -> list[Transactable]:
 
         fraction = validate_percentage(percentage)
 
         txns = []
 
-        for element in exit_arguments:
+        for element in arguments:
             bpt_address = to_checksum_address(element["bpt_address"])
             max_slippage = element["max_slippage"] / 100
             token_out_address = to_checksum_address(element["token_out_address"])
@@ -198,7 +198,7 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
 
     Args:
         percentage (float): Percentage of liquidity to remove from Balancer.
-        exit_arguments (list[dict]): List of dictionaries with the withdrawal parameters.
+        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
             arg_dicts = [
                 {
                     "bpt_address": "0xsOmEAddResS"
@@ -213,13 +213,13 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
     op_type = WithdrawOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[Exit13ArgumentElement],
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit13ArgumentElement],
                  amount_to_redeem: int = None) -> list[Transactable]:
 
         fraction = validate_percentage(percentage)
 
         txns = []
-        for element in exit_arguments:
+        for element in arguments:
             bpt_address = to_checksum_address(element["bpt_address"])
 
             bpt_contract = ctx.w3.eth.contract(address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi)
@@ -249,14 +249,14 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
         return txns
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, percentage: float, exit_arguments: list[Exit21ArgumentElement],
+    def get_txns(cls, ctx: GenericTxContext, percentage: float, arguments: list[Exit21ArgumentElement],
                  amount_to_redeem: int = None) -> list[Transactable]:
         """
         Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
 
         Args:
             percentage (float): Percentage of liquidity to remove.
-            exit_arguments (list[dict]): List of dictionaries with the withdrawal parameters.
+            arguments (list[dict]): List of dictionaries with the withdrawal parameters.
                 e.g.= [
                         {
                             "gauge_address": "0xsOmEAddResS",
@@ -272,7 +272,7 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
         fraction = validate_percentage(percentage)
 
         txns = []
-        for element in exit_arguments:
+        for element in arguments:
             gauge_address = to_checksum_address(element["gauge_address"])
             max_slippage = element["max_slippage"] / 100
 
@@ -296,7 +296,7 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
 
             withdraw_balancer = WithdrawSingle.get_txns(ctx=ctx,
                 percentage=fraction,
-                exit_arguments=[{"bpt_address": bpt_address, "max_slippage": max_slippage}],
+                arguments=[{"bpt_address": bpt_address, "max_slippage": max_slippage}],
                 amount_to_redeem=amount,
             )
             for transactable in withdraw_balancer:
@@ -305,14 +305,14 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
         return txns
 
     def exit_2_2(
-            self, percentage: float, exit_arguments: list[Exit22ArgumentElement], amount_to_redeem: Optional[int] = None
+            self, percentage: float, arguments: list[Exit22ArgumentElement], amount_to_redeem: Optional[int] = None
     ) -> list[Transactable]:
         """
         Unstake from gauge and withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
 
         Args:
             percentage (float): Percentage of liquidity to remove.
-            exit_arguments (list[dict]): List of dictionaries with the withdrawal parameters.
+            arguments (list[dict]): List of dictionaries with the withdrawal parameters.
                 arg_dicts = [
                     {
                         "gauge_address": "0xsOmEAddResS",
@@ -328,7 +328,7 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
         fraction = validate_percentage(percentage)
 
         txns = []
-        for element in exit_arguments:
+        for element in arguments:
             gauge_address = to_checksum_address(element["gauge_address"])
             token_out_address = to_checksum_address(element["token_out_address"])
 
@@ -349,7 +349,7 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
 
             withdraw_balancer = self.exit_1_2(
                 percentage=fraction,
-                exit_arguments=[
+                arguments=[
                     {"bpt_address": bpt_address, "token_out_address": token_out_address, "max_slippage": max_slippage}
                 ],
                 amount_to_redeem=amount,
@@ -360,14 +360,14 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
         return txns
 
     def exit_2_3(
-            self, percentage: float, exit_arguments: list[Exit23ArgumentElement], amount_to_redeem: Optional[int] = None
+            self, percentage: float, arguments: list[Exit23ArgumentElement], amount_to_redeem: Optional[int] = None
     ) -> list[Transactable]:
         """
         Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
 
         Args:
             percentage (float): Percentage of liquidity to remove.
-            exit_arguments (list[dict]): List of dictionaries with the withdrawal parameters.
+            arguments (list[dict]): List of dictionaries with the withdrawal parameters.
                 arg_dicts = [
                     {
                         "gauge_address": "0xsOmEAddResS",
@@ -381,7 +381,7 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
         fraction = validate_percentage(percentage)
 
         txns = []
-        for element in exit_arguments:
+        for element in arguments:
             gauge_address = to_checksum_address(element["gauge_address"])
 
             amount = amount_to_redeem
@@ -398,9 +398,15 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             bpt_address = gauge_contract.functions.lp_token().call()
 
             withdraw_balancer = self.exit_1_3(
-                percentage=fraction, exit_arguments=[{"bpt_address": bpt_address}], amount_to_redeem=amount
+                percentage=fraction, arguments=[{"bpt_address": bpt_address}], amount_to_redeem=amount
             )
             for transactable in withdraw_balancer:
                 txns.append(transactable)
 
         return txns
+
+
+operations = [
+    WithdrawAllAssetsProportional,
+    WithdrawSingle,
+]
