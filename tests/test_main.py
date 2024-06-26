@@ -28,19 +28,19 @@ def test_disassembly_balancer():
             response = client.post(
                 "/txn_data/disassembly/balancer/withdrawallassetsproportional/?"
                 "blockchain=ethereum&"
-                "avatar_safe_address=0x849D52316331967b6fF1198e5E32A0eB168D039d&"
-                "amount_to_redeem=10&",
+                "avatar_safe_address=0x849D52316331967b6fF1198e5E32A0eB168D039d&",
                 json=[
                     {
                         "bpt_address": "0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF",
-                        "max_slippage": 0.2
+                        "max_slippage": 0.2,
+                        "amount": 10
                     }
                 ]
             )
             exit_strategy.assert_called_with(ctx=ANY,
                                              arguments=[
                                                  {'bpt_address': '0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF',
-                                                  'max_slippage': 0.2}],
-                                             amount_to_redeem=10)
+                                                  'max_slippage': 0.2,
+                                                  "amount": 10}],)
             assert response.status_code == 200
             assert response.json() == {"data": [tx_data]}

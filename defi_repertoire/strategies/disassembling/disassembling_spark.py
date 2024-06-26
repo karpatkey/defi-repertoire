@@ -6,7 +6,7 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import spark
 from roles_royce.protocols import cowswap
 
-from ..base import GenericTxContext, SwapOperation, RedeemOperation, register
+from ..base import GenericTxContext, SwapOperation, RedeemOperation, register, StrategyAmountArguments, StrategyAmountWithSlippageArguments
 
 
 def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) -> int:
@@ -22,8 +22,7 @@ class Exit1:
     protocol = "spark"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
-                 amount_to_redeem: int) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
         """Withdraw funds from Spark with proxy.
 
         Args:
@@ -35,13 +34,9 @@ class Exit1:
         """
 
         exit_sdai = spark.RedeemSDAIforDAI(blockchain=ctx.blockchain,
-                                           amount=amount_to_redeem,
-                                           avatar=ctx.avatar_safe_address, )
+                                           amount=arguments["amount"],
+                                           avatar=ctx.avatar_safe_address)
         return [exit_sdai]
-
-
-class Exit2Arguments(TypedDict):
-    max_slippage: float
 
 
 @register
@@ -51,8 +46,7 @@ class Exit2:
     protocol = "spark"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit2Arguments],
-                 amount_to_redeem: int) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountWithSlippageArguments) -> list[Transactable]:
 
         """
         Swaps sDAI for USDC. Approves the Cowswap relayer to spend the sDAI if needed, then creates the order using
@@ -70,7 +64,8 @@ class Exit2:
             list[ Transactable]: List of transactions to execute.
         """
 
-        max_slippage = arguments[0]["max_slippage"] / 100
+        max_slippage = arguments["max_slippage"] / 100
+        amount = arguments["amount"]
 
         if 'anvil' in ctx.w3.client_version:
             fork = True
@@ -81,7 +76,7 @@ class Exit2:
                                              avatar=ctx.avatar_safe_address,
                                              sell_token=ContractSpecs[ctx.blockchain].sDAI.address,
                                              buy_token=Addresses[ctx.blockchain].USDC,
-                                             amount=amount_to_redeem,
+                                             amount=amount,
                                              kind=cowswap.SwapKind.SELL,
                                              max_slippage=max_slippage,
                                              valid_duration=20 * 60,

@@ -21,7 +21,7 @@ from roles_royce.protocols.swap_pools.swap_methods import (
     SwapUniswapV3,
     WrapNativeToken,
 )
-from defi_repertoire.strategies.base import GenericTxContext, SwapOperation, register
+from defi_repertoire.strategies.base import GenericTxContext, SwapOperation, register, SwapArguments
 
 
 def get_amount_to_redeem(ctx: GenericTxContext, token_in_address: Address, fraction: float | Decimal) -> int:
@@ -125,14 +125,13 @@ def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_
 class SwapCowswap:
     """Make a swap on CowSwap with best amount out
         Args:
-        arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "token_in_address: "FillMewithTokenAddress",
-                    "max_slippage": 0.01,
-                    "token_out_address": "FillMewithTokenAddress"
-                }
-            ]
+        arguments
+                    {
+                        "token_in_address": "FillMewithTokenAddress",
+                        "max_slippage": 0.01,
+                        "token_out_address": "FillMewithTokenAddress",
+                        "amount": 123
+                    }
         amount_to_redeem (int): Amount of wallet token to redeem.
     Returns:
         list[ Transactable]:  List of transactions to execute.
@@ -142,15 +141,15 @@ class SwapCowswap:
     protocol = "cowswap"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
-                 amount_to_redeem: int) -> list[Transactable]:
-        max_slippage = arguments[0]["max_slippage"] / 100
-        token_in = arguments[0]["token_in_address"]
-        token_out = arguments[0]["token_out_address"]
+    def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
+        max_slippage = arguments["max_slippage"] / 100
+        token_in = arguments["token_in_address"]
+        token_out = arguments["token_out_address"]
+        amount = arguments["amount"]
 
         txns = []
 
-        if amount_to_redeem == 0:
+        if amount == 0:
             return []
 
         if "anvil" in ctx.w3.client_version:
@@ -159,7 +158,7 @@ class SwapCowswap:
             fork = False
 
         if token_in == NATIVE:
-            wraptoken = WrapNativeToken(blockchain=ctx.blockchain, eth_amount=amount_to_redeem)
+            wraptoken = WrapNativeToken(blockchain=ctx.blockchain, eth_amount=amount)
             txns.append(wraptoken)
             token_in = get_wrapped_token(ctx.blockchain)
 
@@ -168,7 +167,7 @@ class SwapCowswap:
             avatar=ctx.avatar_safe_address,
             sell_token=token_in,
             buy_token=token_out,
-            amount=amount_to_redeem,
+            amount=amount,
             kind=cowswap.SwapKind.SELL,
             max_slippage=max_slippage,
             valid_duration=20 * 60,
@@ -184,15 +183,14 @@ class SwapCowswap:
 class SwapBalancer:
     """Make a swap on Balancer with best amount out
     Args:
-        arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "token_in_address: "FillMewithTokenAddress",
-                    "max_slippage": 0.01,
-                    "token_out_address": "FillMewithTokenAddress"
-                }
-            ]
-        amount_to_redeem (int, optional): Amount of wallet token to redeem. Defaults to None.
+        arguments:
+                arg_dicts =
+                    {
+                        "token_in_address": "FillMewithTokenAddress",
+                        "max_slippage": 0.01,
+                        "token_out_address": "FillMewithTokenAddress",
+                        "amount": 123
+                    }
     Returns:
         list[ Transactable]:  List of transactions to execute.
     """
@@ -201,50 +199,49 @@ class SwapBalancer:
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
-                 amount_to_redeem: int) -> list[Transactable]:
-        for element in arguments:
-            max_slippage = element["max_slippage"] / 100
-            token_in = element["token_in_address"]
-            token_out = element["token_out_address"]
+    def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
+        max_slippage = arguments["max_slippage"] / 100
+        token_in = arguments["token_in_address"]
+        token_out = arguments["token_out_address"]
+        amount = arguments["amount"]
 
-            txns = []
+        txns = []
 
-            # get the pools where we get a quote from
-            pools = get_swap_pools(ctx.blockchain, "Balancer", token_in, token_out)
-            quotes = []
-            if len(pools) == 0:
-                raise ValueError("No pools found with the specified tokens")
-            else:
-                for pool in pools:
-                    swap_pool, quote = get_quote(ctx, pool, token_in, token_out, amount_to_redeem)
-                    quotes.append(quote)
+        # get the pools where we get a quote from
+        pools = get_swap_pools(ctx.blockchain, "Balancer", token_in, token_out)
+        quotes = []
+        if len(pools) == 0:
+            raise ValueError("No pools found with the specified tokens")
+        else:
+            for pool in pools:
+                swap_pool, quote = get_quote(ctx, pool, token_in, token_out, amount)
+                quotes.append(quote)
 
-            # TODO: here swap_pool is the latest defined swap_pool, is that correct?
-            pool_id = get_pool_id(ctx.w3, ctx.blockchain, swap_pool.address)
-            best_quote = max(quotes)
-            amount_out_min_slippage = int(Decimal(best_quote) * Decimal(1 - max_slippage))
-            if token_in == NATIVE:
-                wraptoken = WrapNativeToken(blockchain=ctx.blockchain, eth_amount=amount_to_redeem)
-                txns.append(wraptoken)
-                token_in = get_wrapped_token(ctx.blockchain)
-            elif token_out == NATIVE:
-                token_out = get_wrapped_token(ctx.blockchain)
-            approve_vault = ApproveForVault(token=token_in, amount=amount_to_redeem)
-            swap_balancer = balancer.methods_swap.SingleSwap(
-                blockchain=ctx.blockchain,
-                pool_id=pool_id,
-                avatar=ctx.avatar_safe_address,
-                kind=SwapKind.OutGivenExactIn,
-                token_in_address=token_in,
-                token_out_address=token_out,
-                amount_in=amount_to_redeem,
-                min_amount_out=amount_out_min_slippage,
-                deadline=int(int(time()) + 600),
-            )
+        # TODO: here swap_pool is the latest defined swap_pool, is that correct?
+        pool_id = get_pool_id(ctx.w3, ctx.blockchain, swap_pool.address)
+        best_quote = max(quotes)
+        amount_out_min_slippage = int(Decimal(best_quote) * Decimal(1 - max_slippage))
+        if token_in == NATIVE:
+            wraptoken = WrapNativeToken(blockchain=ctx.blockchain, eth_amount=amount)
+            txns.append(wraptoken)
+            token_in = get_wrapped_token(ctx.blockchain)
+        elif token_out == NATIVE:
+            token_out = get_wrapped_token(ctx.blockchain)
+        approve_vault = ApproveForVault(token=token_in, amount=amount)
+        swap_balancer = balancer.methods_swap.SingleSwap(
+            blockchain=ctx.blockchain,
+            pool_id=pool_id,
+            avatar=ctx.avatar_safe_address,
+            kind=SwapKind.OutGivenExactIn,
+            token_in_address=token_in,
+            token_out_address=token_out,
+            amount_in=amount,
+            min_amount_out=amount_out_min_slippage,
+            deadline=int(int(time()) + 600),
+        )
 
-            txns.append(approve_vault)
-            txns.append(swap_balancer)
+        txns.append(approve_vault)
+        txns.append(swap_balancer)
         return txns
 
 @register
@@ -254,67 +251,66 @@ class SwapOnCurve:
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
-                 amount_to_redeem: int) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
 
         """Make a swap on Curve with best amount out
         Args:
-            arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
-                arg_dicts = [
+            arguments:
+                arg_dicts =
                     {
-                        "token_in_address: "FillMewithTokenAddress",
+                        "token_in_address": "FillMewithTokenAddress",
                         "max_slippage": 0.01,
-                        "token_out_address": "FillMewithTokenAddress"
+                        "token_out_address": "FillMewithTokenAddress",
+                        "amount": 123
                     }
-                ]
-            amount_to_redeem (int, optional): Amount of wallet token to redeem.
         Returns:
             list[ Transactable]:  List of transactions to execute.
         """
-        for element in arguments:
-            max_slippage = element["max_slippage"] / 100
-            token_in = element["token_in_address"]
-            token_out = element["token_out_address"]
 
-            txns = []
+        max_slippage = arguments["max_slippage"] / 100
+        token_in = arguments["token_in_address"]
+        token_out = arguments["token_out_address"]
+        amount = arguments["amount"]
 
-            # get the pools where we get a quote from
-            pools = get_swap_pools(ctx.blockchain, "Curve", token_in, token_out)
-            quotes = []
-            if len(pools) == 0:
-                raise ValueError("No pools found with the specified tokens")
-            else:
-                for pool in pools:
-                    swap_pool, quote = get_quote(ctx, pool, token_in, token_out, amount_to_redeem)
-                    quotes.append(quote)
+        txns = []
 
-            # get the best quote
-            best_quote = max(quotes)
-            amount_out_min_slippage = int(Decimal(best_quote) * Decimal(1 - max_slippage))
+        # get the pools where we get a quote from
+        pools = get_swap_pools(ctx.blockchain, "Curve", token_in, token_out)
+        quotes = []
+        if len(pools) == 0:
+            raise ValueError("No pools found with the specified tokens")
+        else:
+            for pool in pools:
+                swap_pool, quote = get_quote(ctx, pool, token_in, token_out, amount)
+                quotes.append(quote)
 
-            if token_in == NATIVE:
-                eth_amount = amount_to_redeem
-            else:
-                eth_amount = 0
-                approve_curve = ApproveCurve(
-                    blockchain=ctx.blockchain,
-                    token_address=token_in,
-                    spender=swap_pool.address,
-                    amount=amount_to_redeem,
-                )
-                txns.append(approve_curve)
+        # get the best quote
+        best_quote = max(quotes)
+        amount_out_min_slippage = int(Decimal(best_quote) * Decimal(1 - max_slippage))
 
-            swap_curve = SwapCurve(
+        if token_in == NATIVE:
+            eth_amount = amount
+        else:
+            eth_amount = 0
+            approve_curve = ApproveCurve(
                 blockchain=ctx.blockchain,
-                pool_address=swap_pool.address,
-                token_x=swap_pool.tokens.index(token_in),
-                token_y=swap_pool.tokens.index(token_out),
-                amount_x=amount_to_redeem,
-                min_amount_y=amount_out_min_slippage,
-                eth_amount=eth_amount,
+                token_address=token_in,
+                spender=swap_pool.address,
+                amount=amount,
             )
+            txns.append(approve_curve)
 
-            txns.append(swap_curve)
+        swap_curve = SwapCurve(
+            blockchain=ctx.blockchain,
+            pool_address=swap_pool.address,
+            token_x=swap_pool.tokens.index(token_in),
+            token_y=swap_pool.tokens.index(token_out),
+            amount_x=amount,
+            min_amount_y=amount_out_min_slippage,
+            eth_amount=eth_amount,
+        )
+
+        txns.append(swap_curve)
         return txns
 
 @register
@@ -324,65 +320,65 @@ class SwapUniswapV3:
     protocol = "uniswapv3"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
-                 amount_to_redeem: int) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
         """Make a swap on UniswapV3 with best amount out
         Args:
-            arguments (list[dict], optional): List of dictionaries with the withdrawal parameters.
-                arg_dicts = [
+            arguments:
+                arg_dicts =
                     {
-                        "token_in_address: "FillMewithTokenAddress",
+                        "token_in_address": "FillMewithTokenAddress",
                         "max_slippage": 0.01,
-                        "token_out_address": "FillMewithTokenAddress"
+                        "token_out_address": "FillMewithTokenAddress",
+                        "amount": 123
                     }
-                ]
-            amount_to_redeem (int): Amount of wallet token to redeem.
+
         Returns:
             list[ Transactable]:  List of transactions to execute.
         """
-        for element in arguments:
-            max_slippage = element["max_slippage"] / 100
-            token_in = element["token_in_address"]
-            token_out = element["token_out_address"]
 
-            txns = []
+        max_slippage = arguments["max_slippage"] / 100
+        token_in = arguments["token_in_address"]
+        token_out = arguments["token_out_address"]
+        amount = arguments["amount"]
 
-            # get the pools where we get a quote from
-            pools = get_swap_pools(ctx.blockchain, "UniswapV3", token_in, token_out)
-            quotes = []
-            if len(pools) == 0:
-                raise ValueError("No pools found with the specified tokens")
-            else:
-                for pool in pools:
-                    swap_pool, quote = get_quote(ctx, pool, token_in, token_out, amount_to_redeem)
-                    quotes.append(quote)
+        txns = []
 
-            # get the best quote
-            best_quote = max(quotes)
-            amount_out_min_slippage = int(Decimal(best_quote) * Decimal(1 - max_slippage))
-            if token_in == NATIVE:
-                wraptoken = WrapNativeToken(blockchain=ctx.blockchain, eth_amount=amount_to_redeem)
-                txns.append(wraptoken)
-                token_in = get_wrapped_token(ctx.blockchain)
-            elif token_out == NATIVE:
-                token_out = get_wrapped_token(ctx.blockchain)
+        # get the pools where we get a quote from
+        pools = get_swap_pools(ctx.blockchain, "UniswapV3", token_in, token_out)
+        quotes = []
+        if len(pools) == 0:
+            raise ValueError("No pools found with the specified tokens")
+        else:
+            for pool in pools:
+                swap_pool, quote = get_quote(ctx, pool, token_in, token_out, amount)
+                quotes.append(quote)
 
-            approve_uniswapV3 = ApproveUniswapV3(
-                blockchain=ctx.blockchain,
-                token_address=token_in,
-                amount=amount_to_redeem,
-            )
+        # get the best quote
+        best_quote = max(quotes)
+        amount_out_min_slippage = int(Decimal(best_quote) * Decimal(1 - max_slippage))
+        if token_in == NATIVE:
+            wraptoken = WrapNativeToken(blockchain=ctx.blockchain, eth_amount=amount)
+            txns.append(wraptoken)
+            token_in = get_wrapped_token(ctx.blockchain)
+        elif token_out == NATIVE:
+            token_out = get_wrapped_token(ctx.blockchain)
 
-            swap_uniswapV3 = SwapUniswapV3(
-                blockchain=ctx.blockchain,
-                token_in=token_in,
-                token_out=token_out,
-                avatar=ctx.avatar_safe_address,
-                amount_in=amount_to_redeem,
-                min_amount_out=amount_out_min_slippage,
-                fee=swap_pool.uni_fee,
-            )
+        approve_uniswapV3 = ApproveUniswapV3(
+            blockchain=ctx.blockchain,
+            token_address=token_in,
+            amount=amount,
+        )
 
-            txns.append(approve_uniswapV3)
-            txns.append(swap_uniswapV3)
+        swap_uniswapV3 = SwapUniswapV3(
+            blockchain=ctx.blockchain,
+            token_in=token_in,
+            token_out=token_out,
+            avatar=ctx.avatar_safe_address,
+            amount_in=amount,
+            min_amount_out=amount_out_min_slippage,
+            fee=swap_pool.uni_fee,
+        )
+
+        txns.append(approve_uniswapV3)
+        txns.append(swap_uniswapV3)
         return txns

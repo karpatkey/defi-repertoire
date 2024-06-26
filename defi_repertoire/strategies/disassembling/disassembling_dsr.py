@@ -4,8 +4,7 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols.base import Address
 from roles_royce.protocols.eth import maker
 
-from .disassembler import validate_percentage
-from ..base import GenericTxContext, WithdrawOperation, register
+from ..base import GenericTxContext, WithdrawOperation, register, StrategyAmountArguments
 
 
 def get_amount_to_redeem(ctx: GenericTxContext, fraction: Decimal | float, proxy_address: Address = None) -> int:
@@ -18,6 +17,7 @@ def get_amount_to_redeem(ctx: GenericTxContext, fraction: Decimal | float, proxy
     chi = pot_contract.functions.chi().call() / (10 ** 27)
     amount_to_redeem = pie * chi
     return int(Decimal(amount_to_redeem) * Decimal(fraction))
+
 
 @register
 class WithdrawWithProxy:
@@ -36,26 +36,20 @@ class WithdrawWithProxy:
     protocol = "dsr"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
-                 amount_to_redeem: int) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
+        txns = []
+        amount = arguments["amount"]
+        proxy_registry = ContractSpecs[ctx.blockchain].ProxyRegistry.contract(ctx.w3)
+        proxy_address = proxy_registry.functions.proxies(ctx.avatar_safe_address).call()
 
-            fraction = validate_percentage(percentage)
+        approve_dai = maker.ApproveDAI(spender=proxy_address, amount=amount)
+        exit_dai = maker.ProxyActionExitDsr(proxy=proxy_address, wad=amount)
 
-            txns = []
+        txns.append(approve_dai)
+        txns.append(exit_dai)
 
-            proxy_registry = ContractSpecs[ctx.blockchain].ProxyRegistry.contract(ctx.w3)
-            proxy_address = proxy_registry.functions.proxies(ctx.avatar_safe_address).call()
+        return txns
 
-            if amount_to_redeem is None:
-                amount_to_redeem = get_amount_to_redeem(ctx, fraction, proxy_address)
-
-            approve_dai = maker.ApproveDAI(spender=proxy_address, amount=amount_to_redeem)
-            exit_dai = maker.ProxyActionExitDsr(proxy=proxy_address, wad=amount_to_redeem)
-
-            txns.append(approve_dai)
-            txns.append(exit_dai)
-
-            return txns
 
 @register
 class WithdrawWithoutProxy:
@@ -74,18 +68,12 @@ class WithdrawWithoutProxy:
     protocol = "dsr"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
-                 amount_to_redeem: int) -> list[Transactable]:
-
-        fraction = validate_percentage(percentage)
-
+    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
         txns = []
-
-        if amount_to_redeem is None:
-            amount_to_redeem = get_amount_to_redeem(ctx, fraction, proxy_address=None)
+        amount = arguments["amount"]
         dsr_manager_address = ContractSpecs[ctx.blockchain].DsrManager.contract(ctx.w3).address
-        approve_dai = maker.ApproveDAI(spender=dsr_manager_address, amount=amount_to_redeem)
-        exit_dai = maker.ExitDsr(avatar=ctx.avatar_safe_address, wad=amount_to_redeem)
+        approve_dai = maker.ApproveDAI(spender=dsr_manager_address, amount=amount)
+        exit_dai = maker.ExitDsr(avatar=ctx.avatar_safe_address, wad=amount)
 
         txns.append(approve_dai)
         txns.append(exit_dai)

@@ -6,7 +6,8 @@ from roles_royce.protocols.base import Address
 from roles_royce.protocols import cowswap
 from roles_royce.protocols.eth import lido
 
-from ..base import GenericTxContext, SwapOperation, UnstakeOperation, UnwrapOperation
+from ..base import GenericTxContext, SwapOperation, UnstakeOperation, UnwrapOperation, StrategyAmountArguments, \
+    StrategyAmountWithSlippageArguments
 
 
 def get_amount_to_redeem(ctx: GenericTxContext, address: Address, fraction: float | Decimal) -> int:
@@ -34,19 +35,19 @@ class LidoUnstakeStETH:
     op_type = UnstakeOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict], amount_to_redeem: int) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
         """
         Unstakes stETH from Lido
 
         Args:
-            amount_to_redeem (int, optional):Amount of stETH to redeem.
+            amount_to_redeem (int):Amount of stETH to redeem.
 
         Returns:
             list[Transactable]: List of transactions to execute.
         """
 
         txns = []
-
+        amount_to_redeem = arguments["amount"]
         chunk_amount = amount_to_redeem
         if chunk_amount > 1000_000_000_000_000_000_000:
             chunks = []
@@ -74,13 +75,13 @@ class LidoUnwrapAndUnstakeWstETH:
     op_type = UnwrapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict], amount_to_redeem: int) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
 
         """
         Unwraps wstETH and unstakes for ETH on Lido
 
         Args:
-            amount_to_redeem (int, optional): Amount of wstETH to redeem.
+            amount_to_redeem (int): Amount of wstETH to redeem.
 
         Returns:
             list[Transactable]: List of transactions to execute.
@@ -91,6 +92,7 @@ class LidoUnwrapAndUnstakeWstETH:
         contract = ContractSpecs[ctx.blockchain].wstETH.contract(ctx.w3)
         amount_for_list = contract.functions.getWstETHByStETH(
             1_000_000_000_000_000_000_000).call()  # just to be safe that the chunk size is too big
+        amount_to_redeem = arguments["amount"]
         chunk_amount = amount_to_redeem
         if chunk_amount > amount_for_list:
             chunks = []
@@ -133,12 +135,12 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
     op_type = SwapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[dict],
-                 amount_to_redeem: int) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountWithSlippageArguments) -> list[Transactable]:
 
-        max_slippage = arguments[0]["max_slippage"] / 100
+        max_slippage = arguments["max_slippage"] / 100
+        amount = arguments["amount"]
 
-        if amount_to_redeem == 0:
+        if amount == 0:
             return []
 
         if 'anvil' in ctx.w3.client_version:
@@ -150,10 +152,8 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
                                              avatar=ctx.avatar_safe_address,
                                              sell_token=EthereumTokenAddr.stETH,
                                              buy_token=EthereumTokenAddr.E,
-                                             amount=amount_to_redeem,
+                                             amount=amount,
                                              kind=cowswap.SwapKind.SELL,
                                              max_slippage=max_slippage,
                                              valid_duration=20 * 60,
                                              fork=fork)
-
-

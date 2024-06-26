@@ -31,14 +31,12 @@ def get_transactables(blockchain: Blockchain,
                       protocol,
                       op_name,
                       arguments: dict,
-                      avatar_safe_address,
-                      amount_to_redeem):
+                      avatar_safe_address):
     w3 = get_endpoint_for_blockchain(blockchain)
     op = REGISTERED_OPS.get(protocol).get(op_name)
     ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
     txns = op.get_txns(ctx=ctx,
-                       arguments=arguments,
-                       amount_to_redeem=amount_to_redeem)
+                       arguments=arguments)
 
     return [txn.data for txn in txns]
 
@@ -81,15 +79,13 @@ for strategy in STRATEGIES:
         @app.post(url)
         def transaction_data(blockchain: BlockchainOption,
                              avatar_safe_address: str,
-                             arguments: arg_type,
-                             amount_to_redeem: int):
+                             arguments: arg_type):
             blockchain = Chain.get_blockchain_by_name(blockchain)
             transactables = get_transactables(blockchain=blockchain,
                                               protocol=protocol,
                                               avatar_safe_address=avatar_safe_address,
                                               op_name=function_name,
                                               arguments=arguments,
-                                              amount_to_redeem=amount_to_redeem,
                                               )
             return {"data": transactables}
 
