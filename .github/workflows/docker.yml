@@ -21,7 +21,7 @@ jobs:
         id: docker_meta
         uses: docker/metadata-action@v3
         with:
-          images: registry.digitalocean.com/karpatkey/defi_repertoire
+          images: registry.digitalocean.com/karpatkey/defi-repertoire
           tags: |
             type=ref,event=branch
             type=sha,prefix={{branch}}
@@ -52,4 +52,4 @@ jobs:
       - uses: tale/kubectl-action@v1
         with:
           base64-kube-config: ${{ secrets.KUBE_CONFIG }}
-      - run: kubectl delete pod -n defi_repertoire -l app=defi_repertoire --force
+      - run: kubectl delete pod -n rolesapi -l app=defi-repertoire --force
