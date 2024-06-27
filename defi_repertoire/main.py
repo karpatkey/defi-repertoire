@@ -1,10 +1,12 @@
 from collections import defaultdict
+import dataclasses
 import enum
 import os
 from typing import get_type_hints
 from fastapi import FastAPI
 from defi_repertoire.strategies.base import GenericTxContext, STRATEGIES
 from defi_repertoire.strategies import disassembling, swaps
+from roles_royce.generic_method import TxData
 from defabipedia.types import Chain, Blockchain
 from web3 import Web3
 
@@ -38,7 +40,10 @@ def get_transactables(blockchain: Blockchain,
     txns = op.get_txns(ctx=ctx,
                        arguments=arguments)
 
-    return [txn.data for txn in txns]
+    return [dataclasses.asdict(TxData(operation=txn.operation,
+                                      data=txn.data,
+                                      value=txn.value,
+                                      contract_address=txn.contract_address)) for txn in txns]
 
 
 app = FastAPI()
@@ -63,6 +68,7 @@ for strategy in STRATEGIES:
 
     arguments_type = get_type_hints(function)["arguments"]
 
+
     def make_closure(kind, protocol, function_name, arg_type):
         # As exit arguments is a custom type (a dict) and FastAPI does not support complex types
         # in the querystring (https://github.com/tiangolo/fastapi/discussions/7919)
@@ -73,7 +79,7 @@ for strategy in STRATEGIES:
         #  3) Just use POST.
         #
         # For the time being the option 3) is implemented
-        url = f"/txn_data/{kind}/{protocol}/{function_name}/"
+        url = f"/txns/{kind}/{protocol}/{function_name}/"
 
         # @app.get(url)
         @app.post(url)
@@ -87,6 +93,7 @@ for strategy in STRATEGIES:
                                               op_name=function_name,
                                               arguments=arguments,
                                               )
-            return {"data": transactables}
+            return {"txns": transactables}
+
 
     make_closure(kind, protocol, function_name, arguments_type)
