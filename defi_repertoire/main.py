@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from defi_repertoire.strategies.base import GenericTxContext, STRATEGIES
 from defi_repertoire.strategies import disassembling, swaps
 from roles_royce.generic_method import TxData
+from roles_royce.utils import multi_or_one
 from defabipedia.types import Chain, Blockchain
 from web3 import Web3
 
@@ -58,6 +59,14 @@ async def root():
 async def status():
     return {"message": "Ok"}
 
+@app.post(f"/multisend/")
+def transaction_data(blockchain: BlockchainOption,
+                     txns: list[TxData]):
+    blockchain = Chain.get_blockchain_by_name(blockchain)
+    txn = multi_or_one(txs=txns, blockchain=blockchain)
+
+    return {"txn": dataclasses.asdict(txn)}
+
 
 for strategy in STRATEGIES:
     function = strategy.get_txns
@@ -97,3 +106,4 @@ for strategy in STRATEGIES:
 
 
     make_closure(kind, protocol, function_name, arguments_type)
+

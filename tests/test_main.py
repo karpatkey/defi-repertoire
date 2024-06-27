@@ -40,6 +40,7 @@ def test_disassembly_balancer():
                     }
                 ],
             )
+
             exit_strategy.assert_called_with(
                 ctx=ANY,
                 arguments=[
@@ -61,3 +62,36 @@ def test_disassembly_balancer():
                     }
                 ]
             }
+
+
+def test_multisend():
+    with patch.object(Chain, "get_blockchain_from_web3", lambda x: Chain.ETHEREUM):
+        ctract = "0xCB664132622f29943f67FA56CCfD1e24CC8B4995"
+
+        response = client.post(
+            "/multisend/?" "blockchain=ethereum",
+            json=[
+                {
+                    "contract_address": ctract,
+                    "data": "0xb6b55f25000000000000000000000000000000000000000000000000016513bc209d8bba",
+                    "operation": 0,
+                    "value": 0,
+                },
+                {
+                    "contract_address": ctract,
+                    "data": "0xb6b55f25000000000000000000000000000000000000000000000000016513bc209d8bba",
+                    "operation": 0,
+                    "value": 0,
+                },
+            ],
+        )
+
+        assert response.status_code == 200
+        assert response.json() == {
+            "txn": {
+                "data": "0x8d80ff0a000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000f200cb664132622f29943f67fa56ccfd1e24cc8b499500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024b6b55f25000000000000000000000000000000000000000000000000016513bc209d8bba00cb664132622f29943f67fa56ccfd1e24cc8b499500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024b6b55f25000000000000000000000000000000000000000000000000016513bc209d8bba0000000000000000000000000000",
+                "operation": 1,
+                "value": 0,
+                "contract_address": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+            }
+        }
