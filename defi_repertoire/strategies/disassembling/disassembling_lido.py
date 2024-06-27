@@ -6,11 +6,20 @@ from roles_royce.protocols.base import Address
 from roles_royce.protocols import cowswap
 from roles_royce.protocols.eth import lido
 
-from ..base import GenericTxContext, SwapOperation, UnstakeOperation, UnwrapOperation, StrategyAmountArguments, \
-    StrategyAmountWithSlippageArguments, register
+from ..base import (
+    GenericTxContext,
+    SwapOperation,
+    UnstakeOperation,
+    UnwrapOperation,
+    StrategyAmountArguments,
+    StrategyAmountWithSlippageArguments,
+    register,
+)
 
 
-def get_amount_to_redeem(ctx: GenericTxContext, address: Address, fraction: float | Decimal) -> int:
+def get_amount_to_redeem(
+    ctx: GenericTxContext, address: Address, fraction: float | Decimal
+) -> int:
     """
     Calculates the amount of tokens to redeem based on the percentage of the total holdings.
 
@@ -28,7 +37,10 @@ def get_amount_to_redeem(ctx: GenericTxContext, address: Address, fraction: floa
     else:
         raise ValueError("Invalid token address")
 
-    return int(Decimal(contract.functions.balanceOf(ctx.avatar_safe_address).call()) * Decimal(fraction))
+    return int(
+        Decimal(contract.functions.balanceOf(ctx.avatar_safe_address).call())
+        * Decimal(fraction)
+    )
 
 
 @register
@@ -42,7 +54,9 @@ class LidoUnstakeStETH:
     protocol = "lido"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: StrategyAmountArguments
+    ) -> list[Transactable]:
         txns = []
         amount_to_redeem = arguments["amount"]
         chunk_amount = amount_to_redeem
@@ -54,11 +68,17 @@ class LidoUnstakeStETH:
             if chunk_amount > 0:
                 chunks.append(chunk_amount)
 
-            set_allowance = lido.ApproveWithdrawalStETHWithUnstETH(amount=amount_to_redeem)
-            request_withdrawal = lido.RequestWithdrawalsStETH(amounts=chunks, avatar=ctx.avatar_safe_address)
+            set_allowance = lido.ApproveWithdrawalStETHWithUnstETH(
+                amount=amount_to_redeem
+            )
+            request_withdrawal = lido.RequestWithdrawalsStETH(
+                amounts=chunks, avatar=ctx.avatar_safe_address
+            )
 
         else:
-            set_allowance = lido.ApproveWithdrawalStETHWithUnstETH(amount=amount_to_redeem)
+            set_allowance = lido.ApproveWithdrawalStETHWithUnstETH(
+                amount=amount_to_redeem
+            )
             request_withdrawal = lido.RequestWithdrawalsStETH(
                 amounts=[amount_to_redeem], avatar=ctx.avatar_safe_address
             )
@@ -73,17 +93,21 @@ class LidoUnwrapAndUnstakeWstETH:
     """
     Unwraps wstETH and unstakes for ETH on Lido
     """
+
     op_type = UnwrapOperation
     kind = "disassembly"
     protocol = "lido"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: StrategyAmountArguments
+    ) -> list[Transactable]:
         txns = []
 
         contract = ContractSpecs[ctx.blockchain].wstETH.contract(ctx.w3)
         amount_for_list = contract.functions.getWstETHByStETH(
-            1_000_000_000_000_000_000_000).call()  # just to be safe that the chunk size is too big
+            1_000_000_000_000_000_000_000
+        ).call()  # just to be safe that the chunk size is too big
         amount_to_redeem = arguments["amount"]
         chunk_amount = amount_to_redeem
         if chunk_amount > amount_for_list:
@@ -95,7 +119,9 @@ class LidoUnwrapAndUnstakeWstETH:
                 chunks.append(chunk_amount)
 
             set_allowance = lido.ApproveWithdrawalWstETH(amount=amount_to_redeem)
-            request_withdrawal = lido.RequestWithdrawalsWstETH(amounts=chunks, avatar=ctx.avatar_safe_address)
+            request_withdrawal = lido.RequestWithdrawalsWstETH(
+                amounts=chunks, avatar=ctx.avatar_safe_address
+            )
 
         else:
             set_allowance = lido.ApproveWithdrawalWstETH(amount=amount_to_redeem)
@@ -106,6 +132,7 @@ class LidoUnwrapAndUnstakeWstETH:
         txns.append(set_allowance)
         txns.append(request_withdrawal)
         return txns
+
 
 @register
 class SwapStETHforETH:  # TODO: why to have a specific class ?
@@ -119,7 +146,9 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
     op_type = SwapOperation
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountWithSlippageArguments) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: StrategyAmountWithSlippageArguments
+    ) -> list[Transactable]:
 
         max_slippage = arguments["max_slippage"] / 100
         amount = arguments["amount"]
@@ -127,17 +156,19 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
         if amount == 0:
             return []
 
-        if 'anvil' in ctx.w3.client_version:
+        if "anvil" in ctx.w3.client_version:
             fork = True
         else:
             fork = False
 
-        return cowswap.create_order_and_swap(w3=ctx.w3,
-                                             avatar=ctx.avatar_safe_address,
-                                             sell_token=EthereumTokenAddr.stETH,
-                                             buy_token=EthereumTokenAddr.E,
-                                             amount=amount,
-                                             kind=cowswap.SwapKind.SELL,
-                                             max_slippage=max_slippage,
-                                             valid_duration=20 * 60,
-                                             fork=fork)
+        return cowswap.create_order_and_swap(
+            w3=ctx.w3,
+            avatar=ctx.avatar_safe_address,
+            sell_token=EthereumTokenAddr.stETH,
+            buy_token=EthereumTokenAddr.E,
+            amount=amount,
+            kind=cowswap.SwapKind.SELL,
+            max_slippage=max_slippage,
+            valid_duration=20 * 60,
+            fork=fork,
+        )

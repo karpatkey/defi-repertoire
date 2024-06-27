@@ -10,8 +10,10 @@ from roles_royce.generic_method import Transactable
 from roles_royce.utils import to_checksum_address
 
 RolesModMasterCopy = {
-    Chain.ETHEREUM: '0xD8DfC1d938D7D163C5231688341e9635E9011889',
-    Chain.GNOSIS: '0xD8DfC1d938D7D163C5231688341e9635E9011889'}
+    Chain.ETHEREUM: "0xD8DfC1d938D7D163C5231688341e9635E9011889",
+    Chain.GNOSIS: "0xD8DfC1d938D7D163C5231688341e9635E9011889",
+}
+
 
 @dataclass
 class TransactionBuilder:
@@ -24,7 +26,13 @@ class TransactionBuilder:
         self.avatar_safe_address = to_checksum_address(self.avatar_safe_address)
         self.blockchain = Chain.get_blockchain_from_web3(self.w3)
 
-    def send(self, roles_mod_address: str, txns: list[Transactable], private_key: str, w3: Web3 = None) -> TxReceipt:
+    def send(
+        self,
+        roles_mod_address: str,
+        txns: list[Transactable],
+        private_key: str,
+        w3: Web3 = None,
+    ) -> TxReceipt:
         """Executes the multisend batched transaction built from the transactables.
 
         Args:
@@ -40,15 +48,19 @@ class TransactionBuilder:
         if w3 is None:
             w3 = self.w3
         return roles.send(
-            txns, role=self.role, private_key=private_key, roles_mod_address=roles_mod_address, web3=w3
+            txns,
+            role=self.role,
+            private_key=private_key,
+            roles_mod_address=roles_mod_address,
+            web3=w3,
         )
 
     def check(
-            self,
-            roles_mod_address: str,
-            txns: list[Transactable],
-            from_address: Address | ChecksumAddress | str,
-            block: int | str = "latest"
+        self,
+        roles_mod_address: str,
+        txns: list[Transactable],
+        from_address: Address | ChecksumAddress | str,
+        block: int | str = "latest",
     ) -> bool:
         """Checks whether the multisend batched transaction built from the transactables is successfully executed with static call.
 
@@ -60,10 +72,19 @@ class TransactionBuilder:
             True if the transaction was successfully executed, False if it reverted.
         """
         return roles.check(
-            txns, role=self.role, account=from_address, roles_mod_address=roles_mod_address, web3=self.w3, block=block
+            txns,
+            role=self.role,
+            account=from_address,
+            roles_mod_address=roles_mod_address,
+            web3=self.w3,
+            block=block,
         )
 
-    def build(self, txns: list[Transactable], from_address: Address | ChecksumAddress | str | None = None) -> TxParams:
+    def build(
+        self,
+        txns: list[Transactable],
+        from_address: Address | ChecksumAddress | str | None = None,
+    ) -> TxParams:
         """Builds a multisend batched transaction from the transactables.
 
         Args:
@@ -77,8 +98,13 @@ class TransactionBuilder:
         elif self.signer_address is not None:
             account = self.signer_address
         else:
-            raise ValueError("Either from_address or self.signer_address must be provided.")
+            raise ValueError(
+                "Either from_address or self.signer_address must be provided."
+            )
         return roles.build(
-            txns, role=self.role, account=account, roles_mod_address=RolesModMasterCopy[self.blockchain], web3=self.w3
+            txns,
+            role=self.role,
+            account=account,
+            roles_mod_address=RolesModMasterCopy[self.blockchain],
+            web3=self.w3,
         )
-

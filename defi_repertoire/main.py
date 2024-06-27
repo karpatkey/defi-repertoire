@@ -11,13 +11,13 @@ from roles_royce.utils import multi_or_one
 from defabipedia.types import Chain, Blockchain
 from web3 import Web3
 
-Protocols = enum.StrEnum('Protocols', {s.protocol: s.protocol for s in STRATEGIES})
-StrategyKinds = enum.StrEnum('StrategyKinds', {s.kind: s.kind for s in STRATEGIES})
-BlockchainOption = enum.StrEnum('BlockchainOption', {name: name for name in Chain._by_name.values()})
+Protocols = enum.StrEnum("Protocols", {s.protocol: s.protocol for s in STRATEGIES})
+StrategyKinds = enum.StrEnum("StrategyKinds", {s.kind: s.kind for s in STRATEGIES})
+BlockchainOption = enum.StrEnum(
+    "BlockchainOption", {name: name for name in Chain._by_name.values()}
+)
 
-ENDPOINTS = {
-    Chain.ETHEREUM: [os.getenv("RPC_MAINNET_URL")]
-}
+ENDPOINTS = {Chain.ETHEREUM: [os.getenv("RPC_MAINNET_URL")]}
 
 REGISTERED_OPS = defaultdict(dict)
 
@@ -30,21 +30,25 @@ def get_endpoint_for_blockchain(blockchain: Blockchain):
     return Web3(Web3.HTTPProvider(url))
 
 
-def get_transactables(blockchain: Blockchain,
-                      protocol,
-                      op_name,
-                      arguments: dict,
-                      avatar_safe_address):
+def get_transactables(
+    blockchain: Blockchain, protocol, op_name, arguments: dict, avatar_safe_address
+):
     w3 = get_endpoint_for_blockchain(blockchain)
     op = REGISTERED_OPS.get(protocol).get(op_name)
     ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
-    txns = op.get_txns(ctx=ctx,
-                       arguments=arguments)
+    txns = op.get_txns(ctx=ctx, arguments=arguments)
 
-    return [dataclasses.asdict(TxData(operation=txn.operation,
-                                      data=txn.data,
-                                      value=txn.value,
-                                      contract_address=txn.contract_address)) for txn in txns]
+    return [
+        dataclasses.asdict(
+            TxData(
+                operation=txn.operation,
+                data=txn.data,
+                value=txn.value,
+                contract_address=txn.contract_address,
+            )
+        )
+        for txn in txns
+    ]
 
 
 app = FastAPI()
@@ -59,9 +63,9 @@ async def root():
 async def status():
     return {"message": "Ok"}
 
+
 @app.post(f"/multisend/")
-def transaction_data(blockchain: BlockchainOption,
-                     txns: list[TxData]):
+def transaction_data(blockchain: BlockchainOption, txns: list[TxData]):
     blockchain = Chain.get_blockchain_by_name(blockchain)
     txn = multi_or_one(txs=txns, blockchain=blockchain)
 
@@ -77,7 +81,6 @@ for strategy in STRATEGIES:
 
     arguments_type = get_type_hints(function)["arguments"]
 
-
     def make_closure(kind, protocol, function_name, arg_type):
         # As exit arguments is a custom type (a dict) and FastAPI does not support complex types
         # in the querystring (https://github.com/tiangolo/fastapi/discussions/7919)
@@ -92,18 +95,17 @@ for strategy in STRATEGIES:
 
         # @app.get(url)
         @app.post(url, description=strategy.__doc__)
-        def transaction_data(blockchain: BlockchainOption,
-                             avatar_safe_address: str,
-                             arguments: arg_type):
+        def transaction_data(
+            blockchain: BlockchainOption, avatar_safe_address: str, arguments: arg_type
+        ):
             blockchain = Chain.get_blockchain_by_name(blockchain)
-            transactables = get_transactables(blockchain=blockchain,
-                                              protocol=protocol,
-                                              avatar_safe_address=avatar_safe_address,
-                                              op_name=function_name,
-                                              arguments=arguments,
-                                              )
+            transactables = get_transactables(
+                blockchain=blockchain,
+                protocol=protocol,
+                avatar_safe_address=avatar_safe_address,
+                op_name=function_name,
+                arguments=arguments,
+            )
             return {"txns": transactables}
 
-
     make_closure(kind, protocol, function_name, arguments_type)
-

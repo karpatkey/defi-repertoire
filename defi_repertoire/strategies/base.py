@@ -8,13 +8,13 @@ from defabipedia import Chain
 from roles_royce import Transactable
 from roles_royce.utils import to_checksum_address
 
-BlockOperation = NewType('BlockOperation', str)
-SwapOperation = NewType('SwapOperation', BlockOperation)
-WithdrawOperation = NewType('WithdrawOperation', BlockOperation)
-UnstakeOperation = NewType('UnstakeOperation', BlockOperation)
-UnwrapOperation = NewType('UnwrapOperation', BlockOperation)
-RedeemOperation = NewType('RedeemOperation', BlockOperation)
-TransactableChain = NewType('TransactableChain', list[Transactable])
+BlockOperation = NewType("BlockOperation", str)
+SwapOperation = NewType("SwapOperation", BlockOperation)
+WithdrawOperation = NewType("WithdrawOperation", BlockOperation)
+UnstakeOperation = NewType("UnstakeOperation", BlockOperation)
+UnwrapOperation = NewType("UnwrapOperation", BlockOperation)
+RedeemOperation = NewType("RedeemOperation", BlockOperation)
+TransactableChain = NewType("TransactableChain", list[Transactable])
 
 
 class GenericTxContext:
@@ -24,12 +24,15 @@ class GenericTxContext:
         self.blockchain = Chain.get_blockchain_from_web3(self.w3)
         self.ctx = defaultdict(dict)
 
+
 class StrategyAmountArguments(TypedDict):
     amount: int
+
 
 class StrategyAmountWithSlippageArguments(TypedDict):
     amount: int
     max_slippage: float
+
 
 class SwapArguments(TypedDict):
     token_in_address: AnyAddress
@@ -37,13 +40,14 @@ class SwapArguments(TypedDict):
     amount: int
     max_slippage: float
 
+
 STRATEGIES = []
+
 
 def _register_strategy(strategy):
     STRATEGIES.append(strategy)
 
+
 def register(cls):
     _register_strategy(cls)
     return cls
-
-

@@ -21,15 +21,24 @@ from roles_royce.protocols.swap_pools.swap_methods import (
     SwapUniswapV3,
     WrapNativeToken,
 )
-from defi_repertoire.strategies.base import GenericTxContext, SwapOperation, register, SwapArguments
+from defi_repertoire.strategies.base import (
+    GenericTxContext,
+    SwapOperation,
+    register,
+    SwapArguments,
+)
 
 
-def get_amount_to_redeem(ctx: GenericTxContext, token_in_address: Address, fraction: float | Decimal) -> int:
+def get_amount_to_redeem(
+    ctx: GenericTxContext, token_in_address: Address, fraction: float | Decimal
+) -> int:
     balance = 0
     if token_in_address == NATIVE:
         balance = ctx.w3.eth.get_balance(ctx.avatar_safe_address)
     else:
-        token_in_contract = ctx.w3.eth.contract(address=token_in_address, abi=Abis.ERC20.abi)
+        token_in_contract = ctx.w3.eth.contract(
+            address=token_in_address, abi=Abis.ERC20.abi
+        )
         balance = token_in_contract.functions.balanceOf(ctx.avatar_safe_address).call()
 
     amount = int(Decimal(balance) * Decimal(fraction))
@@ -37,7 +46,9 @@ def get_amount_to_redeem(ctx: GenericTxContext, token_in_address: Address, fract
     if token_in_address == NATIVE:
         min_amount = 3
         if balance - amount <= Web3.to_wei(min_amount, "ether"):
-            raise ValueError(f"Must keep at least a balance of {min_amount} of native token")
+            raise ValueError(
+                f"Must keep at least a balance of {min_amount} of native token"
+            )
 
     return amount
 
@@ -52,9 +63,13 @@ def get_wrapped_token(blockchain: Blockchain) -> Address:
 
 
 def get_pool_id(w3: Web3, blockchain: Blockchain, pool_address: Address) -> str:
-    return (w3.eth.contract(address=pool_address, abi=BalancerAbis[blockchain].UniversalBPT.abi)
-            .functions.getPoolId()
-            .call())
+    return (
+        w3.eth.contract(
+            address=pool_address, abi=BalancerAbis[blockchain].UniversalBPT.abi
+        )
+        .functions.getPoolId()
+        .call()
+    )
 
 
 def get_swap_pools(blockchain, protocol, token_in, token_out):
@@ -77,7 +92,13 @@ def get_swap_pools(blockchain, protocol, token_in, token_out):
     return instances
 
 
-def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_out: str, amount_in) -> Decimal:
+def get_quote(
+    ctx: GenericTxContext,
+    swap_pool: SwapPools,
+    token_in: str,
+    token_out: str,
+    amount_in,
+) -> Decimal:
     if swap_pool.protocol == "Curve":
         try:
             index_in = swap_pool.tokens.index(token_in)
@@ -88,7 +109,9 @@ def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_
             index_out = swap_pool.tokens.index(token_out)
         except ValueError:
             index_out = None
-        quote = QuoteCurve(ctx.blockchain, swap_pool.address, index_in, index_out, amount_in)
+        quote = QuoteCurve(
+            ctx.blockchain, swap_pool.address, index_in, index_out, amount_in
+        )
         amount_out = quote.call(web3=ctx.w3)
         return swap_pool, amount_out
 
@@ -97,7 +120,9 @@ def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_
             token_in = get_wrapped_token(ctx.blockchain)
         elif token_out == NATIVE:
             token_out = get_wrapped_token(ctx.blockchain)
-        quote = QuoteUniswapV3(ctx.blockchain, token_in, token_out, amount_in, swap_pool.uni_fee)
+        quote = QuoteUniswapV3(
+            ctx.blockchain, token_in, token_out, amount_in, swap_pool.uni_fee
+        )
         amount_out = quote.call(web3=ctx.w3)
         return swap_pool, amount_out[0]
 
@@ -121,15 +146,19 @@ def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_
     else:
         raise ValueError("Protocol not supported")
 
+
 @register
 class SwapCowswap:
     """Make a swap on CowSwap with best amount out"""
+
     op_type = SwapOperation
     kind = "swap"
     protocol = "cowswap"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: SwapArguments
+    ) -> list[Transactable]:
         max_slippage = arguments["max_slippage"] / 100
         token_in = arguments["token_in_address"]
         token_out = arguments["token_out_address"]
@@ -167,15 +196,19 @@ class SwapCowswap:
 
         return txns
 
+
 @register
 class SwapBalancer:
     """Make a swap on Balancer with best amount out."""
+
     op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: SwapArguments
+    ) -> list[Transactable]:
         max_slippage = arguments["max_slippage"] / 100
         token_in = arguments["token_in_address"]
         token_out = arguments["token_out_address"]
@@ -220,15 +253,19 @@ class SwapBalancer:
         txns.append(swap_balancer)
         return txns
 
+
 @register
 class SwapOnCurve:
     """Make a swap on Curve with best amount out"""
+
     op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: SwapArguments
+    ) -> list[Transactable]:
         max_slippage = arguments["max_slippage"] / 100
         token_in = arguments["token_in_address"]
         token_out = arguments["token_out_address"]
@@ -275,6 +312,7 @@ class SwapOnCurve:
         txns.append(swap_curve)
         return txns
 
+
 @register
 class SwapUniswapV3:
     """Make a swap on UniswapV3 with best amount out."""
@@ -284,7 +322,9 @@ class SwapUniswapV3:
     protocol = "uniswapv3"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: SwapArguments
+    ) -> list[Transactable]:
         max_slippage = arguments["max_slippage"] / 100
         token_in = arguments["token_in_address"]
         token_out = arguments["token_out_address"]

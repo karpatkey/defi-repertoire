@@ -50,16 +50,29 @@ class Exit23ArgumentElement(TypedDict):
     amount: int
 
 
-def get_bpt_amount_to_redeem_from_gauge(ctx: GenericTxContext, gauge_address: Address,
-                                        fraction: float | Decimal) -> int:
-    gauge_contract = ctx.w3.eth.contract(address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi)
-    return int(Decimal(gauge_contract.functions.balanceOf(ctx.avatar_safe_address).call()) * Decimal(fraction))
+def get_bpt_amount_to_redeem_from_gauge(
+    ctx: GenericTxContext, gauge_address: Address, fraction: float | Decimal
+) -> int:
+    gauge_contract = ctx.w3.eth.contract(
+        address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi
+    )
+    return int(
+        Decimal(gauge_contract.functions.balanceOf(ctx.avatar_safe_address).call())
+        * Decimal(fraction)
+    )
 
 
-def get_bpt_amount_to_redeem(ctx: GenericTxContext, bpt_address: Address, fraction: float | Decimal) -> int:
-    bpt_contract = ctx.w3.eth.contract(address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi)
+def get_bpt_amount_to_redeem(
+    ctx: GenericTxContext, bpt_address: Address, fraction: float | Decimal
+) -> int:
+    bpt_contract = ctx.w3.eth.contract(
+        address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
+    )
 
-    return int(Decimal(bpt_contract.functions.balanceOf(ctx.avatar_safe_address).call()) * Decimal(fraction))
+    return int(
+        Decimal(bpt_contract.functions.balanceOf(ctx.avatar_safe_address).call())
+        * Decimal(fraction)
+    )
 
 
 @register
@@ -67,12 +80,15 @@ class WithdrawAllAssetsProportional:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
     """
+
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit11ArgumentElement]) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: list[Exit11ArgumentElement]
+    ) -> list[Transactable]:
 
         txns = []
 
@@ -83,7 +99,9 @@ class WithdrawAllAssetsProportional:
             if amount == 0:
                 continue
 
-            bpt_contract = ctx.w3.eth.contract(address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi)
+            bpt_contract = ctx.w3.eth.contract(
+                address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
+            )
 
             bpt_pool_id = "0x" + bpt_contract.functions.getPoolId().call().hex()
             bpt_pool_paused_state = bpt_contract.functions.getPausedState().call()
@@ -116,13 +134,17 @@ class WithdrawSingle:
     """
     Withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
     """
+
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit12ArgumemntElement],
-                 ) -> list[Transactable]:
+    def get_txns(
+        cls,
+        ctx: GenericTxContext,
+        arguments: list[Exit12ArgumemntElement],
+    ) -> list[Transactable]:
 
         txns = []
 
@@ -132,7 +154,9 @@ class WithdrawSingle:
             token_out_address = to_checksum_address(element["token_out_address"])
             amount = element["amount"]
 
-            bpt_contract = ctx.w3.eth.contract(address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi)
+            bpt_contract = ctx.w3.eth.contract(
+                address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
+            )
 
             if amount == 0:
                 continue
@@ -148,7 +172,9 @@ class WithdrawSingle:
             if bpt_pool_paused_state[0]:
                 raise ValueError("Pool is in paused state, no withdrawing is accepted.")
             if bpt_pool_recovery_mode:
-                raise ValueError("This pool is in recovery mode, only proportional exit possible, try that option.")
+                raise ValueError(
+                    "This pool is in recovery mode, only proportional exit possible, try that option."
+                )
             withdraw_balancer = balancer.ExactBptSingleTokenExitSlippage(
                 w3=ctx.w3,
                 pool_id=bpt_pool_id,
@@ -166,13 +192,17 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
     """
+
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit13ArgumentElement],
-                 ) -> list[Transactable]:
+    def get_txns(
+        cls,
+        ctx: GenericTxContext,
+        arguments: list[Exit13ArgumentElement],
+    ) -> list[Transactable]:
 
         txns = []
         for element in arguments:
@@ -181,7 +211,9 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             if amount == 0:
                 continue
 
-            bpt_contract = ctx.w3.eth.contract(address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi)
+            bpt_contract = ctx.w3.eth.contract(
+                address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
+            )
 
             try:
                 bpt_pool_recovery_mode = bpt_contract.functions.inRecoveryMode().call()
@@ -193,7 +225,10 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             bpt_pool_id = "0x" + bpt_contract.functions.getPoolId().call().hex()
 
             withdraw_balancer = balancer.ExactBptRecoveryModeExit(
-                w3=ctx.w3, pool_id=bpt_pool_id, avatar=ctx.avatar_safe_address, bpt_amount_in=amount
+                w3=ctx.w3,
+                pool_id=bpt_pool_id,
+                avatar=ctx.avatar_safe_address,
+                bpt_amount_in=amount,
             )
 
             txns.append(withdraw_balancer)
@@ -207,12 +242,15 @@ class Exit21:
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets
     in proportional way (not used for pools in recovery mode!).
     """
+
     op_type = WithdrawOperation  # unstake ? ??
     kind = "disassembly"
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit21ArgumentElement]) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: list[Exit21ArgumentElement]
+    ) -> list[Transactable]:
         txns = []
         for element in arguments:
             gauge_address = to_checksum_address(element["gauge_address"])
@@ -229,14 +267,21 @@ class Exit21:
             txns.append(unstake_gauge)
 
             # gauge_address to bpt_address conversion
-            gauge_contract = ctx.w3.eth.contract(address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi)
+            gauge_contract = ctx.w3.eth.contract(
+                address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi
+            )
             bpt_address = gauge_contract.functions.lp_token().call()
 
-            withdraw_balancer = WithdrawAllAssetsProportional.get_txns(ctx=ctx,
-                                                                       arguments=[{"bpt_address": bpt_address,
-                                                                                   "max_slippage": max_slippage,
-                                                                                   "amount": amount}],
-                                                                       )
+            withdraw_balancer = WithdrawAllAssetsProportional.get_txns(
+                ctx=ctx,
+                arguments=[
+                    {
+                        "bpt_address": bpt_address,
+                        "max_slippage": max_slippage,
+                        "amount": amount,
+                    }
+                ],
+            )
             for transactable in withdraw_balancer:
                 txns.append(transactable)
 
@@ -248,12 +293,15 @@ class Exit22:
     """
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
     """
+
     op_type = WithdrawOperation  # unstake ? ??
     kind = "disassembly"
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit22ArgumentElement]) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: list[Exit22ArgumentElement]
+    ) -> list[Transactable]:
 
         txns = []
         for element in arguments:
@@ -266,16 +314,25 @@ class Exit22:
             if amount == 0:
                 continue
 
-            unstake_gauge = balancer.Unstake(w3=ctx.w3, gauge_address=gauge_address, amount=amount)
+            unstake_gauge = balancer.Unstake(
+                w3=ctx.w3, gauge_address=gauge_address, amount=amount
+            )
             txns.append(unstake_gauge)
 
-            gauge_contract = ctx.w3.eth.contract(address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi)
+            gauge_contract = ctx.w3.eth.contract(
+                address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi
+            )
             bpt_address = gauge_contract.functions.lp_token().call()
 
             withdraw_balancer = WithdrawSingle.get_txns(
                 ctx=ctx,
                 arguments=[
-                    {"bpt_address": bpt_address, "token_out_address": token_out_address, "max_slippage": max_slippage, "amount": amount}
+                    {
+                        "bpt_address": bpt_address,
+                        "token_out_address": token_out_address,
+                        "max_slippage": max_slippage,
+                        "amount": amount,
+                    }
                 ],
             )
             for transactable in withdraw_balancer:
@@ -296,7 +353,9 @@ class Exit23:
     protocol = "balancer"
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit23ArgumentElement]) -> list[Transactable]:
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: list[Exit23ArgumentElement]
+    ) -> list[Transactable]:
         txns = []
         for element in arguments:
             gauge_address = to_checksum_address(element["gauge_address"])
@@ -305,15 +364,18 @@ class Exit23:
             if amount == 0:
                 return []
 
-            unstake_gauge = balancer.Unstake(w3=ctx.w3, gauge_address=gauge_address, amount=amount)
+            unstake_gauge = balancer.Unstake(
+                w3=ctx.w3, gauge_address=gauge_address, amount=amount
+            )
             txns.append(unstake_gauge)
 
-            gauge_contract = ctx.w3.eth.contract(address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi)
+            gauge_contract = ctx.w3.eth.contract(
+                address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi
+            )
             bpt_address = gauge_contract.functions.lp_token().call()
 
             withdraw_balancer = WithdrawAllAssetsProportionalPoolsInRecovery.get_txns(
-                ctx=ctx,
-                arguments=[{"bpt_address": bpt_address, "amount": amount}]
+                ctx=ctx, arguments=[{"bpt_address": bpt_address, "amount": amount}]
             )
             for transactable in withdraw_balancer:
                 txns.append(transactable)

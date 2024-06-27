@@ -8,8 +8,15 @@ from roles_royce.generic_method import Transactable
 
 class Disassembler:
 
-    def send(self, ctx: GenericTxContext, roles_mod_address: str, role, txns: list[Transactable], private_key: str,
-             w3: Web3 = None) -> TxReceipt:
+    def send(
+        self,
+        ctx: GenericTxContext,
+        roles_mod_address: str,
+        role,
+        txns: list[Transactable],
+        private_key: str,
+        w3: Web3 = None,
+    ) -> TxReceipt:
         """Executes the multisend batched transaction built from the transactables.
 
         Args:
@@ -24,14 +31,18 @@ class Disassembler:
         if w3 is None:
             w3 = ctx.w3
         return roles.send(
-            txns, role=role, private_key=private_key, roles_mod_address=roles_mod_address, web3=w3
+            txns,
+            role=role,
+            private_key=private_key,
+            roles_mod_address=roles_mod_address,
+            web3=w3,
         )
 
     def check(
-            self,
-            txns: list[Transactable],
-            block: int | str = "latest",
-            from_address: Address | ChecksumAddress | str | None = None,
+        self,
+        txns: list[Transactable],
+        block: int | str = "latest",
+        from_address: Address | ChecksumAddress | str | None = None,
     ) -> bool:
         """Checks whether the multisend batched transaction built from the transactables is successfully executed with static call.
 
@@ -47,12 +58,23 @@ class Disassembler:
         elif self.signer_address:
             account = self.signer_address
         else:
-            raise ValueError("Either from_address or self.signer_address must be provided.")
+            raise ValueError(
+                "Either from_address or self.signer_address must be provided."
+            )
         return roles.check(
-            txns, role=self.role, account=account, roles_mod_address=self.roles_mod_address, web3=self.w3, block=block
+            txns,
+            role=self.role,
+            account=account,
+            roles_mod_address=self.roles_mod_address,
+            web3=self.w3,
+            block=block,
         )
 
-    def build(self, txns: list[Transactable], from_address: Address | ChecksumAddress | str | None = None) -> TxParams:
+    def build(
+        self,
+        txns: list[Transactable],
+        from_address: Address | ChecksumAddress | str | None = None,
+    ) -> TxParams:
         """Builds a multisend batched transaction from the transactables.
 
         Args:
@@ -66,14 +88,22 @@ class Disassembler:
         elif self.signer_address is not None:
             account = self.signer_address
         else:
-            raise ValueError("Either from_address or self.signer_address must be provided.")
+            raise ValueError(
+                "Either from_address or self.signer_address must be provided."
+            )
         return roles.build(
-            txns, role=self.role, account=account, roles_mod_address=self.roles_mod_address, web3=self.w3
+            txns,
+            role=self.role,
+            account=account,
+            roles_mod_address=self.roles_mod_address,
+            web3=self.w3,
         )
 
 
 def validate_percentage(percentage: float) -> float:
     if percentage <= 0 or percentage > 100:
-        raise ValueError("Percentage of liquidity to remove must be greater than 0 and less or equal than 100.")
+        raise ValueError(
+            "Percentage of liquidity to remove must be greater than 0 and less or equal than 100."
+        )
     else:
         return percentage / 100
