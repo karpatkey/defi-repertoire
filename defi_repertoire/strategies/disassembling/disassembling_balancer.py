@@ -66,18 +66,6 @@ def get_bpt_amount_to_redeem(ctx: GenericTxContext, bpt_address: Address, fracti
 class WithdrawAllAssetsProportional:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
-
-    Args:
-        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "bpt_address": "0xsOmEAddResS",
-                    "max_slippage": 1.25
-                }
-            ]
-
-    Returns:
-        list[Transactable]: List of transactions to execute.
     """
     op_type = WithdrawOperation
     kind = "disassembly"
@@ -127,19 +115,6 @@ class WithdrawAllAssetsProportional:
 class WithdrawSingle:
     """
     Withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
-
-    Args:
-        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "bpt_address": "0xsOmEAddResS",
-                    "max_slippage": 1.25,
-                    "token_out_address": "0xAnoThERAdDResS"
-                }
-            ]
-
-    Returns:
-        list[Transactable]: List of transactions to execute.
     """
     op_type = WithdrawOperation
     kind = "disassembly"
@@ -190,17 +165,7 @@ class WithdrawSingle:
 class WithdrawAllAssetsProportionalPoolsInRecovery:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
-
-    Args:
-        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "bpt_address": "0xsOmEAddResS"
-                }
-            ]
-
-    Returns:
-        list[Transactable]: List of transactions to execute."""
+    """
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "balancer"
@@ -238,29 +203,16 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
 
 @register
 class Exit21:
+    """
+    Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets
+    in proportional way (not used for pools in recovery mode!).
+    """
     op_type = WithdrawOperation  # unstake ? ??
     kind = "disassembly"
     protocol = "balancer"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: list[Exit21ArgumentElement]) -> list[Transactable]:
-        """
-        Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
-
-        Args:
-            arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-                e.g.= [
-                        {
-                            "gauge_address": "0xsOmEAddResS",
-                            "max_slippage": 1.25
-                            "amount": amount_of_bpt(int)
-                        }
-                    ]
-
-        Returns:
-            list[Transactable]: List of transactions to execute.
-        """
-
         txns = []
         for element in arguments:
             gauge_address = to_checksum_address(element["gauge_address"])
@@ -295,20 +247,6 @@ class Exit21:
 class Exit22:
     """
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
-
-    Args:
-        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "gauge_address": "0xsOmEAddResS",
-                    "token_out_address" : "0xsOmEAddResS",
-                    "max_slippage": 1.25
-                    "amount":
-                }
-            ]
-
-    Returns:
-        list[Transactable]: List of transactions to execute.
     """
     op_type = WithdrawOperation  # unstake ? ??
     kind = "disassembly"
@@ -349,22 +287,9 @@ class Exit22:
 @register
 class Exit23:
     """
-    Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
-
-    Args:
-        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "gauge_address": "0xsOmEAddResS",
-                    "amount":
-                }
-            ]
-
-
-    Returns:
-        list[Transactable]: List of transactions to execute.
+    Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets
+    in proportional way for pools in recovery mode.
     """
-
 
     op_type = WithdrawOperation  # unstake ? ??
     kind = "disassembly"

@@ -123,19 +123,7 @@ def get_quote(ctx: GenericTxContext, swap_pool: SwapPools, token_in: str, token_
 
 @register
 class SwapCowswap:
-    """Make a swap on CowSwap with best amount out
-        Args:
-        arguments
-                    {
-                        "token_in_address": "FillMewithTokenAddress",
-                        "max_slippage": 0.01,
-                        "token_out_address": "FillMewithTokenAddress",
-                        "amount": 123
-                    }
-        amount_to_redeem (int): Amount of wallet token to redeem.
-    Returns:
-        list[ Transactable]:  List of transactions to execute.
-    """
+    """Make a swap on CowSwap with best amount out"""
     op_type = SwapOperation
     kind = "swap"
     protocol = "cowswap"
@@ -181,19 +169,7 @@ class SwapCowswap:
 
 @register
 class SwapBalancer:
-    """Make a swap on Balancer with best amount out
-    Args:
-        arguments:
-                arg_dicts =
-                    {
-                        "token_in_address": "FillMewithTokenAddress",
-                        "max_slippage": 0.01,
-                        "token_out_address": "FillMewithTokenAddress",
-                        "amount": 123
-                    }
-    Returns:
-        list[ Transactable]:  List of transactions to execute.
-    """
+    """Make a swap on Balancer with best amount out."""
     op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
@@ -246,27 +222,13 @@ class SwapBalancer:
 
 @register
 class SwapOnCurve:
+    """Make a swap on Curve with best amount out"""
     op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
-
-        """Make a swap on Curve with best amount out
-        Args:
-            arguments:
-                arg_dicts =
-                    {
-                        "token_in_address": "FillMewithTokenAddress",
-                        "max_slippage": 0.01,
-                        "token_out_address": "FillMewithTokenAddress",
-                        "amount": 123
-                    }
-        Returns:
-            list[ Transactable]:  List of transactions to execute.
-        """
-
         max_slippage = arguments["max_slippage"] / 100
         token_in = arguments["token_in_address"]
         token_out = arguments["token_out_address"]
@@ -315,27 +277,14 @@ class SwapOnCurve:
 
 @register
 class SwapUniswapV3:
+    """Make a swap on UniswapV3 with best amount out."""
+
     op_type = SwapOperation
     kind = "swap"
     protocol = "uniswapv3"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: SwapArguments) -> list[Transactable]:
-        """Make a swap on UniswapV3 with best amount out
-        Args:
-            arguments:
-                arg_dicts =
-                    {
-                        "token_in_address": "FillMewithTokenAddress",
-                        "max_slippage": 0.01,
-                        "token_out_address": "FillMewithTokenAddress",
-                        "amount": 123
-                    }
-
-        Returns:
-            list[ Transactable]:  List of transactions to execute.
-        """
-
         max_slippage = arguments["max_slippage"] / 100
         token_in = arguments["token_in_address"]
         token_out = arguments["token_out_address"]

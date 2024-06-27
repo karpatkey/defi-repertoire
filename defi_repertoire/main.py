@@ -91,7 +91,7 @@ for strategy in STRATEGIES:
         url = f"/txns/{kind}/{protocol}/{function_name}/"
 
         # @app.get(url)
-        @app.post(url)
+        @app.post(url, description=strategy.__doc__)
         def transaction_data(blockchain: BlockchainOption,
                              avatar_safe_address: str,
                              arguments: arg_type):

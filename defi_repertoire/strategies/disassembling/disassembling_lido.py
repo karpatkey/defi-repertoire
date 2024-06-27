@@ -33,22 +33,16 @@ def get_amount_to_redeem(ctx: GenericTxContext, address: Address, fraction: floa
 
 @register
 class LidoUnstakeStETH:
+    """
+    Unstakes stETH from Lido
+    """
+
     op_type = UnstakeOperation
     kind = "disassembly"
     protocol = "lido"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
-        """
-        Unstakes stETH from Lido
-
-        Args:
-            amount_to_redeem (int):Amount of stETH to redeem.
-
-        Returns:
-            list[Transactable]: List of transactions to execute.
-        """
-
         txns = []
         amount_to_redeem = arguments["amount"]
         chunk_amount = amount_to_redeem
@@ -76,23 +70,15 @@ class LidoUnstakeStETH:
 
 @register
 class LidoUnwrapAndUnstakeWstETH:
+    """
+    Unwraps wstETH and unstakes for ETH on Lido
+    """
     op_type = UnwrapOperation
     kind = "disassembly"
     protocol = "lido"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
-
-        """
-        Unwraps wstETH and unstakes for ETH on Lido
-
-        Args:
-            amount_to_redeem (int): Amount of wstETH to redeem.
-
-        Returns:
-            list[Transactable]: List of transactions to execute.
-        """
-
         txns = []
 
         contract = ContractSpecs[ctx.blockchain].wstETH.contract(ctx.w3)
@@ -123,24 +109,13 @@ class LidoUnwrapAndUnstakeWstETH:
 
 @register
 class SwapStETHforETH:  # TODO: why to have a specific class ?
-    kind = "disassembly"
-    protocol = "lido"
-
     """
     Swaps stETH for ETH. Approves the Cowswap relayer to spend the stETH if needed, then creates the order using the
     Cow's order API and creates the sign_order transaction.
-    Args:
-        arguments (list[dict]):  List with one single dictionary with the order parameters from an already
-         created order:
-            arg_dicts = [
-                {
-                    "max_slippage": 11.25
-                }
-            ]
-        amount_to_redeem (int, optional): Amount of stETH to swap.
-    Returns:
-        list[ Transactable]: List of transactions to execute
     """
+
+    kind = "disassembly"
+    protocol = "lido"
     op_type = SwapOperation
 
     @classmethod

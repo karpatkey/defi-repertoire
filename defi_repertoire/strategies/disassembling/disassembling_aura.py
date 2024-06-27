@@ -53,19 +53,7 @@ def aura_to_bpt_address(ctx: GenericTxContext, aura_rewards_address: ChecksumAdd
 
 @register
 class Withdraw:
-    """Withdraw funds from Aura.
-
-    Args:
-        arguments (list[dict]): List of dictionaries with the Aura rewards addresses to withdraw from.
-            arg_dicts = [
-                    {
-                        "rewards_address": "0xsOmEAddResS"
-                    }
-            ]
-
-    Returns:
-        list[Transactable]: List of transactions to execute.
-    """
+    """Withdraw funds from Aura."""
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "aura"
@@ -93,18 +81,6 @@ class Withdraw:
 class Withdraw2:
     """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way
     (not used for pools in recovery mode!).
-
-    Args:
-        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "rewards_address": 0xsOmEAddResS",
-                    "max_slippage": 1.27
-                }
-            ]
-
-    Returns:
-        list[Transactable]: List of transactions to execute.
     """
     op_type = WithdrawOperation
     name = "widraw_aura_balancer"
@@ -143,19 +119,6 @@ class Withdraw2:
 class Exit22:
     """Withdraw funds from Aura and then from the Balancer pool withdrawing a single asset specified by the
     token index.
-
-    Args:
-        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "rewards_address": "0xsOmEAddResS",
-                    "max_slippage": 0.1,
-                    token_out_address": "0xAnoThERAdDResS"
-                }
-            ]
-
-    Returns:
-        list[Transactable]: List of transactions to execute.
     """
 
     op_type = WithdrawOperation
@@ -199,17 +162,6 @@ class Exit22:
 class Exit23:
     """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way when
     pool is in recovery mode.
-
-    Args:
-        arguments (list[dict]): List of dictionaries with the withdrawal parameters.
-            arg_dicts = [
-                {
-                    "rewards_address": "0xsOmEAddResS"
-                }
-            ]
-
-    Returns:
-        list[Transactable]: List of transactions to execute.
     """
 
     op_type = WithdrawOperation

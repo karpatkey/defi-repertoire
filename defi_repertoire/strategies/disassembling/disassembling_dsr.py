@@ -21,16 +21,7 @@ def get_amount_to_redeem(ctx: GenericTxContext, fraction: Decimal | float, proxy
 
 @register
 class WithdrawWithProxy:
-    """Withdraw funds from DSR with proxy.
-
-    Args:
-        percentage (float): Percentage of liquidity to remove from DSR.
-        arguments (list[str]): List of DSR token addresses to withdraw from.
-        amount_to_redeem (int, optional): Amount of DSR tokens to withdraw. Defaults to None.
-
-    Returns
-        list[Transactable]: List of transactions to exit DSR.
-    """
+    """Withdraw DSR tokens from DSR with proxy."""
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "dsr"
@@ -53,16 +44,7 @@ class WithdrawWithProxy:
 
 @register
 class WithdrawWithoutProxy:
-    """Withdraw funds from DSR without proxy.
-
-    Args:
-        percentage (float): Percentage of liquidity to remove from DSR.
-        arguments (list[str]): List of DSR token addresses to withdraw from.
-        amount_to_redeem (int, optional): Amount of DSR tokens to withdraw. Defaults to None.
-
-    Returns
-        list[Transactable]: List of transactions to exit DSR.
-    """
+    """Withdraw funds from DSR without proxy."""
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "dsr"

@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import TypedDict
 from defabipedia.spark import ContractSpecs
 from defabipedia.tokens import Addresses
 from roles_royce.generic_method import Transactable
@@ -17,22 +16,13 @@ def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) 
 
 @register
 class Exit1:
+    """Withdraw funds from Spark with proxy."""
     op_type = RedeemOperation  #
     kind = "disassembly"
     protocol = "spark"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountArguments) -> list[Transactable]:
-        """Withdraw funds from Spark with proxy.
-
-        Args:
-            arguments (list[str]): List of Spark token addresses to withdraw from.
-            amount_to_redeem (int, optional): Amount of Spark tokens to withdraw.
-
-        Returns
-            list[Transactable]: List of transactions to exit Spark.
-        """
-
         exit_sdai = spark.RedeemSDAIforDAI(blockchain=ctx.blockchain,
                                            amount=arguments["amount"],
                                            avatar=ctx.avatar_safe_address)
@@ -41,29 +31,16 @@ class Exit1:
 
 @register
 class Exit2:
+    """
+    Swaps sDAI for USDC. Approves the Cowswap relayer to spend the sDAI if needed, then creates the order using
+    the Cow's order API and creates the sign_order transaction.
+    """
     op_type = SwapOperation
     kind = "disassembly"
     protocol = "spark"
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: StrategyAmountWithSlippageArguments) -> list[Transactable]:
-
-        """
-        Swaps sDAI for USDC. Approves the Cowswap relayer to spend the sDAI if needed, then creates the order using
-        the Cow's order API and creates the sign_order transaction.
-        Args:
-            arguments (list[dict]):  List with one single dictionary with the order parameters from an already
-             created order:
-                arg_dicts = [
-                    {
-                        "max_slippage": 11.25
-                    }
-                ]
-            amount_to_redeem (int, optional): Amount of sDAI to swap.
-        Returns:
-            list[ Transactable]: List of transactions to execute.
-        """
-
         max_slippage = arguments["max_slippage"] / 100
         amount = arguments["amount"]
 
