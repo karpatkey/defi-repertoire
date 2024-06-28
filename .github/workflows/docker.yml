@@ -40,5 +40,5 @@ jobs:
       - name: Update Deployment
         run: |
           LATEST_IMAGE=$(cat latest_image.txt)
-          kubectl set image deployment/defi-repertoire -n defi-repertoire app=${LATEST_IMAGE}
+          kubectl set image deployment/defi-repertoire -n defi-repertoire defi-repertoire=${LATEST_IMAGE}
 
