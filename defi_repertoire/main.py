@@ -83,6 +83,7 @@ def txns(
     blockchain: BlockchainOption,
     avatar_safe_address: str,
     strategy_calls: list[StrategyCall],
+    multisend: bool = False
 ):
     blockchain = Chain.get_blockchain_by_name(blockchain)
     w3 = get_endpoint_for_blockchain(blockchain)
@@ -101,24 +102,25 @@ def txns(
                     contract_address=txn.contract_address,
                 )
             )
-
+    if multisend:
+        txns = [multi_or_one(txs=txns, blockchain=blockchain)]
     return {"txns": txns}
 
-
-@app.post(f"/multisend/")
+@app.post(f"/multisend/", description="Build one multisend call from multiple Transactables")
 def multisend(blockchain: BlockchainOption, txns: list[TransactableData]):
     blockchain = Chain.get_blockchain_by_name(blockchain)
     txn = multi_or_one(txs=txns, blockchain=blockchain)
     return {"txn": dataclasses.asdict(txn)}
 
 
-# TODO
+# TODO: I still don't understand what is exactly needed about the execTransactionWithRole
 @app.post(f"/build_role_txn/")
 # receives everything and build the payload needed for a later execution step with a specified safe,
 # roles mod contract, and a role number
-def build_role_txn(
+def txns(
     blockchain: BlockchainOption,
-    txns: list[StrategyCall],
+    avatar_safe_address: str,
+    strategy_calls: list[StrategyCall],
     role_mod_contract,
     role,
 ):

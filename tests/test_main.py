@@ -62,6 +62,32 @@ def test_multiple_strategies():
             ]
         }
 
+        # Using multisend
+        response = client.post(
+            "/strategy/txns/?"
+            "blockchain=ethereum&"
+            "avatar_safe_address=0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF&"
+            "multisend=true",
+            json=[
+                {
+                    "id": "dsr__withdraw_without_proxy",
+                    "arguments": {
+                        "amount": 10,
+                    },
+                }
+            ],
+        )
+        assert response.json() == {
+            "txns": [
+                {
+                    "contract_address": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+                    "data": "0x8d80ff0a0000000000000000000000...0000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000",
+                    "operation": 1,
+                    "value": 0,
+                }
+            ]
+        }
+
 
 def test_disassembly_balancer():
     with patch.object(Chain, "get_blockchain_from_web3", lambda x: Chain.ETHEREUM):
@@ -73,6 +99,39 @@ def test_disassembly_balancer():
                     data=tx_data, operation=0, value=0, contract_address=vault_address
                 )
             ]
+
+            response = client.post(
+                "/txns/disassembly/balancer/withdraw_all_assets_proportional/?"
+                "blockchain=ethereum&"
+                "avatar_safe_address=0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF&",
+                json={
+                    "bpt_address": "0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF",
+                    "max_slippage": 0.2,
+                    "amount": 10,
+                },
+            )
+
+            assert response.status_code == 200, response.text
+            exit_strategy.assert_called_with(
+                ctx=ANY,
+                arguments=Exit11ArgumentElement(
+                    **{
+                        "bpt_address": "0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF",
+                        "max_slippage": 0.2,
+                        "amount": 10,
+                    }
+                ),
+            )
+            assert response.json() == {
+                "txns": [
+                    {
+                        "data": tx_data,
+                        "operation": 0,
+                        "value": 0,
+                        "contract_address": vault_address,
+                    }
+                ]
+            }
 
             response = client.post(
                 "/txns/disassembly/balancer/withdraw_all_assets_proportional/?"
