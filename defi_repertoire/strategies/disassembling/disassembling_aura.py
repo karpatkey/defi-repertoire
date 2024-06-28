@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from defabipedia.aura import Abis
-from typing_extensions import TypedDict
+from pydantic import BaseModel
 from web3.types import ChecksumAddress
 
 from roles_royce.generic_method import Transactable
@@ -13,18 +13,18 @@ from . import disassembling_balancer as balancer
 from defi_repertoire.strategies import register
 
 
-class Exit1ArgumentElement(TypedDict):
+class Exit1ArgumentElement(BaseModel):
     rewards_address: str
     amount: int
 
 
-class Exit21ArgumentElement(TypedDict):
+class Exit21ArgumentElement(BaseModel):
     rewards_address: str
     max_slippage: float
     amount: int
 
 
-class Exit22ArgumentElement(TypedDict):
+class Exit22ArgumentElement(BaseModel):
     rewards_address: str
     max_slippage: float
     token_out_address: str
@@ -32,9 +32,9 @@ class Exit22ArgumentElement(TypedDict):
 
 
 def aura_contracts_helper(
-    ctx: GenericTxContext,
-    aura_rewards_address: ChecksumAddress,
-    fraction: float | Decimal,
+        ctx: GenericTxContext,
+        aura_rewards_address: ChecksumAddress,
+        fraction: float | Decimal,
 ) -> (str, int):
     aura_rewards_contract = ctx.w3.eth.contract(
         address=aura_rewards_address, abi=Abis[ctx.blockchain].BaseRewardPool.abi
@@ -50,7 +50,7 @@ def aura_contracts_helper(
 
 
 def aura_to_bpt_address(
-    ctx: GenericTxContext, aura_rewards_address: ChecksumAddress
+        ctx: GenericTxContext, aura_rewards_address: ChecksumAddress
 ) -> str:
     aura_rewards_contract = ctx.w3.eth.contract(
         address=aura_rewards_address, abi=Abis[ctx.blockchain].BaseRewardPool.abi
@@ -65,24 +65,21 @@ class Withdraw:
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "aura"
+    name = "exit_1"
 
     @classmethod
     def get_txns(
-        cls, ctx: GenericTxContext, arguments: list[Exit1ArgumentElement]
+            cls, ctx: GenericTxContext, arguments: Exit1ArgumentElement
     ) -> list[Transactable]:
-
         txns = []
-        for element in arguments:
-            aura_rewards_address = to_checksum_address(element["rewards_address"])
+        aura_rewards_address = to_checksum_address(arguments.rewards_address)
+        bpt_address = aura_to_bpt_address(ctx, aura_rewards_address)
+        ctx.ctx["aura"]["aura_to_bpt"][aura_rewards_address] = bpt_address
 
-            bpt_address = aura_to_bpt_address(ctx, aura_rewards_address)
-            ctx.ctx["aura"]["aura_to_bpt"][aura_rewards_address] = bpt_address
-            if element["amount"] == 0:
-                continue
-            withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
-                reward_address=aura_rewards_address, amount=element["amount"]
-            )
-            txns.append(withdraw_aura)
+        withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
+            reward_address=aura_rewards_address, amount=arguments.amount
+        )
+        txns.append(withdraw_aura)
 
         return txns
 
@@ -94,44 +91,39 @@ class Withdraw2:
     """
 
     op_type = WithdrawOperation
-    name = "widraw_aura_balancer"
     kind = "disassembly"
     protocol = "aura"
+    name = "exit_2_1"
 
     @classmethod
     def get_txns(
-        cls, ctx: GenericTxContext, arguments: list[Exit21ArgumentElement]
+            cls, ctx: GenericTxContext, arguments: Exit21ArgumentElement
     ) -> list[Transactable]:
-
         txns = []
+        amount = arguments.amount
+        if amount == 0:
+            return txns
 
-        for element in arguments:
-            amount = element["amount"]
-            if amount == 0:
-                continue
+        aura_reward_address = to_checksum_address(arguments.rewards_address)
+        aura_txns = Withdraw.get_txns(
+            ctx,
+            arguments=Exit1ArgumentElement(**{"rewards_address": aura_reward_address, "amount": amount}),
+        )
+        txns.extend(aura_txns)
 
-            aura_reward_address = to_checksum_address(element["rewards_address"])
-            aura_txns = Withdraw.get_txns(
-                ctx,
-                arguments=[{"rewards_address": aura_reward_address, "amount": amount}],
-            )
-            txns.extend(aura_txns)
+        bpt_address = ctx.ctx["aura"]["aura_to_bpt"][aura_reward_address]
 
-            max_slippage = element["max_slippage"]
-
-            bpt_address = ctx.ctx["aura"]["aura_to_bpt"][aura_reward_address]
-
-            bal_txns = balancer.WithdrawAllAssetsProportional.get_txns(
-                ctx=ctx,
-                arguments=[
-                    {
-                        "bpt_address": bpt_address,
-                        "max_slippage": max_slippage,
-                        "amount": amount,
-                    }
-                ],
-            )
-            txns.extend(bal_txns)
+        bal_txns = balancer.WithdrawAllAssetsProportional.get_txns(
+            ctx=ctx,
+            arguments=balancer.Exit11ArgumentElement(**
+                                                     {
+                                                         "bpt_address": bpt_address,
+                                                         "max_slippage": arguments.max_slippage,
+                                                         "amount": amount,
+                                                     }
+                                                     )
+        )
+        txns.extend(bal_txns)
 
         return txns
 
@@ -145,45 +137,52 @@ class Exit22:
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "aura"
+    name = "exit_2_2"
 
     @classmethod
     def get_txns(
-        cls, ctx: GenericTxContext, arguments: list[Exit22ArgumentElement]
+            cls, ctx: GenericTxContext, arguments: Exit22ArgumentElement
     ) -> list[Transactable]:
 
         txns = []
 
-        for element in arguments:
-            aura_rewards_address = to_checksum_address(element["rewards_address"])
-            max_slippage = element["max_slippage"]
-            token_out_address = to_checksum_address(element["token_out_address"])
-            amount = element["amount"]
+        aura_rewards_address = to_checksum_address(arguments.rewards_address)
+        max_slippage = arguments.max_slippage
+        token_out_address = to_checksum_address(arguments.token_out_address)
+        amount = arguments.amount
 
-            bpt_address = aura_to_bpt_address(ctx, aura_rewards_address)
+        bpt_address = aura_to_bpt_address(ctx, aura_rewards_address)
 
-            if amount == 0:
-                continue
+        if amount == 0:
+            return txns
 
-            withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
-                reward_address=aura_rewards_address, amount=amount
-            )
+        withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
+            reward_address=aura_rewards_address, amount=amount
+        )
 
-            withdraw_balancer = balancer.WithdrawSingle.get_txns(
-                arguments=[
-                    {
-                        "bpt_address": bpt_address,
-                        "max_slippage": max_slippage,
-                        "token_out_address": token_out_address,
-                        "amount": amount,
-                    }
-                ],
-            )
+        withdraw_balancer = balancer.WithdrawSingle.get_txns(ctx=ctx,
+                                                             arguments=balancer.Exit12ArgumemntElement(**
+                                                                                                       {
+                                                                                                           "bpt_address": bpt_address,
+                                                                                                           "max_slippage": max_slippage,
+                                                                                                           "token_out_address": token_out_address,
+                                                                                                           "amount": amount,
+                                                                                                       }
+                                                                                                       )
+                                                             )
 
-            txns.append(withdraw_aura)
-            for transactable in withdraw_balancer:
-                txns.append(transactable)
+        txns.append(withdraw_aura)
+        for transactable in withdraw_balancer:
+            txns.append(transactable)
 
         return txns
+
+
+# Original Contracts Payloads [(Withdraw, Allow, ...)]
+
+# Multisend()
+
+# Roles Modifier Contract (Roles: execTransactionWithRole, role, role_mod_address) -> execution_service
 
 
 @register
@@ -195,34 +194,32 @@ class Exit23:
     op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "aura"
+    name = "exit_2_3"
 
     @classmethod
     def get_txns(
-        cls, ctx: GenericTxContext, arguments: list[Exit1ArgumentElement]
+            cls, ctx: GenericTxContext, arguments: Exit1ArgumentElement
     ) -> list[Transactable]:
         txns = []
+        if arguments.amount == 0:
+            return txns
 
-        for element in arguments:
-            aura_rewards_address = to_checksum_address(element["rewards_address"])
-            amount = element["amount"]
+        aura_rewards_address = to_checksum_address(arguments.rewards_address)
 
-            bpt_address = aura_to_bpt_address(ctx, aura_rewards_address)
+        bpt_address = aura_to_bpt_address(ctx, aura_rewards_address)
 
-            if amount == 0:
-                continue
+        withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
+            reward_address=aura_rewards_address, amount=arguments.amount
+        )
 
-            withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
-                reward_address=aura_rewards_address, amount=amount
+        withdraw_balancer = (
+            balancer.WithdrawAllAssetsProportionalPoolsInRecovery.get_txns(
+                ctx=ctx, arguments=balancer.Exit13ArgumentElement(**{"bpt_address": bpt_address, "amount": arguments.amount})
             )
+        )
 
-            withdraw_balancer = (
-                balancer.WithdrawAllAssetsProportionalPoolsInRecovery.get_txns(
-                    ctx=ctx, arguments=[{"bpt_address": bpt_address, "amount": amount}]
-                )
-            )
-
-            txns.append(withdraw_aura)
-            for transactable in withdraw_balancer:
-                txns.append(transactable)
+        txns.append(withdraw_aura)
+        for transactable in withdraw_balancer:
+            txns.append(transactable)
 
         return txns

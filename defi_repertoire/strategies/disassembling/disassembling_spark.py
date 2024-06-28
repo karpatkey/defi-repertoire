@@ -28,6 +28,7 @@ class Exit1:
     op_type = RedeemOperation  #
     kind = "disassembly"
     protocol = "spark"
+    name = "exit_1"
 
     @classmethod
     def get_txns(
@@ -35,7 +36,7 @@ class Exit1:
     ) -> list[Transactable]:
         exit_sdai = spark.RedeemSDAIforDAI(
             blockchain=ctx.blockchain,
-            amount=arguments["amount"],
+            amount=arguments.amount,
             avatar=ctx.avatar_safe_address,
         )
         return [exit_sdai]
@@ -51,13 +52,14 @@ class Exit2:
     op_type = SwapOperation
     kind = "disassembly"
     protocol = "spark"
+    name = "exit_2"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountWithSlippageArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        amount = arguments.amount
 
         if "anvil" in ctx.w3.client_version:
             fork = True

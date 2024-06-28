@@ -1,7 +1,8 @@
 from collections import defaultdict
-from typing import NewType, TypedDict
+from typing import NewType, TypedDict, get_type_hints, Protocol, Any
 
 from eth_typing import Address, ChecksumAddress, AnyAddress
+from pydantic import BaseModel
 from web3 import Web3
 
 from defabipedia import Chain
@@ -25,29 +26,72 @@ class GenericTxContext:
         self.ctx = defaultdict(dict)
 
 
-class StrategyAmountArguments(TypedDict):
+class Strategy(Protocol):
+    """
+    This is the protocol specification reference for Strategy classes.
+    """
+    kind: str
+    protocol: str
+    name: str
+
+    @classmethod
+    def get_txns(cls, ctx: GenericTxContext, arguments: BaseModel) -> list[Transactable]:
+        ...
+
+
+class StrategyDefinitionModel(BaseModel):
+    """
+    Strategy model to serialize and deserialize a Strategy
+    """
+    kind: str
+    protocol: str
+    name: str
+    id: str
+    arguments: dict[str, Any]
+
+
+class StrategyAmountArguments(BaseModel):
     amount: int
 
 
-class StrategyAmountWithSlippageArguments(TypedDict):
+class StrategyAmountWithSlippageArguments(BaseModel):
     amount: int
     max_slippage: float
 
 
-class SwapArguments(TypedDict):
+class SwapArguments(BaseModel):
     token_in_address: AnyAddress
     token_out_address: AnyAddress
     amount: int
     max_slippage: float
 
 
-STRATEGIES = []
-
+STRATEGIES = {}
 
 def _register_strategy(strategy):
-    STRATEGIES.append(strategy)
-
+    STRATEGIES[get_strategy_id(strategy)] = strategy
 
 def register(cls):
     _register_strategy(cls)
     return cls
+
+
+def get_strategy_arguments_type(strategy):
+    return get_type_hints(strategy.get_txns)["arguments"]
+
+
+def get_strategy_id(strategy):
+    return f"{strategy.protocol}__{strategy.name}"
+
+def get_strategy_by_id(strategy_id):
+
+    return
+
+def strategy_as_dict(strategy):
+    data = StrategyDefinitionModel(
+        kind=strategy.kind,
+        protocol=strategy.protocol,
+        name=strategy.name,
+        id=get_strategy_id(strategy),
+        arguments=get_strategy_arguments_type(strategy).model_json_schema())
+    return data

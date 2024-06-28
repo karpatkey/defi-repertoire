@@ -154,15 +154,16 @@ class SwapCowswap:
     op_type = SwapOperation
     kind = "swap"
     protocol = "cowswap"
+    name = "swap"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: SwapArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        token_in = arguments["token_in_address"]
-        token_out = arguments["token_out_address"]
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        token_in = arguments.token_in_address
+        token_out = arguments.token_out_address
+        amount = arguments.amount
 
         txns = []
 
@@ -204,15 +205,16 @@ class SwapBalancer:
     op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
+    name = "swap"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: SwapArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        token_in = arguments["token_in_address"]
-        token_out = arguments["token_out_address"]
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        token_in = arguments.token_in_address
+        token_out = arguments.token_out_address
+        amount = arguments.amount
 
         txns = []
 
@@ -261,15 +263,16 @@ class SwapOnCurve:
     op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
+    name = "swap"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: SwapArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        token_in = arguments["token_in_address"]
-        token_out = arguments["token_out_address"]
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        token_in = arguments.token_in_address
+        token_out = arguments.token_out_address
+        amount = arguments.amount
 
         txns = []
 
@@ -320,15 +323,16 @@ class SwapUniswapV3:
     op_type = SwapOperation
     kind = "swap"
     protocol = "uniswapv3"
+    name = "swap"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: SwapArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        token_in = arguments["token_in_address"]
-        token_out = arguments["token_out_address"]
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        token_in = arguments.token_in_address
+        token_out = arguments.token_out_address
+        amount = arguments.amount
 
         txns = []
 

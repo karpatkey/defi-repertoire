@@ -52,13 +52,14 @@ class LidoUnstakeStETH:
     op_type = UnstakeOperation
     kind = "disassembly"
     protocol = "lido"
+    name = "unstake_stETH"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountArguments
     ) -> list[Transactable]:
         txns = []
-        amount_to_redeem = arguments["amount"]
+        amount_to_redeem = arguments.amount
         chunk_amount = amount_to_redeem
         if chunk_amount > 1000_000_000_000_000_000_000:
             chunks = []
@@ -97,6 +98,7 @@ class LidoUnwrapAndUnstakeWstETH:
     op_type = UnwrapOperation
     kind = "disassembly"
     protocol = "lido"
+    name = "unwrap_and_unstake_wstETH"
 
     @classmethod
     def get_txns(
@@ -108,7 +110,7 @@ class LidoUnwrapAndUnstakeWstETH:
         amount_for_list = contract.functions.getWstETHByStETH(
             1_000_000_000_000_000_000_000
         ).call()  # just to be safe that the chunk size is too big
-        amount_to_redeem = arguments["amount"]
+        amount_to_redeem = arguments.amount
         chunk_amount = amount_to_redeem
         if chunk_amount > amount_for_list:
             chunks = []
@@ -144,14 +146,15 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
     kind = "disassembly"
     protocol = "lido"
     op_type = SwapOperation
+    name = "swap_stETH_for_ETH"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountWithSlippageArguments
     ) -> list[Transactable]:
 
-        max_slippage = arguments["max_slippage"] / 100
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        amount = arguments.amount
 
         if amount == 0:
             return []
