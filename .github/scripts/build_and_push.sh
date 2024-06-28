@@ -37,4 +37,7 @@ docker run --rm -v $(pwd):/workspace -v $(pwd)/kaniko/.cache:/cache -v $(pwd)/ka
   --compressed-caching=true \
   --cache-repo="$DOCKER_IMAGE_NAME"
 
-echo "Image pushed to registry: $DOCKER_TAG"
+echo "Image pushed to registry: $DOCKER_TAG_WITH_DATE"
+
+# Save the latest image tag to a file
+echo "$DOCKER_TAG_WITH_DATE" > latest_image.txt
