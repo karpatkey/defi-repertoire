@@ -6,7 +6,6 @@ from roles_royce.protocols.eth import maker
 
 from ..base import (
     GenericTxContext,
-    WithdrawOperation,
     register,
     StrategyAmountArguments,
 )
@@ -30,7 +29,6 @@ def get_amount_to_redeem(
 class WithdrawWithProxy:
     """Withdraw DSR tokens from DSR with proxy."""
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "dsr"
     name = "withdraw_with_proxy"
@@ -56,7 +54,6 @@ class WithdrawWithProxy:
 class WithdrawWithoutProxy:
     """Withdraw funds from DSR without proxy."""
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "dsr"
     name = "withdraw_without_proxy"

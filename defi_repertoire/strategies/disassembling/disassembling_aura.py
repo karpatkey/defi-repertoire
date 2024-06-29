@@ -2,12 +2,11 @@ from decimal import Decimal
 
 from defabipedia.aura import Abis
 from pydantic import BaseModel
-from web3.types import ChecksumAddress
 
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import aura
 
-from ..base import GenericTxContext, WithdrawOperation, Amount, ChecksumAddress, Percentage
+from ..base import GenericTxContext, Amount, ChecksumAddress, Percentage
 from . import disassembling_balancer as balancer
 from defi_repertoire.strategies import register
 
@@ -61,7 +60,6 @@ def aura_to_bpt_address(
 class Withdraw:
     """Withdraw funds from Aura."""
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "aura"
     name = "exit_1"
@@ -88,7 +86,6 @@ class Withdraw2:
     (not used for pools in recovery mode!).
     """
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "aura"
     name = "exit_2_1"
@@ -130,7 +127,6 @@ class Exit22:
     token index.
     """
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "aura"
     name = "exit_2_2"
@@ -170,20 +166,12 @@ class Exit22:
         return txns
 
 
-# Original Contracts Payloads [(Withdraw, Allow, ...)]
-
-# Multisend()
-
-# Roles Modifier Contract (Roles: execTransactionWithRole, role, role_mod_address) -> execution_service
-
-
 @register
 class Exit23:
     """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way when
     pool is in recovery mode.
     """
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "aura"
     name = "exit_2_3"

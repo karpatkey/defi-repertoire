@@ -8,9 +8,6 @@ from roles_royce.protocols.eth import lido
 
 from ..base import (
     GenericTxContext,
-    SwapOperation,
-    UnstakeOperation,
-    UnwrapOperation,
     StrategyAmountArguments,
     StrategyAmountWithSlippageArguments,
     register,
@@ -49,7 +46,6 @@ class LidoUnstakeStETH:
     Unstakes stETH from Lido
     """
 
-    op_type = UnstakeOperation
     kind = "disassembly"
     protocol = "lido"
     name = "unstake_stETH"
@@ -95,7 +91,6 @@ class LidoUnwrapAndUnstakeWstETH:
     Unwraps wstETH and unstakes for ETH on Lido
     """
 
-    op_type = UnwrapOperation
     kind = "disassembly"
     protocol = "lido"
     name = "unwrap_and_unstake_wstETH"
@@ -145,7 +140,6 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
 
     kind = "disassembly"
     protocol = "lido"
-    op_type = SwapOperation
     name = "swap_stETH_for_ETH"
 
     @classmethod

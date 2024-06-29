@@ -10,14 +10,6 @@ from defabipedia import Chain
 from roles_royce import Transactable
 from roles_royce.utils import to_checksum_address
 
-BlockOperation = NewType("BlockOperation", str)
-SwapOperation = NewType("SwapOperation", BlockOperation)
-WithdrawOperation = NewType("WithdrawOperation", BlockOperation)
-UnstakeOperation = NewType("UnstakeOperation", BlockOperation)
-UnwrapOperation = NewType("UnwrapOperation", BlockOperation)
-RedeemOperation = NewType("RedeemOperation", BlockOperation)
-TransactableChain = NewType("TransactableChain", list[Transactable])
-
 Amount = Annotated[int, Field(gt=0)]
 Percentage = Annotated[float, Field(ge=0, le=100)]
 

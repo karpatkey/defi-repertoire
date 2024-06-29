@@ -7,8 +7,6 @@ from roles_royce.protocols import cowswap
 
 from ..base import (
     GenericTxContext,
-    SwapOperation,
-    RedeemOperation,
     register,
     StrategyAmountArguments,
     StrategyAmountWithSlippageArguments,
@@ -25,7 +23,6 @@ def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) 
 class Exit1:
     """Withdraw funds from Spark with proxy."""
 
-    op_type = RedeemOperation  #
     kind = "disassembly"
     protocol = "spark"
     name = "exit_1"
@@ -49,7 +46,6 @@ class Exit2:
     the Cow's order API and creates the sign_order transaction.
     """
 
-    op_type = SwapOperation
     kind = "disassembly"
     protocol = "spark"
     name = "exit_2"

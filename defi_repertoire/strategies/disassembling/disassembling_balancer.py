@@ -9,7 +9,7 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols import balancer
 #from roles_royce.protocols.base import Address
 
-from ..base import GenericTxContext, WithdrawOperation, register, Amount, Percentage, ChecksumAddress
+from ..base import GenericTxContext, register, Amount, Percentage, ChecksumAddress
 
 
 class Exit11ArgumentElement(BaseModel):
@@ -80,7 +80,6 @@ class WithdrawAllAssetsProportional:
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
     """
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "balancer"
     name = "withdraw_all_assets_proportional"
@@ -132,7 +131,6 @@ class WithdrawSingle:
     Withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
     """
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "balancer"
     name = "withdraw_single"
@@ -188,7 +186,6 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
     """
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "balancer"
     name = "withdraw_all_assets_proportional_pools_in_recovery"
@@ -236,7 +233,6 @@ class Exit21:
     in proportional way (not used for pools in recovery mode!).
     """
 
-    op_type = WithdrawOperation  # unstake ? ??
     kind = "disassembly"
     protocol = "balancer"
     name = "exit_2_1"
@@ -285,7 +281,6 @@ class Exit22:
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
     """
 
-    op_type = WithdrawOperation  # unstake ? ??
     kind = "disassembly"
     protocol = "balancer"
     name = "exit_2_2"
@@ -337,7 +332,6 @@ class Exit23:
     in proportional way for pools in recovery mode.
     """
 
-    op_type = WithdrawOperation  # unstake ? ??
     kind = "disassembly"
     protocol = "balancer"
     name = "exit_2_3"

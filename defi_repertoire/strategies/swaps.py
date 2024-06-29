@@ -23,7 +23,6 @@ from roles_royce.protocols.swap_pools.swap_methods import (
 )
 from defi_repertoire.strategies.base import (
     GenericTxContext,
-    SwapOperation,
     register,
     SwapArguments,
 )
@@ -151,7 +150,6 @@ def get_quote(
 class SwapCowswap:
     """Make a swap on CowSwap with best amount out"""
 
-    op_type = SwapOperation
     kind = "swap"
     protocol = "cowswap"
     name = "swap"
@@ -202,7 +200,6 @@ class SwapCowswap:
 class SwapBalancer:
     """Make a swap on Balancer with best amount out."""
 
-    op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
     name = "swap"
@@ -260,7 +257,6 @@ class SwapBalancer:
 class SwapOnCurve:
     """Make a swap on Curve with best amount out"""
 
-    op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
     name = "swap"
@@ -320,7 +316,6 @@ class SwapOnCurve:
 class SwapUniswapV3:
     """Make a swap on UniswapV3 with best amount out."""
 
-    op_type = SwapOperation
     kind = "swap"
     protocol = "uniswapv3"
     name = "swap"
