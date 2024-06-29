@@ -56,6 +56,7 @@ class StrategyDefinitionModel(BaseModel):
     protocol: str
     name: str
     id: str
+    description: str
     arguments: dict[str, Any]
 
 
@@ -102,5 +103,7 @@ def strategy_as_dict(strategy):
         protocol=strategy.protocol,
         name=strategy.name,
         id=get_strategy_id(strategy),
-        arguments=get_strategy_arguments_type(strategy).model_json_schema())
+        arguments=get_strategy_arguments_type(strategy).model_json_schema(),
+        description=str.strip(strategy.__doc__)
+    )
     return data
