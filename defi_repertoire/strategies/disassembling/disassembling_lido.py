@@ -156,9 +156,6 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
         max_slippage = arguments.max_slippage / 100
         amount = arguments.amount
 
-        if amount == 0:
-            return []
-
         if "anvil" in ctx.w3.client_version:
             fork = True
         else:

@@ -7,51 +7,50 @@ from web3.exceptions import ContractLogicError
 
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols import balancer
-from roles_royce.protocols.base import Address
-from roles_royce.utils import to_checksum_address
+#from roles_royce.protocols.base import Address
 
-from ..base import GenericTxContext, WithdrawOperation, register
+from ..base import GenericTxContext, WithdrawOperation, register, Amount, Percentage, ChecksumAddress
 
 
 class Exit11ArgumentElement(BaseModel):
-    bpt_address: str
-    max_slippage: float
-    amount: int
+    bpt_address: ChecksumAddress
+    max_slippage: Percentage
+    amount: Amount
 
 
 class Exit12ArgumemntElement(BaseModel):
-    bpt_address: str
-    max_slippage: float
-    token_out_address: str
-    amount: int
+    bpt_address: ChecksumAddress
+    max_slippage: Percentage
+    token_out_address: ChecksumAddress
+    amount: Amount
 
 
 class Exit13ArgumentElement(BaseModel):
-    bpt_address: str
-    amount: int
+    bpt_address: ChecksumAddress
+    amount: Amount
 
 
 class Exit21ArgumentElement(BaseModel):
-    gauge_address: str
-    max_slippage: float
-    amount: int
+    gauge_address: ChecksumAddress
+    max_slippage: Percentage
+    amount: Amount
 
 
 class Exit22ArgumentElement(BaseModel):
-    gauge_address: str
-    max_slippage: float
-    token_out_address: str
-    amount: int
+    gauge_address: ChecksumAddress
+    max_slippage: Percentage
+    token_out_address: ChecksumAddress
+    amount: Amount
 
 
 class Exit23ArgumentElement(BaseModel):
-    gauge_address: str
-    max_slippage: float
-    amount: int
+    gauge_address: ChecksumAddress
+    max_slippage: Percentage
+    amount: Amount
 
 
 def get_bpt_amount_to_redeem_from_gauge(
-        ctx: GenericTxContext, gauge_address: Address, fraction: float | Decimal
+        ctx: GenericTxContext, gauge_address: ChecksumAddress, fraction: float | Decimal
 ) -> int:
     gauge_contract = ctx.w3.eth.contract(
         address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi
@@ -63,7 +62,7 @@ def get_bpt_amount_to_redeem_from_gauge(
 
 
 def get_bpt_amount_to_redeem(
-        ctx: GenericTxContext, bpt_address: Address, fraction: float | Decimal
+        ctx: GenericTxContext, bpt_address: ChecksumAddress, fraction: float | Decimal
 ) -> int:
     bpt_contract = ctx.w3.eth.contract(
         address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
@@ -93,11 +92,9 @@ class WithdrawAllAssetsProportional:
 
         txns = []
 
-        bpt_address = to_checksum_address(arguments.bpt_address)
+        bpt_address = arguments.bpt_address
         max_slippage = arguments.max_slippage / 100
         amount = arguments.amount
-        if amount == 0:
-            return txns
 
         bpt_contract = ctx.w3.eth.contract(
             address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
@@ -149,13 +146,11 @@ class WithdrawSingle:
 
         txns = []
 
-        bpt_address = to_checksum_address(arguments.bpt_address)
+        bpt_address = arguments.bpt_address
         max_slippage = arguments.max_slippage / 100
-        token_out_address = to_checksum_address(arguments.token_out_address)
+        token_out_address = arguments.token_out_address
         amount = arguments.amount
 
-        if amount == 0:
-            return txns
         bpt_contract = ctx.w3.eth.contract(
             address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
         )
@@ -206,10 +201,8 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
     ) -> list[Transactable]:
 
         txns = []
-        bpt_address = to_checksum_address(arguments.bpt_address)
+        bpt_address = arguments.bpt_address
         amount = arguments.amount
-        if amount == 0:
-            return txns
 
         bpt_contract = ctx.w3.eth.contract(
             address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
@@ -254,11 +247,9 @@ class Exit21:
     ) -> list[Transactable]:
 
         txns = []
-        gauge_address = to_checksum_address(arguments.gauge_address)
+        gauge_address = arguments.gauge_address
         max_slippage = arguments.max_slippage / 100
         amount = arguments.amount
-        if amount == 0:
-            return txns
 
         unstake_gauge = balancer.UnstakeFromGauge(
             blockchain=ctx.blockchain,
@@ -306,11 +297,9 @@ class Exit22:
 
         txns = []
 
-        gauge_address = to_checksum_address(arguments.gauge_address)
-        token_out_address = to_checksum_address(arguments.token_out_address)
+        gauge_address = arguments.gauge_address
+        token_out_address = arguments.token_out_address
         amount = arguments.amount
-        if amount == 0:
-            return txns
 
         max_slippage = arguments.max_slippage / 100
 
@@ -359,11 +348,8 @@ class Exit23:
     ) -> list[Transactable]:
         txns = []
 
-        gauge_address = to_checksum_address(arguments.gauge_address)
+        gauge_address = arguments.gauge_address
         amount = arguments.amount
-
-        if amount == 0:
-            return []
 
         unstake_gauge = balancer.Unstake(
             w3=ctx.w3, gauge_address=gauge_address, amount=amount

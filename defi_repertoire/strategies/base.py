@@ -1,8 +1,9 @@
 from collections import defaultdict
-from typing import NewType, TypedDict, get_type_hints, Protocol, Any
+from typing import NewType, TypedDict, get_type_hints, Protocol, Any, Annotated
 
-from eth_typing import Address, ChecksumAddress, AnyAddress
-from pydantic import BaseModel
+from eth_utils.address import is_checksum_formatted_address
+from pydantic import BaseModel, Field, ValidationError
+from pydantic.functional_validators import AfterValidator
 from web3 import Web3
 
 from defabipedia import Chain
@@ -17,9 +18,25 @@ UnwrapOperation = NewType("UnwrapOperation", BlockOperation)
 RedeemOperation = NewType("RedeemOperation", BlockOperation)
 TransactableChain = NewType("TransactableChain", list[Transactable])
 
+Amount = Annotated[int, Field(gt=0)]
+Percentage = Annotated[float, Field(ge=0, le=100)]
+
+
+def validate_checksum_address(address: str):
+    length = 42
+    assert address.startswith("0x"), f"Address '{address}' must start with 0x"
+    assert len(address) == length, f"Address '{address}' must be of length {length}"
+    checksumed = to_checksum_address(address)
+    if is_checksum_formatted_address(address):
+        assert checksumed == address, f"Wrong address checksum for address: {address}"
+    return checksumed
+
+
+ChecksumAddress = Annotated[str, AfterValidator(validate_checksum_address)]
+
 
 class GenericTxContext:
-    def __init__(self, w3: Web3, avatar_safe_address: AnyAddress):
+    def __init__(self, w3: Web3, avatar_safe_address: ChecksumAddress):
         self.w3 = w3
         self.avatar_safe_address = to_checksum_address(avatar_safe_address)
         self.blockchain = Chain.get_blockchain_from_web3(self.w3)
@@ -51,19 +68,19 @@ class StrategyDefinitionModel(BaseModel):
 
 
 class StrategyAmountArguments(BaseModel):
-    amount: int
+    amount: Amount
 
 
 class StrategyAmountWithSlippageArguments(BaseModel):
-    amount: int
-    max_slippage: float
+    amount: Amount
+    max_slippage: Percentage
 
 
 class SwapArguments(BaseModel):
-    token_in_address: AnyAddress
-    token_out_address: AnyAddress
-    amount: int
-    max_slippage: float
+    token_in_address: ChecksumAddress
+    token_out_address: ChecksumAddress
+    amount: Amount
+    max_slippage: Percentage
 
 
 STRATEGIES = {}

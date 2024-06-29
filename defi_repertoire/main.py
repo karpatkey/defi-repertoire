@@ -11,6 +11,7 @@ from defi_repertoire.strategies.base import (
     STRATEGIES,
     get_strategy_arguments_type,
     strategy_as_dict,
+    ChecksumAddress
 )
 from defi_repertoire.strategies import disassembling, swaps
 from roles_royce.generic_method import Operation
@@ -37,7 +38,7 @@ class StrategyCall(BaseModel):
 
 
 class TransactableData(BaseModel):
-    contract_address: str
+    contract_address: ChecksumAddress
     data: str
     operation: Operation
     value: int
@@ -79,12 +80,13 @@ def list_strategies():
 
 
 @app.post(f"/strategy/txns/")
-def txns(
+def strategy_transactions(
     blockchain: BlockchainOption,
-    avatar_safe_address: str,
+    avatar_safe_address: ChecksumAddress,
     strategy_calls: list[StrategyCall],
     multisend: bool = False
 ):
+
     blockchain = Chain.get_blockchain_by_name(blockchain)
     w3 = get_endpoint_for_blockchain(blockchain)
     ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
@@ -119,7 +121,7 @@ def multisend(blockchain: BlockchainOption, txns: list[TransactableData]):
 # roles mod contract, and a role number
 def txns(
     blockchain: BlockchainOption,
-    avatar_safe_address: str,
+    avatar_safe_address: ChecksumAddress,
     strategy_calls: list[StrategyCall],
     role_mod_contract,
     role,
@@ -153,7 +155,7 @@ for strategy_id, strategy in STRATEGIES.items():
         # @app.get(url)
         @app.post(url, description=strategy.__doc__)
         def transaction_data(
-            blockchain: BlockchainOption, avatar_safe_address: str, arguments: arg_type
+            blockchain: BlockchainOption, avatar_safe_address: ChecksumAddress, arguments: arg_type
         ):
             blockchain = Chain.get_blockchain_by_name(blockchain)
             strategy = STRATEGIES_BY_PROTOCOL_AND_NAME.get(protocol).get(strategy_name)
