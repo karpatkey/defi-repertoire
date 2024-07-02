@@ -15,6 +15,9 @@ from defi_repertoire.strategies.base import (
 )
 from defi_repertoire.strategies import disassembling, swaps
 from roles_royce.generic_method import Operation
+from roles_royce.protocols.roles_modifier.contract_methods import (
+    get_exec_transaction_with_role_method,
+)
 from roles_royce.utils import multi_or_one
 from defabipedia.types import Chain, Blockchain
 from web3 import Web3
@@ -129,10 +132,6 @@ def strategies_to_exec_with_role(
     blockchain = Chain.get_blockchain_by_name(blockchain)
     txns = strategies_to_transactions(blockchain, avatar_safe_address, strategy_calls)
     txn = multi_or_one(txs=txns, blockchain=blockchain)
-    from roles_royce.protocols.roles_modifier.contract_methods import (
-        get_exec_transaction_with_role_method,
-    )
-
     role_method = get_exec_transaction_with_role_method(
         roles_mod_address=roles_mod_address,
         operation=txn.operation,
