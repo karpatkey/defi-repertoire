@@ -1,25 +1,32 @@
-FROM debian:12-slim
+# Build Stage
+FROM python:3.11-alpine3.19 AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-COPY requirements.txt .
+WORKDIR /build
 
-RUN apt-get update \
-    && apt-get install -qq -y --no-install-recommends \
-                        git \
-                        python3 \
-                        python3-dev \
-                        python3-pip \
-                        build-essential \
-                        gcc \
-    && pip install --break-system-packages -r requirements.txt \
-    && apt-get autoremove -qq -y gcc build-essential python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy only the necessary files for building
+
+# Install build dependencies and compile
+RUN apk --no-cache add git gcc musl-dev libffi-dev bash
+
+COPY requirements.txt .
+# COPY pyproject.toml .
+
+RUN pip install -r requirements.txt
+
+COPY . .
+
+# Final Stage
+FROM python:3.11-alpine3.19
 
 WORKDIR /app
 
-EXPOSE 8000
+# Copy the installed code from the build stage
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+COPY defi_repertoire ./defi_repertoire
 
-COPY defi_repertoire rolesapi
+ENV PYTHONPATH=.
 
-CMD ["uvicorn", "rolesapi.main:app", "--workers", "4"]
+CMD ["uvicorn", "defi_repertoire.main:app", "--workers", "4"]
