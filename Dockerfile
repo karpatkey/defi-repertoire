@@ -28,5 +28,6 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY defi_repertoire ./defi_repertoire
 
 ENV PYTHONPATH=.
+ENV PORT=8000
 
-CMD ["uvicorn", "defi_repertoire.main:app", "--workers", "4"]
+CMD uvicorn defi_repertoire.main:app --workers=4 --host=0.0.0.0 --port=${PORT} --loop=asyncio --no-use-colors
