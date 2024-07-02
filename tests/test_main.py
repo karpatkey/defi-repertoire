@@ -19,7 +19,7 @@ def test_read_main():
 
 
 def test_list_strategies():
-    response = client.get("/strategy/list")
+    response = client.get("/strategies")
     assert response.status_code == 200, response.text
 
     first_strategy = response.json()["strategies"][0]
@@ -33,7 +33,7 @@ def test_list_strategies():
 def test_multiple_strategies():
     with patch.object(Chain, "get_blockchain_from_web3", lambda x: Chain.ETHEREUM):
         response = client.post(
-            "/strategy/txns/?"
+            "/strategies-to-transactions/?"
             "blockchain=ethereum&"
             "avatar_safe_address=0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF&",
             json=[
@@ -64,7 +64,7 @@ def test_multiple_strategies():
 
         # Using multisend
         response = client.post(
-            "/strategy/txns/?"
+            "/strategies-to-transactions/?"
             "blockchain=ethereum&"
             "avatar_safe_address=0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF&"
             "multisend=true",
@@ -86,6 +86,33 @@ def test_multiple_strategies():
                     "value": 0,
                 }
             ]
+        }
+
+
+def test_exec_with_role():
+    with patch.object(Chain, "get_blockchain_from_web3", lambda x: Chain.ETHEREUM):
+        response = client.post(
+            "/strategies-to-exec-with-role/?"
+            "blockchain=ethereum&"
+            "avatar_safe_address=0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF&"
+            "roles_mod_address=0x8C33ee6E439C874713a9912f3D3debfF1Efb90Da&"
+            "role=1",
+            json=[
+                {
+                    "id": "dsr__withdraw_without_proxy",
+                    "arguments": {
+                        "amount": 10,
+                    },
+                }
+            ],
+        )
+        assert response.json() == {
+            "txn": {
+                "contract_address": "0x8C33ee6E439C874713a9912f3D3debfF1Efb90Da",
+                "data": "0xc6fe8747000000000000000000000000a238cbeb142c10ef7ad8442c6d1f9e89e07e7761000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000013100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000001848d80ff0a00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000132006b175474e89094c44da98b954eedeac495271d0f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044095ea7b3000000000000000000000000373238337bfe1146fb49989fc222523f83081ddb000000000000000000000000000000000000000000000000000000000000000a00373238337bfe1146fb49989fc222523f83081ddb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044ef693bed0000000000000000000000008353157092ed8be69a9df8f95af097bbf33cb2af000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                "operation": 0,
+                "value": 0,
+            }
         }
 
 
@@ -172,7 +199,7 @@ def test_multisend():
         ctract = "0xCB664132622f29943f67FA56CCfD1e24CC8B4995"
 
         response = client.post(
-            "/multisend/?" "blockchain=ethereum",
+            "/multisend-transactions/?" "blockchain=ethereum",
             json=[
                 {
                     "contract_address": ctract,
