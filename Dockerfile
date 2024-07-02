@@ -20,6 +20,6 @@ WORKDIR /app
 
 EXPOSE 8000
 
-COPY defi_repertoire rolesapi
+COPY defi_repertoire defi_repertoire
 
-CMD ["uvicorn", "rolesapi.main:app", "--workers", "4"]
+CMD ["uvicorn", "defi_repertoire.main:app", "--workers", "4"]
