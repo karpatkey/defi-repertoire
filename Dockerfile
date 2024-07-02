@@ -27,6 +27,7 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY defi_repertoire ./defi_repertoire
 
+
 ENV PYTHONPATH=.
 ENV PORT=8000
 
