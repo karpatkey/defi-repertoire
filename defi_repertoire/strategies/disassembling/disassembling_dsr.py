@@ -6,7 +6,6 @@ from roles_royce.protocols.eth import maker
 
 from ..base import (
     GenericTxContext,
-    WithdrawOperation,
     register,
     StrategyAmountArguments,
 )
@@ -30,21 +29,20 @@ def get_amount_to_redeem(
 class WithdrawWithProxy:
     """Withdraw DSR tokens from DSR with proxy."""
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "dsr"
+    name = "withdraw_with_proxy"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountArguments
     ) -> list[Transactable]:
         txns = []
-        amount = arguments["amount"]
         proxy_registry = ContractSpecs[ctx.blockchain].ProxyRegistry.contract(ctx.w3)
         proxy_address = proxy_registry.functions.proxies(ctx.avatar_safe_address).call()
 
-        approve_dai = maker.ApproveDAI(spender=proxy_address, amount=amount)
-        exit_dai = maker.ProxyActionExitDsr(proxy=proxy_address, wad=amount)
+        approve_dai = maker.ApproveDAI(spender=proxy_address, amount=arguments.amount)
+        exit_dai = maker.ProxyActionExitDsr(proxy=proxy_address, wad=arguments.amount)
 
         txns.append(approve_dai)
         txns.append(exit_dai)
@@ -56,21 +54,20 @@ class WithdrawWithProxy:
 class WithdrawWithoutProxy:
     """Withdraw funds from DSR without proxy."""
 
-    op_type = WithdrawOperation
     kind = "disassembly"
     protocol = "dsr"
+    name = "withdraw_without_proxy"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountArguments
     ) -> list[Transactable]:
         txns = []
-        amount = arguments["amount"]
         dsr_manager_address = (
             ContractSpecs[ctx.blockchain].DsrManager.contract(ctx.w3).address
         )
-        approve_dai = maker.ApproveDAI(spender=dsr_manager_address, amount=amount)
-        exit_dai = maker.ExitDsr(avatar=ctx.avatar_safe_address, wad=amount)
+        approve_dai = maker.ApproveDAI(spender=dsr_manager_address, amount=arguments.amount)
+        exit_dai = maker.ExitDsr(avatar=ctx.avatar_safe_address, wad=arguments.amount)
 
         txns.append(approve_dai)
         txns.append(exit_dai)

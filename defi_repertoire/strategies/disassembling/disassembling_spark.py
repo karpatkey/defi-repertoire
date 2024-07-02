@@ -7,8 +7,6 @@ from roles_royce.protocols import cowswap
 
 from ..base import (
     GenericTxContext,
-    SwapOperation,
-    RedeemOperation,
     register,
     StrategyAmountArguments,
     StrategyAmountWithSlippageArguments,
@@ -25,9 +23,9 @@ def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) 
 class Exit1:
     """Withdraw funds from Spark with proxy."""
 
-    op_type = RedeemOperation  #
     kind = "disassembly"
     protocol = "spark"
+    name = "exit_1"
 
     @classmethod
     def get_txns(
@@ -35,7 +33,7 @@ class Exit1:
     ) -> list[Transactable]:
         exit_sdai = spark.RedeemSDAIforDAI(
             blockchain=ctx.blockchain,
-            amount=arguments["amount"],
+            amount=arguments.amount,
             avatar=ctx.avatar_safe_address,
         )
         return [exit_sdai]
@@ -48,16 +46,16 @@ class Exit2:
     the Cow's order API and creates the sign_order transaction.
     """
 
-    op_type = SwapOperation
     kind = "disassembly"
     protocol = "spark"
+    name = "exit_2"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountWithSlippageArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        amount = arguments.amount
 
         if "anvil" in ctx.w3.client_version:
             fork = True

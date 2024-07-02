@@ -23,7 +23,6 @@ from roles_royce.protocols.swap_pools.swap_methods import (
 )
 from defi_repertoire.strategies.base import (
     GenericTxContext,
-    SwapOperation,
     register,
     SwapArguments,
 )
@@ -151,18 +150,18 @@ def get_quote(
 class SwapCowswap:
     """Make a swap on CowSwap with best amount out"""
 
-    op_type = SwapOperation
     kind = "swap"
     protocol = "cowswap"
+    name = "swap"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: SwapArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        token_in = arguments["token_in_address"]
-        token_out = arguments["token_out_address"]
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        token_in = arguments.token_in_address
+        token_out = arguments.token_out_address
+        amount = arguments.amount
 
         txns = []
 
@@ -201,18 +200,18 @@ class SwapCowswap:
 class SwapBalancer:
     """Make a swap on Balancer with best amount out."""
 
-    op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
+    name = "swap"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: SwapArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        token_in = arguments["token_in_address"]
-        token_out = arguments["token_out_address"]
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        token_in = arguments.token_in_address
+        token_out = arguments.token_out_address
+        amount = arguments.amount
 
         txns = []
 
@@ -258,18 +257,18 @@ class SwapBalancer:
 class SwapOnCurve:
     """Make a swap on Curve with best amount out"""
 
-    op_type = SwapOperation
     kind = "swap"
     protocol = "balancer"
+    name = "swap"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: SwapArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        token_in = arguments["token_in_address"]
-        token_out = arguments["token_out_address"]
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        token_in = arguments.token_in_address
+        token_out = arguments.token_out_address
+        amount = arguments.amount
 
         txns = []
 
@@ -317,18 +316,18 @@ class SwapOnCurve:
 class SwapUniswapV3:
     """Make a swap on UniswapV3 with best amount out."""
 
-    op_type = SwapOperation
     kind = "swap"
     protocol = "uniswapv3"
+    name = "swap"
 
     @classmethod
     def get_txns(
         cls, ctx: GenericTxContext, arguments: SwapArguments
     ) -> list[Transactable]:
-        max_slippage = arguments["max_slippage"] / 100
-        token_in = arguments["token_in_address"]
-        token_out = arguments["token_out_address"]
-        amount = arguments["amount"]
+        max_slippage = arguments.max_slippage / 100
+        token_in = arguments.token_in_address
+        token_out = arguments.token_out_address
+        amount = arguments.amount
 
         txns = []
 

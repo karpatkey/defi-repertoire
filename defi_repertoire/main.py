@@ -2,24 +2,46 @@ from collections import defaultdict
 import dataclasses
 import enum
 import os
-from typing import get_type_hints
+
 from fastapi import FastAPI
-from defi_repertoire.strategies.base import GenericTxContext, STRATEGIES
+from pydantic import BaseModel
+
+from defi_repertoire.strategies.base import (
+    GenericTxContext,
+    STRATEGIES,
+    get_strategy_arguments_type,
+    strategy_as_dict,
+    ChecksumAddress
+)
 from defi_repertoire.strategies import disassembling, swaps
-from roles_royce.generic_method import TxData
+from roles_royce.generic_method import Operation
 from roles_royce.utils import multi_or_one
 from defabipedia.types import Chain, Blockchain
 from web3 import Web3
 
-Protocols = enum.StrEnum("Protocols", {s.protocol: s.protocol for s in STRATEGIES})
-StrategyKinds = enum.StrEnum("StrategyKinds", {s.kind: s.kind for s in STRATEGIES})
+Protocols = enum.StrEnum(
+    "Protocols", {s.protocol: s.protocol for s in STRATEGIES.values()}
+)
+StrategyKinds = enum.StrEnum(
+    "StrategyKinds", {s.kind: s.kind for s in STRATEGIES.values()}
+)
 BlockchainOption = enum.StrEnum(
     "BlockchainOption", {name: name for name in Chain._by_name.values()}
 )
 
 ENDPOINTS = {Chain.ETHEREUM: [os.getenv("RPC_MAINNET_URL")]}
 
-REGISTERED_OPS = defaultdict(dict)
+
+class StrategyCall(BaseModel):
+    id: str
+    arguments: dict
+
+
+class TransactableData(BaseModel):
+    contract_address: ChecksumAddress
+    data: str
+    operation: Operation
+    value: int
 
 
 def get_endpoint_for_blockchain(blockchain: Blockchain):
@@ -30,25 +52,13 @@ def get_endpoint_for_blockchain(blockchain: Blockchain):
     return Web3(Web3.HTTPProvider(url))
 
 
-def get_transactables(
-    blockchain: Blockchain, protocol, op_name, arguments: dict, avatar_safe_address
-):
-    w3 = get_endpoint_for_blockchain(blockchain)
-    op = REGISTERED_OPS.get(protocol).get(op_name)
-    ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
-    txns = op.get_txns(ctx=ctx, arguments=arguments)
-
-    return [
-        dataclasses.asdict(
-            TxData(
-                operation=txn.operation,
-                data=txn.data,
-                value=txn.value,
-                contract_address=txn.contract_address,
-            )
-        )
-        for txn in txns
-    ]
+def to_transactabledata(transactable):
+    return TransactableData(
+        operation=transactable.operation,
+        data=transactable.data,
+        value=transactable.value,
+        contract_address=transactable.contract_address,
+    )
 
 
 app = FastAPI()
@@ -64,24 +74,73 @@ async def status():
     return {"message": "Ok"}
 
 
-@app.post(f"/multisend/")
-def transaction_data(blockchain: BlockchainOption, txns: list[TxData]):
+@app.get(f"/strategy/list")
+def list_strategies():
+    return {"strategies": [strategy_as_dict(s) for s in STRATEGIES.values()]}
+
+
+@app.post(f"/strategy/txns/")
+def strategy_transactions(
+    blockchain: BlockchainOption,
+    avatar_safe_address: ChecksumAddress,
+    strategy_calls: list[StrategyCall],
+    multisend: bool = False
+):
+
+    blockchain = Chain.get_blockchain_by_name(blockchain)
+    w3 = get_endpoint_for_blockchain(blockchain)
+    ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
+    txns: list[TransactableData] = []
+    for call in strategy_calls:
+        strategy = STRATEGIES[call.id]
+        arguments = get_strategy_arguments_type(strategy)(**call.arguments)
+        strategy_txns = strategy.get_txns(ctx=ctx, arguments=arguments)
+        for txn in strategy_txns:
+            txns.append(
+                TransactableData(
+                    operation=txn.operation,
+                    value=txn.value,
+                    data=txn.data,
+                    contract_address=txn.contract_address,
+                )
+            )
+    if multisend:
+        txns = [multi_or_one(txs=txns, blockchain=blockchain)]
+    return {"txns": txns}
+
+@app.post(f"/multisend/", description="Build one multisend call from multiple Transactables")
+def multisend(blockchain: BlockchainOption, txns: list[TransactableData]):
+    blockchain = Chain.get_blockchain_by_name(blockchain)
+    txn = multi_or_one(txs=txns, blockchain=blockchain)
+    return {"txn": dataclasses.asdict(txn)}
+
+
+# TODO: I still don't understand what is exactly needed about the execTransactionWithRole
+@app.post(f"/build_role_txn/")
+# receives everything and build the payload needed for a later execution step with a specified safe,
+# roles mod contract, and a role number
+def txns(
+    blockchain: BlockchainOption,
+    avatar_safe_address: ChecksumAddress,
+    strategy_calls: list[StrategyCall],
+    role_mod_contract,
+    role,
+):
     blockchain = Chain.get_blockchain_by_name(blockchain)
     txn = multi_or_one(txs=txns, blockchain=blockchain)
 
     return {"txn": dataclasses.asdict(txn)}
 
+# Endpoints for each strategy
+STRATEGIES_BY_PROTOCOL_AND_NAME = defaultdict(dict)
 
-for strategy in STRATEGIES:
-    function = strategy.get_txns
-    function_name = str.lower(strategy.__name__)
-    protocol = strategy.protocol
+for strategy_id, strategy in STRATEGIES.items():
+    strategy_name = strategy.name
     kind = strategy.kind
-    REGISTERED_OPS[protocol][function_name] = strategy
+    arguments_type = get_strategy_arguments_type(strategy)
+    STRATEGIES_BY_PROTOCOL_AND_NAME[strategy.protocol][strategy_name] = strategy
 
-    arguments_type = get_type_hints(function)["arguments"]
-
-    def make_closure(kind, protocol, function_name, arg_type):
+    def make_closure(kind, protocol, strategy_name, arg_type):
         # As exit arguments is a custom type (a dict) and FastAPI does not support complex types
         # in the querystring (https://github.com/tiangolo/fastapi/discussions/7919)
         # We have mainly two options:
@@ -91,21 +150,19 @@ for strategy in STRATEGIES:
         #  3) Just use POST.
         #
         # For the time being the option 3) is implemented
-        url = f"/txns/{kind}/{protocol}/{function_name}/"
+        url = f"/txns/{kind}/{protocol}/{strategy_name}/"
 
         # @app.get(url)
         @app.post(url, description=strategy.__doc__)
         def transaction_data(
-            blockchain: BlockchainOption, avatar_safe_address: str, arguments: arg_type
+            blockchain: BlockchainOption, avatar_safe_address: ChecksumAddress, arguments: arg_type
         ):
             blockchain = Chain.get_blockchain_by_name(blockchain)
-            transactables = get_transactables(
-                blockchain=blockchain,
-                protocol=protocol,
-                avatar_safe_address=avatar_safe_address,
-                op_name=function_name,
-                arguments=arguments,
-            )
-            return {"txns": transactables}
+            strategy = STRATEGIES_BY_PROTOCOL_AND_NAME.get(protocol).get(strategy_name)
+            w3 = get_endpoint_for_blockchain(blockchain)
+            ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
+            txns = strategy.get_txns(ctx=ctx, arguments=arguments)
 
-    make_closure(kind, protocol, function_name, arguments_type)
+            return {"txns": [to_transactabledata(txn) for txn in txns]}
+
+    make_closure(kind, strategy.protocol, strategy.name, arguments_type)
