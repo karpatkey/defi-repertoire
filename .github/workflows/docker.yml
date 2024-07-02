@@ -28,17 +28,3 @@ jobs:
         env:
           DOCKER_IMAGE_NAME: "registry.digitalocean.com/karpatkey/defi-repertoire"
           DOCKERFILE: "./Dockerfile"
-
-  update-deployment:
-    needs: docker
-    runs-on: self-hosted
-    timeout-minutes: 10
-    steps:
-      - uses: tale/kubectl-action@v1
-        with:
-          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
-      - name: Update Deployment
-        run: |
-          LATEST_IMAGE=$(cat latest_image.txt)
-          kubectl set image deployment/defi-repertoire -n defi-repertoire defi-repertoire=${LATEST_IMAGE}
-
