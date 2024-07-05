@@ -80,10 +80,10 @@ def strategies_to_contract_methods(
     blockchain: Blockchain,
     avatar_safe_address: ChecksumAddress,
     strategy_calls: list[StrategyCall],
-):
+) -> list[ContractMethod]:
     w3 = get_endpoint_for_blockchain(blockchain)
     ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
-    txns: list[TransactableData] = []
+    txns = []
     for call in strategy_calls:
         strategy = STRATEGIES[call.id]
         arguments = get_strategy_arguments_type(strategy)(**call.arguments)
