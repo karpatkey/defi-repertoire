@@ -1,4 +1,5 @@
 import enum
+import json
 import os
 from collections import defaultdict
 
@@ -6,6 +7,7 @@ from defabipedia.types import Blockchain, Chain
 from fastapi import FastAPI
 from pydantic import BaseModel, field_serializer
 from roles_royce.generic_method import Operation
+from roles_royce.protocols import ContractMethod
 from roles_royce.protocols.roles_modifier.contract_methods import (
     get_exec_transaction_with_role_method,
 )
@@ -65,7 +67,16 @@ class DecodeNode(BaseModel):
 
     @field_serializer("decoded")
     def serialize_decoded(self, decoded: dict, _info):
-        return Web3.to_json(decoded)
+        # Inefficient way to use the Web3 json normalizers
+        return json.loads(Web3.to_json(decoded))
+
+    @classmethod
+    def from_contract_method(
+        cls, method: ContractMethod, childs: list["DecodeNode"] | None
+    ) -> "DecodeNode":
+        txn = TransactableData.from_transactable(method)
+        decoded = {"name": method.name, "inputs": method.inputs}
+        return cls(txn=txn, decoded=decoded, childs=childs)
 
 
 def get_endpoint_for_blockchain(blockchain: Blockchain):
@@ -143,22 +154,17 @@ def strategies_to_exec_with_role(
         blockchain, avatar_safe_address, strategy_calls
     )
     strategy_decode_nodes = [
-        DecodeNode(
-            txn=TransactableData.from_transactable(method),
-            decoded=method.inputs,
-            childs=None,
-        )
+        DecodeNode.from_contract_method(method, childs=None)
         for method in strategy_methods
     ]
 
     # multisend layer
     multisend_method = multi_or_one(txs=strategy_methods, blockchain=blockchain)
     multisend_txn = TransactableData.from_transactable(multisend_method)
-    multisend_decode_node = DecodeNode(
-        txn=multisend_txn,
-        decoded=multisend_method.inputs,
-        childs=strategy_decode_nodes,
+    multisend_decode_node = DecodeNode.from_contract_method(
+        multisend_method, childs=strategy_decode_nodes
     )
+
     # role layer
     role_method = get_exec_transaction_with_role_method(
         roles_mod_address=roles_mod_address,
@@ -171,8 +177,8 @@ def strategies_to_exec_with_role(
     )
     role_txn = TransactableData.from_transactable(role_method)
     # build the decode tree
-    role_txn_decode_tree = DecodeNode(
-        txn=role_txn, decoded=role_method.inputs, childs=[multisend_decode_node]
+    role_txn_decode_tree = DecodeNode.from_contract_method(
+        role_method, childs=[multisend_decode_node]
     )
     return {"txn": role_txn, "decoded": role_txn_decode_tree}
 
