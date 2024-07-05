@@ -63,7 +63,7 @@ class TransactableData(BaseModel):
 class DecodeNode(BaseModel):
     txn: TransactableData
     decoded: dict
-    childs: list["DecodeNode"] | None
+    children: list["DecodeNode"] | None
 
     @field_serializer("decoded")
     def serialize_decoded(self, decoded: dict, _info):
@@ -72,11 +72,11 @@ class DecodeNode(BaseModel):
 
     @classmethod
     def from_contract_method(
-        cls, method: ContractMethod, childs: list["DecodeNode"] | None
+        cls, method: ContractMethod, children: list["DecodeNode"] | None
     ) -> "DecodeNode":
         txn = TransactableData.from_transactable(method)
         decoded = {"name": method.name, "inputs": method.inputs}
-        return cls(txn=txn, decoded=decoded, childs=childs)
+        return DecodeNode(txn=txn, decoded=decoded, children=children)
 
 
 def get_endpoint_for_blockchain(blockchain: Blockchain):
@@ -154,7 +154,7 @@ def strategies_to_exec_with_role(
         blockchain, avatar_safe_address, strategy_calls
     )
     strategy_decode_nodes = [
-        DecodeNode.from_contract_method(method, childs=None)
+        DecodeNode.from_contract_method(method, children=None)
         for method in strategy_methods
     ]
 
@@ -162,7 +162,7 @@ def strategies_to_exec_with_role(
     multisend_method = multi_or_one(txs=strategy_methods, blockchain=blockchain)
     multisend_txn = TransactableData.from_transactable(multisend_method)
     multisend_decode_node = DecodeNode.from_contract_method(
-        multisend_method, childs=strategy_decode_nodes
+        multisend_method, children=strategy_decode_nodes
     )
 
     # role layer
@@ -178,7 +178,7 @@ def strategies_to_exec_with_role(
     role_txn = TransactableData.from_transactable(role_method)
     # build the decode tree
     role_txn_decode_tree = DecodeNode.from_contract_method(
-        role_method, childs=[multisend_decode_node]
+        role_method, children=[multisend_decode_node]
     )
     return {"txn": role_txn, "decoded": role_txn_decode_tree}
 

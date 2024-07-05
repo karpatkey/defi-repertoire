@@ -108,6 +108,7 @@ def test_exec_with_role():
                 }
             ],
         )
+
         assert response.json() == {
             "txn": {
                 "contract_address": "0x8C33ee6E439C874713a9912f3D3debfF1Efb90Da",
@@ -133,7 +134,7 @@ def test_exec_with_role():
                         "should_revert": True,
                     },
                 },
-                "childs": [
+                "children": [
                     {
                         "txn": {
                             "contract_address": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
@@ -147,7 +148,7 @@ def test_exec_with_role():
                                 "transactions": "0x006b175474e89094c44da98b954eedeac495271d0f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044095ea7b3000000000000000000000000373238337bfe1146fb49989fc222523f83081ddb000000000000000000000000000000000000000000000000000000000000000a00373238337bfe1146fb49989fc222523f83081ddb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044ef693bed0000000000000000000000008353157092ed8be69a9df8f95af097bbf33cb2af000000000000000000000000000000000000000000000000000000000000000a"
                             },
                         },
-                        "childs": [
+                        "children": [
                             {
                                 "txn": {
                                     "contract_address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -162,7 +163,7 @@ def test_exec_with_role():
                                         "amount": 10,
                                     },
                                 },
-                                "childs": None,
+                                "children": None,
                             },
                             {
                                 "txn": {
@@ -178,7 +179,7 @@ def test_exec_with_role():
                                         "wad": 10,
                                     },
                                 },
-                                "childs": None,
+                                "children": None,
                             },
                         ],
                     }
