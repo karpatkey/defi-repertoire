@@ -5,11 +5,10 @@ from eth_account.signers.local import LocalAccount
 from gnosis.eth import EthereumClient, EthereumNetwork
 from gnosis.safe import Safe, addresses
 from hexbytes import HexBytes
-from web3.types import TxParams, TxReceipt
-
 from roles_royce.constants import ETHAddr
 from roles_royce.generic_method import Transactable
 from roles_royce.utils import multi_or_one
+from web3.types import TxParams, TxReceipt
 
 
 class SafeExecutionFailure(Exception):
@@ -22,9 +21,11 @@ class TxResult:
     tx_params: TxParams
     receipt: TxReceipt
 
+
 class SimpleEthereumClient(EthereumClient):
     def __init__(self, w3):
         self.w3 = w3
+
 
 class SimpleSafe(Safe):
     """A simple Safe with one signer to be used in tests"""
@@ -52,7 +53,9 @@ class SimpleSafe(Safe):
 
         for log in receipt["logs"]:
             for topic in log["topics"]:
-                if topic == HexBytes("0x23428b18acfb3ea64b08dc0c1d296ea9c09702c09083ca5272e64d115b687d23"):
+                if topic == HexBytes(
+                    "0x23428b18acfb3ea64b08dc0c1d296ea9c09702c09083ca5272e64d115b687d23"
+                ):
                     raise SafeExecutionFailure()
         return TxResult(tx_hash, safe_tx, receipt)
 
@@ -71,5 +74,7 @@ class SimpleSafe(Safe):
             proxy_factory_address=addresses.PROXY_FACTORIES[network][1][0],
         )
 
-        safe = SimpleSafe(ethereum_tx_sent.contract_address, ethereum_client, signer_key=owner.key)
+        safe = SimpleSafe(
+            ethereum_tx_sent.contract_address, ethereum_client, signer_key=owner.key
+        )
         return safe

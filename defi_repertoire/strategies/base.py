@@ -1,14 +1,13 @@
 from collections import defaultdict
-from typing import NewType, TypedDict, get_type_hints, Protocol, Any, Annotated
+from typing import Annotated, Any, NewType, Protocol, TypedDict, get_type_hints
 
+from defabipedia import Chain
 from eth_utils.address import is_checksum_formatted_address
 from pydantic import BaseModel, Field, ValidationError
 from pydantic.functional_validators import AfterValidator
-from web3 import Web3
-
-from defabipedia import Chain
 from roles_royce import Transactable
 from roles_royce.utils import to_checksum_address
+from web3 import Web3
 
 Amount = Annotated[int, Field(gt=0)]
 Percentage = Annotated[float, Field(ge=0, le=100)]
@@ -39,19 +38,22 @@ class Strategy(Protocol):
     """
     This is the protocol specification reference for Strategy classes.
     """
+
     kind: str
     protocol: str
     name: str
 
     @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: BaseModel) -> list[Transactable]:
-        ...
+    def get_txns(
+        cls, ctx: GenericTxContext, arguments: BaseModel
+    ) -> list[Transactable]: ...
 
 
 class StrategyDefinitionModel(BaseModel):
     """
     Strategy model to serialize and deserialize a Strategy
     """
+
     kind: str
     protocol: str
     name: str
@@ -78,8 +80,10 @@ class SwapArguments(BaseModel):
 
 STRATEGIES = {}
 
+
 def _register_strategy(strategy):
     STRATEGIES[get_strategy_id(strategy)] = strategy
+
 
 def register(cls):
     _register_strategy(cls)
@@ -93,9 +97,11 @@ def get_strategy_arguments_type(strategy):
 def get_strategy_id(strategy):
     return f"{strategy.protocol}__{strategy.name}"
 
+
 def get_strategy_by_id(strategy_id):
 
     return
+
 
 def strategy_as_dict(strategy):
     data = StrategyDefinitionModel(
@@ -104,6 +110,6 @@ def strategy_as_dict(strategy):
         name=strategy.name,
         id=get_strategy_id(strategy),
         arguments=get_strategy_arguments_type(strategy).model_json_schema(),
-        description=str.strip(strategy.__doc__)
+        description=str.strip(strategy.__doc__),
     )
     return data

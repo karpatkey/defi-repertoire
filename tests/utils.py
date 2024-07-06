@@ -12,12 +12,11 @@ import time
 import pytest
 from eth_account import Account
 from eth_account.signers.local import LocalAccount
+from roles_royce.constants import ETHAddr
+from roles_royce.evm_utils import erc20_abi
 from web3 import HTTPProvider, Web3
 from web3.exceptions import ContractLogicError
 from web3.types import TxReceipt
-
-from roles_royce.constants import ETHAddr
-from roles_royce.evm_utils import erc20_abi
 
 from .safe import SimpleSafe
 
@@ -61,7 +60,9 @@ def gen_test_accounts() -> list[LocalAccount]:
 
 
 TEST_ACCOUNTS = gen_test_accounts()
-SCRAPE_ACCOUNT = Account.from_key("0xf214f2b2cd398c806f84e317254e0f0b801d0643303237d97a22a48e01628897")
+SCRAPE_ACCOUNT = Account.from_key(
+    "0xf214f2b2cd398c806f84e317254e0f0b801d0643303237d97a22a48e01628897"
+)
 
 
 @pytest.fixture(scope="module")
@@ -134,7 +135,9 @@ def fork_reset_state(w3: Web3, url: str, block: int | str = "latest"):
     if isinstance(block, str):
         if block == "latest":
             raise ValueError("Can't use 'latest' as fork block")
-    return w3.provider.make_request("anvil_reset", [{"forking": {"jsonRpcUrl": url, "blockNumber": block}}])
+    return w3.provider.make_request(
+        "anvil_reset", [{"forking": {"jsonRpcUrl": url, "blockNumber": block}}]
+    )
 
 
 def run_hardhat():
@@ -142,10 +145,14 @@ def run_hardhat():
     try:
         npm = shutil.which("npm")
         subprocess.check_call([npm, "--version"])
-        if "hardhat" not in json.loads(subprocess.check_output([npm, "list", "--json"])).get("dependencies", {}):
+        if "hardhat" not in json.loads(
+            subprocess.check_output([npm, "list", "--json"])
+        ).get("dependencies", {}):
             raise subprocess.CalledProcessError
     except subprocess.CalledProcessError:
-        raise RuntimeError("Hardhat is not installed properly. Check the README for instructions.")
+        raise RuntimeError(
+            "Hardhat is not installed properly. Check the README for instructions."
+        )
 
     log_filename = "/tmp/rr_hardhat_log.txt"
     logger.info(f"Writing Hardhat log to {log_filename}")
@@ -179,7 +186,7 @@ class LocalNode:
         self.port = port
         self.url = f"http://127.0.0.1:{port}"
         self.default_block = default_block
-        self.w3 = Web3(HTTPProvider(self.url, request_kwargs={'timeout': 30}))
+        self.w3 = Web3(HTTPProvider(self.url, request_kwargs={"timeout": 30}))
 
     def reset_state(self):
         fork_reset_state(self.w3, self.remote_url, self.default_block)
@@ -214,7 +221,11 @@ def _local_node(request, node: LocalNode):
 
             start_time = time.monotonic()
             response = self.make_request(method, params)
-            logger.debug("Web3 time spent in %s: %f seconds", method, time.monotonic() - start_time)
+            logger.debug(
+                "Web3 time spent in %s: %f seconds",
+                method,
+                time.monotonic() - start_time,
+            )
             return response
 
     node.w3.middleware_onion.add(LatencyMeasurerMiddleware, "latency_middleware")
@@ -260,7 +271,13 @@ def top_up_address(w3: Web3, address: str, amount: int) -> None:
     if amount > (w3.eth.get_balance(SCRAPE_ACCOUNT.address) * 1e18) * 0.99:
         raise ValueError("Not enough ETH in the faucet account")
     try:
-        w3.eth.send_transaction({"to": address, "value": Web3.to_wei(amount, "ether"), "from": SCRAPE_ACCOUNT.address})
+        w3.eth.send_transaction(
+            {
+                "to": address,
+                "value": Web3.to_wei(amount, "ether"),
+                "from": SCRAPE_ACCOUNT.address,
+            }
+        )
     except ContractLogicError:
         raise Exception("Address is a smart contract address with no payable function.")
 
@@ -271,14 +288,24 @@ def to_hex_32_bytes(value: str | int) -> str:
         if value.startswith("0x") and len(value) <= 66:
             return "0x" + value[2:].rjust(64, "0")
         else:
-            raise ValueError("Invalid value. Value must be a hex string with or without 0x prefix and length <= 66")
+            raise ValueError(
+                "Invalid value. Value must be a hex string with or without 0x prefix and length <= 66"
+            )
     elif isinstance(value, int):
         return Web3.to_hex(Web3.to_bytes(value).rjust(32, b"\0"))
     else:
-        raise ValueError("Invalid value. Value must be an int or a hex string with 0x prefix and length <= 66")
+        raise ValueError(
+            "Invalid value. Value must be an int or a hex string with 0x prefix and length <= 66"
+        )
 
 
-def assign_role(local_node, avatar_safe_address: str, roles_mod_address: str, role: int, asignee: str) -> TxReceipt:
+def assign_role(
+    local_node,
+    avatar_safe_address: str,
+    roles_mod_address: str,
+    role: int,
+    asignee: str,
+) -> TxReceipt:
     asignee_32_bytes = to_hex_32_bytes(asignee)
     role_32_byes = to_hex_32_bytes(role)
     a = asignee_32_bytes[2:]

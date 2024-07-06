@@ -2,28 +2,31 @@ import gzip
 import json
 import os
 from pathlib import Path
+
 import pytest
 from eth_account.signers.local import LocalAccount
-from web3._utils.encoding import Web3JsonEncoder
 from web3 import Web3
+from web3._utils.encoding import Web3JsonEncoder
 from web3.providers.base import BaseProvider
 
 from tests.utils import (
-    LocalNode,
     ETH_FORK_NODE_URL,
-    ETH_LOCAL_NODE_PORT,
     ETH_LOCAL_NODE_DEFAULT_BLOCK,
-    _local_node,
+    ETH_LOCAL_NODE_PORT,
     GC_FORK_NODE_URL,
-    GC_LOCAL_NODE_PORT,
     GC_LOCAL_NODE_DEFAULT_BLOCK,
+    GC_LOCAL_NODE_PORT,
     TEST_ACCOUNTS,
+    LocalNode,
+    _local_node,
 )
 
 
 @pytest.fixture(scope="session")
 def local_node_eth(request) -> LocalNode:
-    node = LocalNode(ETH_FORK_NODE_URL, ETH_LOCAL_NODE_PORT, ETH_LOCAL_NODE_DEFAULT_BLOCK)
+    node = LocalNode(
+        ETH_FORK_NODE_URL, ETH_LOCAL_NODE_PORT, ETH_LOCAL_NODE_DEFAULT_BLOCK
+    )
     _local_node(request, node)
     return node
 
@@ -52,7 +55,9 @@ class RecordMiddleware:
         cls.interactions = []
 
     def __call__(self, method, params, reentrant=False):
-        self.interactions.append({"request": {"method": method, "params": list(params)}})
+        self.interactions.append(
+            {"request": {"method": method, "params": list(params)}}
+        )
         response = self.make_request(method, params)
 
         del response["jsonrpc"]
@@ -129,10 +134,12 @@ def _local_node_replay(local_node, request, chain_name, chain_id):
     RecordMiddleware.clear_interactions()
 
     if mode == "replay_and_assert":
-        with gzip.open(web3_test_data_file, mode='rt') as f:
+        with gzip.open(web3_test_data_file, mode="rt") as f:
             ReplayAndAssertMiddleware.set_interactions(json.load(f))
         fake_local_node = DoNothingLocalNode(chain_id)
-        fake_local_node.w3.middleware_onion.inject(ReplayAndAssertMiddleware, "replay_and_assert", layer=0)
+        fake_local_node.w3.middleware_onion.inject(
+            ReplayAndAssertMiddleware, "replay_and_assert", layer=0
+        )
         yield fake_local_node
     else:
         yield local_node
@@ -143,7 +150,7 @@ def _local_node_replay(local_node, request, chain_name, chain_id):
         # TODO: don't write the file if the test failed
         # https://docs.pytest.org/en/latest/example/simple.html#making-test-result-information-available-in-fixtures
         data = json.dumps(RecordMiddleware.interactions, indent=2, cls=Web3JsonEncoder)
-        with gzip.open(web3_test_data_file, mode='wt') as f:
+        with gzip.open(web3_test_data_file, mode="wt") as f:
             f.write(data)
 
 

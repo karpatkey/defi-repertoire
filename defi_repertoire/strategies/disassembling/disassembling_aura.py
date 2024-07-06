@@ -2,13 +2,13 @@ from decimal import Decimal
 
 from defabipedia.aura import Abis
 from pydantic import BaseModel
-
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import aura
 
-from ..base import GenericTxContext, Amount, ChecksumAddress, Percentage
-from . import disassembling_balancer as balancer
 from defi_repertoire.strategies import register
+
+from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage
+from . import disassembling_balancer as balancer
 
 
 class Exit1ArgumentElement(BaseModel):
@@ -30,9 +30,9 @@ class Exit22ArgumentElement(BaseModel):
 
 
 def aura_contracts_helper(
-        ctx: GenericTxContext,
-        aura_rewards_address: ChecksumAddress,
-        fraction: float | Decimal,
+    ctx: GenericTxContext,
+    aura_rewards_address: ChecksumAddress,
+    fraction: float | Decimal,
 ) -> (str, int):
     aura_rewards_contract = ctx.w3.eth.contract(
         address=aura_rewards_address, abi=Abis[ctx.blockchain].BaseRewardPool.abi
@@ -48,7 +48,7 @@ def aura_contracts_helper(
 
 
 def aura_to_bpt_address(
-        ctx: GenericTxContext, aura_rewards_address: ChecksumAddress
+    ctx: GenericTxContext, aura_rewards_address: ChecksumAddress
 ) -> str:
     aura_rewards_contract = ctx.w3.eth.contract(
         address=aura_rewards_address, abi=Abis[ctx.blockchain].BaseRewardPool.abi
@@ -66,7 +66,7 @@ class Withdraw:
 
     @classmethod
     def get_txns(
-            cls, ctx: GenericTxContext, arguments: Exit1ArgumentElement
+        cls, ctx: GenericTxContext, arguments: Exit1ArgumentElement
     ) -> list[Transactable]:
         txns = []
         bpt_address = aura_to_bpt_address(ctx, arguments.rewards_address)
@@ -92,7 +92,7 @@ class Withdraw2:
 
     @classmethod
     def get_txns(
-            cls, ctx: GenericTxContext, arguments: Exit21ArgumentElement
+        cls, ctx: GenericTxContext, arguments: Exit21ArgumentElement
     ) -> list[Transactable]:
         txns = []
         amount = arguments.amount
@@ -100,7 +100,9 @@ class Withdraw2:
         aura_reward_address = arguments.rewards_address
         aura_txns = Withdraw.get_txns(
             ctx,
-            arguments=Exit1ArgumentElement(**{"rewards_address": aura_reward_address, "amount": amount}),
+            arguments=Exit1ArgumentElement(
+                **{"rewards_address": aura_reward_address, "amount": amount}
+            ),
         )
         txns.extend(aura_txns)
 
@@ -108,13 +110,13 @@ class Withdraw2:
 
         bal_txns = balancer.WithdrawAllAssetsProportional.get_txns(
             ctx=ctx,
-            arguments=balancer.Exit11ArgumentElement(**
-                                                     {
-                                                         "bpt_address": bpt_address,
-                                                         "max_slippage": arguments.max_slippage,
-                                                         "amount": amount,
-                                                     }
-                                                     )
+            arguments=balancer.Exit11ArgumentElement(
+                **{
+                    "bpt_address": bpt_address,
+                    "max_slippage": arguments.max_slippage,
+                    "amount": amount,
+                }
+            ),
         )
         txns.extend(bal_txns)
 
@@ -133,7 +135,7 @@ class Exit22:
 
     @classmethod
     def get_txns(
-            cls, ctx: GenericTxContext, arguments: Exit22ArgumentElement
+        cls, ctx: GenericTxContext, arguments: Exit22ArgumentElement
     ) -> list[Transactable]:
         txns = []
 
@@ -148,16 +150,17 @@ class Exit22:
             reward_address=aura_rewards_address, amount=amount
         )
 
-        withdraw_balancer = balancer.WithdrawSingle.get_txns(ctx=ctx,
-                                                             arguments=balancer.Exit12ArgumemntElement(**
-                                                                                                       {
-                                                                                                           "bpt_address": bpt_address,
-                                                                                                           "max_slippage": max_slippage,
-                                                                                                           "token_out_address": token_out_address,
-                                                                                                           "amount": amount,
-                                                                                                       }
-                                                                                                       )
-                                                             )
+        withdraw_balancer = balancer.WithdrawSingle.get_txns(
+            ctx=ctx,
+            arguments=balancer.Exit12ArgumemntElement(
+                **{
+                    "bpt_address": bpt_address,
+                    "max_slippage": max_slippage,
+                    "token_out_address": token_out_address,
+                    "amount": amount,
+                }
+            ),
+        )
 
         txns.append(withdraw_aura)
         for transactable in withdraw_balancer:
@@ -178,7 +181,7 @@ class Exit23:
 
     @classmethod
     def get_txns(
-            cls, ctx: GenericTxContext, arguments: Exit1ArgumentElement
+        cls, ctx: GenericTxContext, arguments: Exit1ArgumentElement
     ) -> list[Transactable]:
         txns = []
 
@@ -192,7 +195,10 @@ class Exit23:
 
         withdraw_balancer = (
             balancer.WithdrawAllAssetsProportionalPoolsInRecovery.get_txns(
-                ctx=ctx, arguments=balancer.Exit13ArgumentElement(**{"bpt_address": bpt_address, "amount": arguments.amount})
+                ctx=ctx,
+                arguments=balancer.Exit13ArgumentElement(
+                    **{"bpt_address": bpt_address, "amount": arguments.amount}
+                ),
             )
         )
 

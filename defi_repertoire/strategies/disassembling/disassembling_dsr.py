@@ -1,14 +1,11 @@
 from decimal import Decimal
+
 from defabipedia.maker import ContractSpecs
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.base import Address
 from roles_royce.protocols.eth import maker
 
-from ..base import (
-    GenericTxContext,
-    register,
-    StrategyAmountArguments,
-)
+from ..base import GenericTxContext, StrategyAmountArguments, register
 
 
 def get_amount_to_redeem(
@@ -66,7 +63,9 @@ class WithdrawWithoutProxy:
         dsr_manager_address = (
             ContractSpecs[ctx.blockchain].DsrManager.contract(ctx.w3).address
         )
-        approve_dai = maker.ApproveDAI(spender=dsr_manager_address, amount=arguments.amount)
+        approve_dai = maker.ApproveDAI(
+            spender=dsr_manager_address, amount=arguments.amount
+        )
         exit_dai = maker.ExitDsr(avatar=ctx.avatar_safe_address, wad=arguments.amount)
 
         txns.append(approve_dai)

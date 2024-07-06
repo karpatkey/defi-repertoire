@@ -1,5 +1,6 @@
 import pytest
 from pydantic import BaseModel, ValidationError
+
 from defi_repertoire.strategies.base import ChecksumAddress
 
 
@@ -14,7 +15,10 @@ def test_checkum_address():
     assert DemoModel(address=good_checksumed_address).address == good_checksumed_address
 
     # input is not checksumed then the output is checksumed
-    assert DemoModel(address=str.lower(good_checksumed_address)).address == good_checksumed_address
+    assert (
+        DemoModel(address=str.lower(good_checksumed_address)).address
+        == good_checksumed_address
+    )
 
     # input has a wrong cheksum
     with pytest.raises(ValidationError):
