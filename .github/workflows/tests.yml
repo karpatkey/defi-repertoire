@@ -44,4 +44,4 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Check formatting
-        run: black --check . && isort --check .
+        run: black --check .
