@@ -14,29 +14,6 @@ from defi_repertoire.strategies import register
 from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, optional_args
 from . import disassembling_balancer as balancer
 
-
-class Exit1ArgumentElement(BaseModel):
-    rewards_address: ChecksumAddress
-    amount: Amount
-
-
-class Exit21ArgumentElement(BaseModel):
-    rewards_address: ChecksumAddress
-    max_slippage: Percentage
-    amount: Amount
-
-
-class WithdrawSingleArgs(BaseModel):
-    rewards_address: ChecksumAddress
-    max_slippage: Percentage
-    token_out_address: ChecksumAddress
-    amount: Amount
-
-
-OptExit1Arguments = optional_args(Exit1ArgumentElement)
-OptExit21Arguments = optional_args(Exit21ArgumentElement)
-OptWithdrawSingleArgs = optional_args(WithdrawSingleArgs)
-
 GRAPHS: Dict[Blockchain, str] = {}
 GRAPHS[Chain.get_blockchain_by_chain_id(1)] = (
     "https://subgraph.satsuma-prod.com/cae76ab408ca/1xhub-ltd/aura-finance-mainnet/api"
@@ -117,8 +94,14 @@ class Withdraw:
     protocol = "aura"
     name = "exit_1"
 
+    class Args(BaseModel):
+        rewards_address: ChecksumAddress
+        amount: Amount
+
+    OptArgs = optional_args(Args)
+
     @classmethod
-    async def get_options(cls, ctx: GenericTxContext, arguments: OptExit1Arguments):
+    async def get_options(cls, ctx: GenericTxContext, arguments: OptArgs):
         pools = await fetch_pools(ctx.blockchain)
         if arguments.rewards_address:
             address = str.lower(arguments.rewards_address)
@@ -134,9 +117,7 @@ class Withdraw:
             return {"rewards_address": reward_addresses}
 
     @classmethod
-    def get_txns(
-        cls, ctx: GenericTxContext, arguments: Exit1ArgumentElement
-    ) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
         txns = []
         bpt_address = aura_to_bpt_address(ctx, arguments.rewards_address)
         ctx.ctx["aura"]["aura_to_bpt"][arguments.rewards_address] = bpt_address
@@ -159,19 +140,20 @@ class Withdraw2:
     protocol = "aura"
     name = "exit_2_1"
 
+    class Args(BaseModel):
+        rewards_address: ChecksumAddress
+        max_slippage: Percentage
+        amount: Amount
+
     @classmethod
-    def get_txns(
-        cls, ctx: GenericTxContext, arguments: Exit21ArgumentElement
-    ) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
         txns = []
         amount = arguments.amount
 
         aura_reward_address = arguments.rewards_address
         aura_txns = Withdraw.get_txns(
             ctx,
-            arguments=Exit1ArgumentElement(
-                **{"rewards_address": aura_reward_address, "amount": amount}
-            ),
+            arguments=Withdraw.Args(rewards_address=aura_reward_address, amount=amount),
         )
         txns.extend(aura_txns)
 
@@ -179,7 +161,7 @@ class Withdraw2:
 
         bal_txns = balancer.WithdrawAllAssetsProportional.get_txns(
             ctx=ctx,
-            arguments=balancer.Exit11ArgumentElement(
+            arguments=balancer.WithdrawAllAssetsProportional.Args(
                 **{
                     "bpt_address": bpt_address,
                     "max_slippage": arguments.max_slippage,
@@ -202,8 +184,16 @@ class WithdrawSingle:
     protocol = "aura"
     name = "exit_2_2"
 
+    class Args(BaseModel):
+        rewards_address: ChecksumAddress
+        max_slippage: Percentage
+        token_out_address: ChecksumAddress
+        amount: Amount
+
+    OptArgs = optional_args(Args)
+
     @classmethod
-    async def get_options(cls, ctx: GenericTxContext, arguments: OptWithdrawSingleArgs):
+    async def get_options(cls, ctx: GenericTxContext, arguments: OptArgs):
         pools = await fetch_pools(ctx.blockchain)
         if arguments.rewards_address:
 
@@ -218,7 +208,7 @@ class WithdrawSingle:
             bpt_address = pool["lpToken"]["id"]
             balancer_options = await balancer.WithdrawSingle.get_options(
                 ctx=ctx,
-                arguments=balancer.OptExit12Arguments(
+                arguments=balancer.WithdrawSingle.OptArgs(
                     **{
                         "bpt_address": bpt_address,
                     }
@@ -234,9 +224,7 @@ class WithdrawSingle:
             return {"rewards_address": reward_addresses}
 
     @classmethod
-    def get_txns(
-        cls, ctx: GenericTxContext, arguments: WithdrawSingleArgs
-    ) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
         txns = []
 
         aura_rewards_address = arguments.rewards_address
@@ -252,7 +240,7 @@ class WithdrawSingle:
 
         withdraw_balancer = balancer.WithdrawSingle.get_txns(
             ctx=ctx,
-            arguments=balancer.Exit12ArgumemntElement(
+            arguments=balancer.WithdrawSingle.Args(
                 **{
                     "bpt_address": bpt_address,
                     "max_slippage": max_slippage,
@@ -279,10 +267,12 @@ class Exit23:
     protocol = "aura"
     name = "exit_2_3"
 
+    class Args(BaseModel):
+        rewards_address: ChecksumAddress
+        amount: Amount
+
     @classmethod
-    def get_txns(
-        cls, ctx: GenericTxContext, arguments: Exit1ArgumentElement
-    ) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
         txns = []
 
         aura_rewards_address = arguments.rewards_address
@@ -296,7 +286,7 @@ class Exit23:
         withdraw_balancer = (
             balancer.WithdrawAllAssetsProportionalPoolsInRecovery.get_txns(
                 ctx=ctx,
-                arguments=balancer.Exit13ArgumentElement(
+                arguments=balancer.WithdrawAllAssetsProportionalPoolsInRecovery.Args(
                     **{"bpt_address": bpt_address, "amount": arguments.amount}
                 ),
             )

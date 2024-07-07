@@ -21,49 +21,6 @@ from ..base import (
     register,
 )
 
-# from roles_royce.protocols.base import Address
-
-
-class Exit11ArgumentElement(BaseModel):
-    bpt_address: ChecksumAddress
-    max_slippage: Percentage
-    amount: Amount
-
-
-class Exit12ArgumemntElement(BaseModel):
-    bpt_address: ChecksumAddress
-    max_slippage: Percentage
-    token_out_address: ChecksumAddress
-    amount: Amount
-
-
-OptExit12Arguments = optional_args(Exit12ArgumemntElement)
-
-
-class Exit13ArgumentElement(BaseModel):
-    bpt_address: ChecksumAddress
-    amount: Amount
-
-
-class Exit21ArgumentElement(BaseModel):
-    gauge_address: ChecksumAddress
-    max_slippage: Percentage
-    amount: Amount
-
-
-class Exit22ArgumentElement(BaseModel):
-    gauge_address: ChecksumAddress
-    max_slippage: Percentage
-    token_out_address: ChecksumAddress
-    amount: Amount
-
-
-class Exit23ArgumentElement(BaseModel):
-    gauge_address: ChecksumAddress
-    max_slippage: Percentage
-    amount: Amount
-
-
 API_KEY = os.getenv("THEGRAPH_API_KEY", "MOCK_KEY")
 
 GRAPHS: Dict[Blockchain, str] = {}
@@ -143,12 +100,13 @@ class WithdrawAllAssetsProportional:
     protocol = "balancer"
     name = "withdraw_all_assets_proportional"
 
-    @classmethod
-    def get_txns(
-        cls, ctx: GenericTxContext, arguments: Exit11ArgumentElement
-    ) -> list[Transactable]:
+    class Args(BaseModel):
+        bpt_address: ChecksumAddress
+        max_slippage: Percentage
+        amount: Amount
 
-        txns = []
+    @classmethod
+    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
 
         bpt_address = arguments.bpt_address
         max_slippage = arguments.max_slippage / 100
@@ -180,8 +138,7 @@ class WithdrawAllAssetsProportional:
             bpt_amount_in=amount,
             max_slippage=max_slippage,
         )
-        txns.append(withdraw_balancer)
-        return txns
+        return [withdraw_balancer]
 
 
 @register
@@ -194,11 +151,19 @@ class WithdrawSingle:
     protocol = "balancer"
     name = "withdraw_single"
 
+    class Args(BaseModel):
+        bpt_address: ChecksumAddress
+        amount: Amount
+        max_slippage: Percentage
+        token_out_address: ChecksumAddress
+
+    OptArgs = optional_args(Args)
+
     @classmethod
     async def get_options(
         cls,
         ctx: GenericTxContext,
-        arguments: OptExit12Arguments,
+        arguments: OptArgs,
     ):
         pools = await fetch_pools(ctx.blockchain)
         if arguments.bpt_address:
@@ -218,10 +183,8 @@ class WithdrawSingle:
     def get_txns(
         cls,
         ctx: GenericTxContext,
-        arguments: Exit12ArgumemntElement,
+        arguments: Args,
     ) -> list[Transactable]:
-
-        txns = []
 
         bpt_address = arguments.bpt_address
         max_slippage = arguments.max_slippage / 100
@@ -254,9 +217,7 @@ class WithdrawSingle:
             token_out_address=token_out_address,
             max_slippage=max_slippage,
         )
-        txns.append(withdraw_balancer)
-
-        return txns
+        return [withdraw_balancer]
 
 
 @register
@@ -267,16 +228,20 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
 
     kind = "disassembly"
     protocol = "balancer"
-    name = "withdraw_all_assets_proportional_pools_in_recovery"
+    id = "withdraw_all_assets_proportional_pools_in_recovery"
+    name = "Withdraw Proportionally (Recovery mode)"
+
+    class Args(BaseModel):
+        bpt_address: ChecksumAddress
+        amount: Amount
 
     @classmethod
     def get_txns(
         cls,
         ctx: GenericTxContext,
-        arguments: Exit13ArgumentElement,
+        arguments: Args,
     ) -> list[Transactable]:
 
-        txns = []
         bpt_address = arguments.bpt_address
         amount = arguments.amount
 
@@ -300,13 +265,11 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
             bpt_amount_in=amount,
         )
 
-        txns.append(withdraw_balancer)
-
-        return txns
+        return [withdraw_balancer]
 
 
 @register
-class Exit21:
+class UnstakeAndWithdrawProportionally:
     """
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets
     in proportional way (not used for pools in recovery mode!).
@@ -316,10 +279,13 @@ class Exit21:
     protocol = "balancer"
     name = "exit_2_1"
 
+    class Args(BaseModel):
+        gauge_address: ChecksumAddress
+        amount: Amount
+        max_slippage: Percentage
+
     @classmethod
-    def get_txns(
-        cls, ctx: GenericTxContext, arguments: Exit21ArgumentElement
-    ) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
 
         txns = []
         gauge_address = arguments.gauge_address
@@ -341,12 +307,10 @@ class Exit21:
 
         withdraw_balancer = WithdrawAllAssetsProportional.get_txns(
             ctx=ctx,
-            arguments=Exit11ArgumentElement(
-                **{
-                    "bpt_address": bpt_address,
-                    "max_slippage": max_slippage,
-                    "amount": amount,
-                }
+            arguments=WithdrawAllAssetsProportional.Args(
+                bpt_address=bpt_address,
+                max_slippage=max_slippage,
+                amount=amount,
             ),
         )
         for transactable in withdraw_balancer:
@@ -356,19 +320,24 @@ class Exit21:
 
 
 @register
-class Exit22:
+class UnstakeAndWithdrawSingleToken:
     """
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing a single asset specified by the token index.
     """
 
     kind = "disassembly"
     protocol = "balancer"
-    name = "exit_2_2"
+    name = "Unstake + Windraw (Single token out)"
+    id = "exit_2_2"
+
+    class Args(BaseModel):
+        gauge_address: ChecksumAddress
+        amount: Amount
+        max_slippage: Percentage
+        token_out_address: ChecksumAddress
 
     @classmethod
-    def get_txns(
-        cls, ctx: GenericTxContext, arguments: Exit22ArgumentElement
-    ) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
 
         txns = []
 
@@ -390,7 +359,7 @@ class Exit22:
 
         withdraw_balancer = WithdrawSingle.get_txns(
             ctx=ctx,
-            arguments=Exit12ArgumemntElement(
+            arguments=WithdrawSingle.Args(
                 **{
                     "bpt_address": bpt_address,
                     "token_out_address": token_out_address,
@@ -416,10 +385,13 @@ class Exit23:
     protocol = "balancer"
     name = "exit_2_3"
 
+    class Args(BaseModel):
+        gauge_address: ChecksumAddress
+        amount: Amount
+        max_slippage: Percentage
+
     @classmethod
-    def get_txns(
-        cls, ctx: GenericTxContext, arguments: Exit23ArgumentElement
-    ) -> list[Transactable]:
+    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
         txns = []
 
         gauge_address = arguments.gauge_address
@@ -437,7 +409,7 @@ class Exit23:
 
         withdraw_balancer = WithdrawAllAssetsProportionalPoolsInRecovery.get_txns(
             ctx=ctx,
-            arguments=Exit13ArgumentElement(
+            arguments=WithdrawAllAssetsProportionalPoolsInRecovery.Args(
                 **{"bpt_address": bpt_address, "amount": amount}
             ),
         )

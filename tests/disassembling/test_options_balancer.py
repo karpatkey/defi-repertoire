@@ -14,19 +14,15 @@ async def test_balancer_options_gnosis(web3_gnosis, accounts):
     cow_gno_pool_address = "0x21d4c792Ea7E38e0D0819c2011A2b1Cb7252Bd99"
 
     ctx = GenericTxContext(w3=w3, avatar_safe_address=accounts[0].address)
-    arguments = balancer.OptExit12Arguments(
-        bpt_address=None, max_slippage=None, token_out_address=None, amount=None
+    opts = await balancer.WithdrawSingle.get_options(
+        ctx,
+        balancer.WithdrawSingle.OptArgs(**{}),
     )
-    opts = await balancer.WithdrawSingle.get_options(ctx, arguments)
     assert str.lower(cow_gno_pool_address) in opts["bpt_address"]
 
-    arguments = balancer.OptExit12Arguments(
-        bpt_address=cow_gno_pool_address,
-        max_slippage=None,
-        token_out_address=None,
-        amount=None,
+    opts2 = await balancer.WithdrawSingle.get_options(
+        ctx, balancer.WithdrawSingle.OptArgs(**{"bpt_address": cow_gno_pool_address})
     )
-    opts2 = await balancer.WithdrawSingle.get_options(ctx, arguments)
     assert str.lower(cow_gno_pool_address) in opts2["bpt_address"]
     assert len(opts2["bpt_address"]) == 1
     assert opts2["token_out_address"] == [
@@ -51,19 +47,14 @@ async def test_balancer_options_eth(web3_eth, accounts):
     cow_gno_pool_address = "0x92762b42a06dcdddc5b7362cfb01e631c4d44b40"
 
     ctx = GenericTxContext(w3=w3, avatar_safe_address=accounts[0].address)
-    arguments = balancer.OptExit12Arguments(
-        bpt_address=None, max_slippage=None, token_out_address=None, amount=None
+    opts = await balancer.WithdrawSingle.get_options(
+        ctx, balancer.WithdrawSingle.OptArgs(**{})
     )
-    opts = await balancer.WithdrawSingle.get_options(ctx, arguments)
     assert str.lower(cow_gno_pool_address) in opts["bpt_address"]
 
-    arguments = balancer.OptExit12Arguments(
-        bpt_address=cow_gno_pool_address,
-        max_slippage=None,
-        token_out_address=None,
-        amount=None,
+    opts2 = await balancer.WithdrawSingle.get_options(
+        ctx, balancer.WithdrawSingle.OptArgs(**{"bpt_address": cow_gno_pool_address})
     )
-    opts2 = await balancer.WithdrawSingle.get_options(ctx, arguments)
     assert str.lower(cow_gno_pool_address) in opts2["bpt_address"]
     assert len(opts2["bpt_address"]) == 1
     assert opts2["token_out_address"] == [

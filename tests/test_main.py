@@ -6,8 +6,8 @@ from fastapi.testclient import TestClient
 from roles_royce.generic_method import TxData
 
 from defi_repertoire.main import app
-from defi_repertoire.strategies.disassembling.disassembling_balancer import (
-    Exit11ArgumentElement, WithdrawAllAssetsProportional)
+from defi_repertoire.strategies.disassembling.disassembling_balancer import \
+    WithdrawAllAssetsProportional
 
 client = TestClient(app)
 
@@ -211,7 +211,7 @@ def test_disassembly_balancer():
             assert response.status_code == 200, response.text
             exit_strategy.assert_called_with(
                 ctx=ANY,
-                arguments=Exit11ArgumentElement(
+                arguments=WithdrawAllAssetsProportional.Args(
                     **{
                         "bpt_address": "0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF",
                         "max_slippage": 0.2,
@@ -244,7 +244,7 @@ def test_disassembly_balancer():
             assert response.status_code == 200, response.text
             exit_strategy.assert_called_with(
                 ctx=ANY,
-                arguments=Exit11ArgumentElement(
+                arguments=WithdrawAllAssetsProportional.Args(
                     **{
                         "bpt_address": "0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF",
                         "max_slippage": 0.2,

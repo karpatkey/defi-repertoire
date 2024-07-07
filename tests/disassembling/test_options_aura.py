@@ -14,15 +14,12 @@ async def test_aura_options_gnosis(web3_gnosis, accounts):
     weth_wsteth_address = "0x026d163c28cc7dbf57d6ed57f14208ee412ca526"
 
     ctx = GenericTxContext(w3=w3, avatar_safe_address=accounts[0].address)
-    arguments = aura.OptExit1Arguments(rewards_address=None, amount=None)
-    opts = await aura.Withdraw.get_options(ctx, arguments)
+    opts = await aura.Withdraw.get_options(ctx, aura.Withdraw.OptArgs(**{}))
     assert str.lower(weth_wsteth_address) in opts["rewards_address"]
 
-    arguments = aura.OptExit1Arguments(
-        rewards_address=weth_wsteth_address,
-        amount=None,
+    opts2 = await aura.Withdraw.get_options(
+        ctx, aura.Withdraw.OptArgs(**{"rewards_address": weth_wsteth_address})
     )
-    opts2 = await aura.Withdraw.get_options(ctx, arguments)
     assert str.lower(weth_wsteth_address) in opts2["rewards_address"]
     assert len(opts2["rewards_address"]) == 1
 
@@ -35,15 +32,12 @@ async def test_aura_options_ethereum(web3_eth, accounts):
     cow_gno_pool_address = "0x82feb430d9d14ee5e635c41807e03fd8f5fffdec"
 
     ctx = GenericTxContext(w3=w3, avatar_safe_address=accounts[0].address)
-    arguments = aura.OptExit1Arguments(rewards_address=None, amount=None)
-    opts = await aura.Withdraw.get_options(ctx, arguments)
+    opts = await aura.Withdraw.get_options(ctx, aura.Withdraw.OptArgs(**{}))
     assert str.lower(cow_gno_pool_address) in opts["rewards_address"]
 
-    arguments = aura.OptExit1Arguments(
-        rewards_address=cow_gno_pool_address,
-        amount=None,
+    opts2 = await aura.Withdraw.get_options(
+        ctx, aura.Withdraw.OptArgs(**{"rewards_address": cow_gno_pool_address})
     )
-    opts2 = await aura.Withdraw.get_options(ctx, arguments)
     assert str.lower(cow_gno_pool_address) in opts2["rewards_address"]
     assert len(opts2["rewards_address"]) == 1
 
@@ -56,19 +50,12 @@ async def test_aura_options_ethereum_single_out(web3_eth, accounts):
     cow_gno_pool_address = "0x82feb430d9d14ee5e635c41807e03fd8f5fffdec"
 
     ctx = GenericTxContext(w3=w3, avatar_safe_address=accounts[0].address)
-    arguments = aura.OptWithdrawSingleArgs(
-        rewards_address=None, amount=None, token_out_address=None, max_slippage=None
-    )
-    opts = await aura.WithdrawSingle.get_options(ctx, arguments)
+    opts = await aura.WithdrawSingle.get_options(ctx, aura.WithdrawSingle.OptArgs(**{}))
     assert str.lower(cow_gno_pool_address) in opts["rewards_address"]
 
-    arguments = aura.OptWithdrawSingleArgs(
-        rewards_address=cow_gno_pool_address,
-        amount=None,
-        token_out_address=None,
-        max_slippage=None,
+    opts2 = await aura.WithdrawSingle.get_options(
+        ctx, aura.WithdrawSingle.OptArgs(**{"rewards_address": cow_gno_pool_address})
     )
-    opts2 = await aura.WithdrawSingle.get_options(ctx, arguments)
     assert str.lower(cow_gno_pool_address) in opts2["rewards_address"]
     assert len(opts2["rewards_address"]) == 1
     assert opts2["token_out_address"] == [
