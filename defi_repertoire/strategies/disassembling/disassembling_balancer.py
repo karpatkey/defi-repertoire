@@ -64,7 +64,7 @@ class Exit23ArgumentElement(BaseModel):
     amount: Amount
 
 
-API_KEY = os.getenv("THEGRAPH_API_KEY")
+API_KEY = os.getenv("THEGRAPH_API_KEY", "MOCK_KEY")
 
 GRAPHS: Dict[Blockchain, str] = {}
 GRAPHS[Chain.get_blockchain_by_chain_id(1)] = (
