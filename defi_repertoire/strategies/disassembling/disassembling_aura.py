@@ -1,13 +1,17 @@
 from decimal import Decimal
+from typing import Dict
 
+import requests
 from defabipedia.aura import Abis
+from defabipedia.types import Blockchain, Chain
 from pydantic import BaseModel
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import aura
 
+from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
 from defi_repertoire.strategies import register
 
-from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage
+from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, optional_args
 from . import disassembling_balancer as balancer
 
 
@@ -22,11 +26,24 @@ class Exit21ArgumentElement(BaseModel):
     amount: Amount
 
 
-class Exit22ArgumentElement(BaseModel):
+class WithdrawSingleArgs(BaseModel):
     rewards_address: ChecksumAddress
     max_slippage: Percentage
     token_out_address: ChecksumAddress
     amount: Amount
+
+
+OptExit1Arguments = optional_args(Exit1ArgumentElement)
+OptExit21Arguments = optional_args(Exit21ArgumentElement)
+OptWithdrawSingleArgs = optional_args(WithdrawSingleArgs)
+
+GRAPHS: Dict[Blockchain, str] = {}
+GRAPHS[Chain.get_blockchain_by_chain_id(1)] = (
+    "https://subgraph.satsuma-prod.com/cae76ab408ca/1xhub-ltd/aura-finance-mainnet/api"
+)
+GRAPHS[Chain.get_blockchain_by_chain_id(100)] = (
+    "https://subgraph.satsuma-prod.com/cae76ab408ca/1xhub-ltd/aura-finance-gnosis/api"
+)
 
 
 def aura_contracts_helper(
@@ -56,6 +73,42 @@ def aura_to_bpt_address(
     return aura_rewards_contract.functions.asset().call()
 
 
+@stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
+async def fetch_pools(blockchain: Blockchain):
+    print(f"\nFETCHING AURA POOLS {blockchain.name}\n")
+    req = """
+    {
+      pools(where: { totalSupply_gt: "500000" }) {
+        id
+        totalSupply
+        depositToken {
+          id
+          decimals
+          symbol
+          name
+        }
+        lpToken {
+          id
+          decimals
+          symbol
+          name
+        }
+        gauge {
+          id
+        }
+        isFactoryPool
+        rewardPool
+      }
+    }
+    """
+    graph_url = GRAPHS.get(blockchain)
+    if not graph_url:
+        raise ValueError(f"Blockchain not supported: {blockchain}")
+
+    response = requests.post(url=graph_url, json={"query": req})
+    return response.json()["data"]["pools"]
+
+
 @register
 class Withdraw:
     """Withdraw funds from Aura."""
@@ -63,6 +116,22 @@ class Withdraw:
     kind = "disassembly"
     protocol = "aura"
     name = "exit_1"
+
+    @classmethod
+    async def get_options(cls, ctx: GenericTxContext, arguments: OptExit1Arguments):
+        pools = await fetch_pools(ctx.blockchain)
+        if arguments.rewards_address:
+            address = str.lower(arguments.rewards_address)
+            pool = next(
+                (p for p in pools if str.lower(p["rewardPool"]) == address),
+                None,
+            )
+            if not pool:
+                raise ValueError("Pool not found")
+            return {"rewards_address": [pool["rewardPool"]]}
+        else:
+            reward_addresses = [p["rewardPool"] for p in pools]
+            return {"rewards_address": reward_addresses}
 
     @classmethod
     def get_txns(
@@ -124,7 +193,7 @@ class Withdraw2:
 
 
 @register
-class Exit22:
+class WithdrawSingle:
     """Withdraw funds from Aura and then from the Balancer pool withdrawing a single asset specified by the
     token index.
     """
@@ -134,8 +203,39 @@ class Exit22:
     name = "exit_2_2"
 
     @classmethod
+    async def get_options(cls, ctx: GenericTxContext, arguments: OptWithdrawSingleArgs):
+        pools = await fetch_pools(ctx.blockchain)
+        if arguments.rewards_address:
+
+            address = str.lower(arguments.rewards_address)
+            pool = next(
+                (p for p in pools if str.lower(p["rewardPool"]) == address),
+                None,
+            )
+            if not pool:
+                raise ValueError("Pool not found")
+
+            bpt_address = pool["lpToken"]["id"]
+            balancer_options = await balancer.WithdrawSingle.get_options(
+                ctx=ctx,
+                arguments=balancer.OptExit12Arguments(
+                    **{
+                        "bpt_address": bpt_address,
+                    }
+                ),
+            )
+            return {
+                "rewards_address": [address],
+                "token_out_address": balancer_options["token_out_address"],
+            }
+
+        else:
+            reward_addresses = [p["rewardPool"] for p in pools]
+            return {"rewards_address": reward_addresses}
+
+    @classmethod
     def get_txns(
-        cls, ctx: GenericTxContext, arguments: Exit22ArgumentElement
+        cls, ctx: GenericTxContext, arguments: WithdrawSingleArgs
     ) -> list[Transactable]:
         txns = []
 

@@ -1,12 +1,25 @@
+import os
 from decimal import Decimal
+from typing import Dict
 
+import requests
 from defabipedia.balancer import Abis
+from defabipedia.types import Blockchain, Chain
 from pydantic import BaseModel
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols import balancer
 from web3.exceptions import ContractLogicError
 
-from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, register
+from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
+
+from ..base import (
+    Amount,
+    ChecksumAddress,
+    GenericTxContext,
+    Percentage,
+    optional_args,
+    register,
+)
 
 # from roles_royce.protocols.base import Address
 
@@ -22,6 +35,9 @@ class Exit12ArgumemntElement(BaseModel):
     max_slippage: Percentage
     token_out_address: ChecksumAddress
     amount: Amount
+
+
+OptExit12Arguments = optional_args(Exit12ArgumemntElement)
 
 
 class Exit13ArgumentElement(BaseModel):
@@ -48,6 +64,17 @@ class Exit23ArgumentElement(BaseModel):
     amount: Amount
 
 
+API_KEY = os.getenv("THEGRAPH_API_KEY")
+
+GRAPHS: Dict[Blockchain, str] = {}
+GRAPHS[Chain.get_blockchain_by_chain_id(1)] = (
+    f"https://gateway-arbitrum.network.thegraph.com/api/{API_KEY}/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV"
+)
+GRAPHS[Chain.get_blockchain_by_chain_id(100)] = (
+    f"https://gateway-arbitrum.network.thegraph.com/api/{API_KEY}/subgraphs/id/EJezH1Cp31QkKPaBDerhVPRWsKVZLrDfzjrLqpmv6cGg"
+)
+
+
 def get_bpt_amount_to_redeem_from_gauge(
     ctx: GenericTxContext, gauge_address: ChecksumAddress, fraction: float | Decimal
 ) -> int:
@@ -71,6 +98,39 @@ def get_bpt_amount_to_redeem(
         Decimal(bpt_contract.functions.balanceOf(ctx.avatar_safe_address).call())
         * Decimal(fraction)
     )
+
+
+@stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
+async def fetch_pools(blockchain: Blockchain):
+    print(f"\nFETCHING BALANCER POOLS {blockchain.name}\n")
+    req = """
+    {
+      pools(where: { totalLiquidity_gt: "500000" }, orderBy: totalLiquidity) {
+        name
+        address
+        poolType
+        strategyType
+        oracleEnabled
+        symbol
+        swapEnabled
+        isPaused
+        isInRecoveryMode
+        totalLiquidity
+        tokens {
+          symbol
+          name
+          address
+        }
+      }
+    }
+    """
+
+    graph_url = GRAPHS.get(blockchain)
+    if not graph_url:
+        raise ValueError(f"Blockchain not supported: {blockchain}")
+
+    response = requests.post(url=graph_url, json={"query": req})
+    return response.json()["data"]["pools"]
 
 
 @register
@@ -133,6 +193,26 @@ class WithdrawSingle:
     kind = "disassembly"
     protocol = "balancer"
     name = "withdraw_single"
+
+    @classmethod
+    async def get_options(
+        cls,
+        ctx: GenericTxContext,
+        arguments: OptExit12Arguments,
+    ):
+        pools = await fetch_pools(ctx.blockchain)
+        if arguments.bpt_address:
+            bpt_address = str.lower(arguments.bpt_address)
+            pool = next(
+                (p for p in pools if str.lower(p["address"]) == bpt_address),
+                None,
+            )
+            if not pool:
+                raise ValueError("Pool not found")
+            return {"bpt_address": [bpt_address], "token_out_address": pool["tokens"]}
+
+        else:
+            return {"bpt_address": [p["address"] for p in pools]}
 
     @classmethod
     def get_txns(
