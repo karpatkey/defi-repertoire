@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: '{"jsonrpc": "2.0", "method": "eth_chainId", "params": [], "id": 0}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '66'
+      Content-Type:
+      - application/json
+      Cookie:
+      - _cfuvid=7ung5gIG4pkmAEKww4KclBT.SSj3A0rCGwm2niDdaLA-1720371492881-0.0.1.1-604800000
+      User-Agent:
+      - web3.py/6.20.0/<class 'web3.providers.rpc.HTTPProvider'>
+    method: POST
+    uri: https://eth-mainnet.g.alchemy.com/v2/MOCK_KEY
+  response:
+    body:
+      string: '{"jsonrpc":"2.0","id":0,"result":"0x1"}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 89f960e7796e4893-LIS
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '39'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 07 Jul 2024 16:58:18 GMT
+      Server:
+      - cloudflare
+      Vary:
+      - Accept-Encoding
+      access-control-allow-credentials:
+      - 'true'
+      x-alchemy-trace-id:
+      - 217a701e10951c451765e5235171d49c
+    status:
+      code: 200
+      message: OK
+version: 1

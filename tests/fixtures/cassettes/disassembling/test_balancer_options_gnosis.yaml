@@ -1,0 +1,159 @@
+interactions:
+- request:
+    body: '{"jsonrpc": "2.0", "method": "eth_chainId", "params": [], "id": 0}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '66'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - web3.py/6.20.0/<class 'web3.providers.rpc.HTTPProvider'>
+    method: POST
+    uri: https://rpc.ankr.com/gnosis
+  response:
+    body:
+      string: '{"jsonrpc":"2.0","id":0,"result":"0x64"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Content-Type,Authorization
+      Access-Control-Allow-Methods:
+      - GET,POST,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Max-Age:
+      - '86400'
+      CF-Cache-Status:
+      - HIT
+      CF-RAY:
+      - 89f960d7fba96926-LIS
+      Cache-Control:
+      - public, max-age=86400
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '40'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 07 Jul 2024 16:58:15 GMT
+      Server:
+      - cloudflare
+      Vary:
+      - Accept-Encoding
+      X-Robots-Tag:
+      - noindex, nofollow
+      x-multirpc-response-type:
+      - '1'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query": "\n    {\n      pools(where: { totalLiquidity_gt: \"500000\"
+      }, orderBy: totalLiquidity) {\n        name\n        address\n        poolType\n        strategyType\n        oracleEnabled\n        symbol\n        swapEnabled\n        isPaused\n        isInRecoveryMode\n        totalLiquidity\n        tokens
+      {\n          symbol\n          name\n          address\n        }\n      }\n    }\n    "}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '405'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://gateway-arbitrum.network.thegraph.com/api/MOCK_KEY/subgraphs/id/EJezH1Cp31QkKPaBDerhVPRWsKVZLrDfzjrLqpmv6cGg
+  response:
+    body:
+      string: '{"data":{"pools":[{"address":"0x00df7f58e1cf932ebe5f54de5970fb2bdf0ef06d","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        50wstETH-25BAL-25AURA","oracleEnabled":false,"poolType":"Weighted","strategyType":1,"swapEnabled":true,"symbol":"B-50wstETH-25BAL-25AURA","tokens":[{"address":"0x1509706a6c66ca549ff0cb464de88231ddbe213b","name":"Aura","symbol":"AURA"},{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
+        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"},{"address":"0x7ef541e2a22058048904fe5744f9c7e4c57af717","name":"Balancer
+        on xDai","symbol":"BAL"}],"totalLiquidity":"1023617.873910649738567109006972998"},{"address":"0xa9b2234773cc6a4f3a34a770c52c931cba5c24b2","isInRecoveryMode":null,"isPaused":false,"name":"B-50SAFE-50GNO","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50SAFE-50GNO","tokens":[{"address":"0x4d18815d14fe5c3304e87b3fa18318baa5c23820","name":"Safe
+        Token from Mainnet","symbol":"SAFE"},{"address":"0x9c58bacc331c9aa871afd802db6379a98e80cedb","name":"Gnosis
+        Token on xDai","symbol":"GNO"}],"totalLiquidity":"1375051.338443672366698661904172538"},{"address":"0x21d4c792ea7e38e0d0819c2011a2b1cb7252bd99","isInRecoveryMode":null,"isPaused":false,"name":"50COW-50GNO","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50COW-50GNO","tokens":[{"address":"0x177127622c4a00f3d409b75571e12cb3c8973d3c","name":"CoW
+        Protocol Token from Mainnet","symbol":"COW"},{"address":"0x9c58bacc331c9aa871afd802db6379a98e80cedb","name":"Gnosis
+        Token on xDai","symbol":"GNO"}],"totalLiquidity":"1383684.940887327347013871271657878"},{"address":"0x4cdabe9e07ca393943acfb9286bbbd0d0a310ff6","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        50wstETH-50COW","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-50wstETH-50COW","tokens":[{"address":"0x177127622c4a00f3d409b75571e12cb3c8973d3c","name":"CoW
+        Protocol Token from Mainnet","symbol":"COW"},{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
+        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"}],"totalLiquidity":"1463086.198700422346788489865798555"},{"address":"0x79c872ed3acb3fc5770dd8a0cd9cd5db3b3ac985","isInRecoveryMode":null,"isPaused":false,"name":"50OLAS-50WXDAI","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50OLAS-50WXDAI","tokens":[{"address":"0xce11e14225575945b8e6dc0d4f2dd4c570f79d9f","name":"Autonolas
+        from Mainnet","symbol":"OLAS"},{"address":"0xe91d153e0b41518a2ce8dd3d7944fa863463a97d","name":"Wrapped
+        XDAI","symbol":"WXDAI"}],"totalLiquidity":"1827238.987081044739064266"},{"address":"0xe2343512dcf8a23d81e6cdc2fac656db1ff83aa1","isInRecoveryMode":null,"isPaused":false,"name":"B-50WBTC-50WETH","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50WBTC-50WETH","tokens":[{"address":"0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1","name":"Wrapped
+        Ether on xDai","symbol":"WETH"},{"address":"0x8e5bbbb09ed1ebde8674cda39a0c169401db4252","name":"Wrapped
+        BTC on xDai","symbol":"WBTC"}],"totalLiquidity":"2310563.885973640819045547600027868"},{"address":"0x7644fa5d0ea14fcf3e813fdf93ca9544f8567655","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        Stable USD","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"sBAL3","tokens":[{"address":"0x4ecaba5870353805a9f068101a40e0f32ed605c6","name":"Tether
+        USD on xDai","symbol":"USDT"},{"address":"0x7644fa5d0ea14fcf3e813fdf93ca9544f8567655","name":"Balancer
+        Stable USD","symbol":"sBAL3"},{"address":"0xaf204776c7245bf4147c2612bf6e5972ee483701","name":"Savings
+        xDAI","symbol":"sDAI"},{"address":"0xddafbb505ad214d7b80b1f830fccc89b60fb7a83","name":"USD//C
+        on xDai","symbol":"USDC"}],"totalLiquidity":"3037988.597780105391418241497401465"},{"address":"0x8dd4df4ce580b9644437f3375e54f1ab09808228","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
+        ECLP wstETH/WETH","oracleEnabled":false,"poolType":"GyroE","strategyType":2,"swapEnabled":true,"symbol":"ECLP-wstETH-WETH","tokens":[{"address":"0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1","name":"Wrapped
+        Ether on xDai","symbol":"WETH"},{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
+        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"}],"totalLiquidity":"3346133.891435318641216868351979773"},{"address":"0xdd439304a77f54b1f7854751ac1169b279591ef7","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        EURe/sDAI","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"EURe/sDAI","tokens":[{"address":"0xaf204776c7245bf4147c2612bf6e5972ee483701","name":"Savings
+        xDAI","symbol":"sDAI"},{"address":"0xcb444e90d8198415266c6a2724b7900fb12fc56e","name":"Monerium
+        EUR emoney","symbol":"EURe"},{"address":"0xdd439304a77f54b1f7854751ac1169b279591ef7","name":"Balancer
+        EURe/sDAI","symbol":"EURe/sDAI"}],"totalLiquidity":"4025182.217177638168637440702234241"},{"address":"0xfc095c811fe836ed12f247bcf042504342b73fb7","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        Stable USD3","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"sBAL3","tokens":[{"address":"0x2a22f9c3b484c3629090feed35f17ff8f88f76f0","name":"Bridged
+        USDC (Gnosis)","symbol":"USDC.e"},{"address":"0x4ecaba5870353805a9f068101a40e0f32ed605c6","name":"Tether
+        USD on xDai","symbol":"USDT"},{"address":"0xaf204776c7245bf4147c2612bf6e5972ee483701","name":"Savings
+        xDAI","symbol":"sDAI"},{"address":"0xfc095c811fe836ed12f247bcf042504342b73fb7","name":"Balancer
+        Stable USD3","symbol":"sBAL3"}],"totalLiquidity":"5549254.074806016948908822070530838"},{"address":"0xbad20c15a773bf03ab973302f61fabcea5101f0a","isInRecoveryMode":false,"isPaused":false,"name":"Balancer
+        Stable WETH wstETH pool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"bb-WETH-wstETH","tokens":[{"address":"0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1","name":"Wrapped
+        Ether on xDai","symbol":"WETH"},{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
+        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"},{"address":"0xbad20c15a773bf03ab973302f61fabcea5101f0a","name":"Balancer
+        Stable WETH wstETH pool","symbol":"bb-WETH-wstETH"}],"totalLiquidity":"14320759.01656268507047440076814434"},{"address":"0xbc2acf5e821c5c9f8667a36bb1131dad26ed64f9","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        50sDAI-50wstETH","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-50sDAI-50wstETH","tokens":[{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
+        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"},{"address":"0xaf204776c7245bf4147c2612bf6e5972ee483701","name":"Savings
+        xDAI","symbol":"sDAI"}],"totalLiquidity":"15297448.55588898672975415283424027"},{"address":"0x4683e340a8049261057d5ab1b29c8d840e75695e","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        50wstETH-50GNO","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-50wstETH-50GNO","tokens":[{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
+        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"},{"address":"0x9c58bacc331c9aa871afd802db6379a98e80cedb","name":"Gnosis
+        Token on xDai","symbol":"GNO"}],"totalLiquidity":"28064728.10560916409124944993407278"}]}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 89f960db0d3f488d-LIS
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 07 Jul 2024 16:58:17 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=ncTrcEdlH2YVT7fL_7PJmqCCwD0YBURRr5EQ__KV14U-1720371497-1.0.1.1-w7BraEjIRbE1y4QHOjJov2JLVUkV7Y4LpR_etcbqVoWm62KewP2x47IEhG4aNZNdLaNtVacBvvZT1aAbKwJHIQ;
+        path=/; expires=Sun, 07-Jul-24 17:28:17 GMT; domain=.thegraph.com; HttpOnly;
+        Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - origin, access-control-request-method, access-control-request-headers, Accept-Encoding
+      access-control-allow-credentials:
+      - 'true'
+      access-control-allow-headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      access-control-allow-methods:
+      - PUT, GET, POST, OPTIONS
+      access-control-max-age:
+      - '3600'
+      graph-attestation:
+      - '{"requestCID":"0x22f426a589cdd43c33a1ca83186ca9c2922babfaebd7cc6deaf3fbc2a6772c7a","responseCID":"0xbd1df5dba378a54c517f1991ca11374bc10a7ca21e36face41f32e3a3f659941","subgraphDeploymentID":"0x887c909d345acd34702a79aaba8ef973ecb01f3bafffbf5b938a7c077b3dcc7d","r":"0x3b2c4418f4273ccfa51ac46881862b7bd07c9c91dbfbb2b1d4b0fbab286f2b30","s":"0x2cf20710bfe2d2a411c92b500f2ccc2838f9dc70417512ced539ca8c5c4cb0da","v":28}'
+    status:
+      code: 200
+      message: OK
+version: 1
