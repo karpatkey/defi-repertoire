@@ -234,6 +234,22 @@ def generate_strategy_endpoints():
                     "txns": [TransactableData.from_transactable(txn) for txn in txns]
                 }
 
+            @app.post(url + "/options", description=strategy.__doc__)
+            def transaction_data(
+                blockchain: BlockchainOption,
+                avatar_safe_address: ChecksumAddress,
+                arguments: arg_type,
+            ):
+                blockchain = Chain.get_blockchain_by_name(blockchain)
+                strategy = STRATEGIES_BY_PROTOCOL_AND_NAME.get(protocol).get(
+                    strategy_name
+                )
+                w3 = get_endpoint_for_blockchain(blockchain)
+                ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
+                options = strategy.get_options(ctx=ctx, arguments=arguments)
+
+                return {"options": options}
+
         make_closure(kind, strategy.protocol, strategy.name, arguments_type)
 
 
