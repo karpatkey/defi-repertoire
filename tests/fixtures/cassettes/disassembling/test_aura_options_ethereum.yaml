@@ -1,54 +1,5 @@
 interactions:
 - request:
-    body: '{"jsonrpc": "2.0", "method": "eth_chainId", "params": [], "id": 0}'
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '66'
-      Content-Type:
-      - application/json
-      User-Agent:
-      - web3.py/6.20.0/<class 'web3.providers.rpc.HTTPProvider'>
-    method: POST
-    uri: https://eth-mainnet.g.alchemy.com/v2/MOCK_KEY
-  response:
-    body:
-      string: '{"jsonrpc":"2.0","id":0,"result":"0x1"}'
-    headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-Ray:
-      - 89f960c589e74899-LIS
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '39'
-      Content-Type:
-      - application/json
-      Date:
-      - Sun, 07 Jul 2024 16:58:12 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - _cfuvid=7ung5gIG4pkmAEKww4KclBT.SSj3A0rCGwm2niDdaLA-1720371492881-0.0.1.1-604800000;
-        path=/; domain=.g.alchemy.com; HttpOnly; Secure; SameSite=None
-      Vary:
-      - Accept-Encoding
-      access-control-allow-credentials:
-      - 'true'
-      x-alchemy-trace-id:
-      - 8b7ccda2f636a4875aaf014fe8f78fad
-    status:
-      code: 200
-      message: OK
-- request:
     body: '{"query": "\n    {\n      pools(where: { totalSupply_gt: \"500000\" })
       {\n        id\n        totalSupply\n        depositToken {\n          id\n          decimals\n          symbol\n          name\n        }\n        lpToken
       {\n          id\n          decimals\n          symbol\n          name\n        }\n        gauge
@@ -110,7 +61,7 @@ interactions:
         BPT","name":"Balancer vETH/WETH StablePool Aura Deposit"},"lpToken":{"id":"0x156c02f3f7fef64a3a9d80ccf7085f23cce91d76","decimals":18,"symbol":"vETH/WETH
         BPT","name":"Balancer vETH/WETH StablePool"},"gauge":{"id":"0x1d157cf1f1339864a3c291d1bbe786d6ee682434"},"isFactoryPool":true,"rewardPool":"0xf75d485e9cd0063947e255a214e60bc247ff40f5"},{"id":"13","totalSupply":"993576547155537","depositToken":{"id":"0x6c4afa47860aad1ba39dfa778fef4efa5e5ba3b7","decimals":18,"symbol":"aurasfrxETH-stETH-rETH-BPT","name":"sfrxETH-stETH-rETH
         StablePool Aura Deposit"},"lpToken":{"id":"0x8e85e97ed19c0fa13b2549309965291fbbc0048b","decimals":18,"symbol":"sfrxETH-stETH-rETH-BPT","name":"sfrxETH-stETH-rETH
-        StablePool"},"gauge":{"id":"0x3f0fb52648eb3981ea598716b7320081d1c8ba1a"},"isFactoryPool":true,"rewardPool":"0x60cf485394e83d3879998281faac6a1c3cf218c7"},{"id":"132","totalSupply":"81651337812417394791","depositToken":{"id":"0xbec88e5abd451cfc28bc0ead31dd074f0ec515ba","decimals":18,"symbol":"auraB-baoETH-ETH-BPT","name":"baoETH-ETH
+        StablePool"},"gauge":{"id":"0x3f0fb52648eb3981ea598716b7320081d1c8ba1a"},"isFactoryPool":true,"rewardPool":"0x60cf485394e83d3879998281faac6a1c3cf218c7"},{"id":"132","totalSupply":"80657854904819270741","depositToken":{"id":"0xbec88e5abd451cfc28bc0ead31dd074f0ec515ba","decimals":18,"symbol":"auraB-baoETH-ETH-BPT","name":"baoETH-ETH
         StablePool Aura Deposit"},"lpToken":{"id":"0x1a44e35d5451e0b78621a1b3e7a53dfaa306b1d0","decimals":18,"symbol":"B-baoETH-ETH-BPT","name":"baoETH-ETH
         StablePool"},"gauge":{"id":"0xd449efa0a587f2cb6be3ae577bc167a774525810"},"isFactoryPool":true,"rewardPool":"0xc8fc8ac325d941c31655c62169dd47778129be63"},{"id":"133","totalSupply":"18644517252495178726","depositToken":{"id":"0x7ae2e34911816074d63a4227ef5bd0ec473f69ce","decimals":18,"symbol":"auraR-bb-s-DAI-BLP","name":"R/bb-s-DAI
         Stable Pool Aura Deposit"},"lpToken":{"id":"0xbf2ef8bdc2fc0f3203b3a01778e3ec5009aeef33","decimals":18,"symbol":"R-bb-s-DAI-BLP","name":"R/bb-s-DAI
@@ -141,7 +92,7 @@ interactions:
         wstETH-WETH Stable Pool Aura Deposit"},"lpToken":{"id":"0x93d199263632a4ef4bb438f1feb99e57b4b5f0bd","decimals":18,"symbol":"wstETH-WETH-BPT","name":"Balancer
         wstETH-WETH Stable Pool"},"gauge":{"id":"0x5c0f23a5c1be65fa710d385814a7fd1bda480b1c"},"isFactoryPool":true,"rewardPool":"0x2a14db8d09db0542f6a371c0cb308a768227d67d"},{"id":"154","totalSupply":"13580884163210094591288223","depositToken":{"id":"0x961a1c5bf64f6bb35cdbcaf5ab0360398181fd65","decimals":18,"symbol":"auraSTG/USDC","name":"Balancer
         STG/USDC Aura Deposit"},"lpToken":{"id":"0x3ff3a210e57cfe679d9ad1e9ba6453a716c56a2e","decimals":18,"symbol":"STG/USDC","name":"Balancer
-        STG/USDC"},"gauge":{"id":"0x15c84754c7445d0df6c613f1490ca07654347c1b"},"isFactoryPool":true,"rewardPool":"0x8bd520bf5d59f959b25ee7b78811142dde543134"},{"id":"157","totalSupply":"6324739532899376138810203","depositToken":{"id":"0xcfaf65235bb4e1e7ba2c6544e6d97fe6a508b9d5","decimals":18,"symbol":"auraGHO/USDT/USDC","name":"Balancer
+        STG/USDC"},"gauge":{"id":"0x15c84754c7445d0df6c613f1490ca07654347c1b"},"isFactoryPool":true,"rewardPool":"0x8bd520bf5d59f959b25ee7b78811142dde543134"},{"id":"157","totalSupply":"6300747205227059980284789","depositToken":{"id":"0xcfaf65235bb4e1e7ba2c6544e6d97fe6a508b9d5","decimals":18,"symbol":"auraGHO/USDT/USDC","name":"Balancer
         GHO/USDT/USDC Aura Deposit"},"lpToken":{"id":"0x8353157092ed8be69a9df8f95af097bbf33cb2af","decimals":18,"symbol":"GHO/USDT/USDC","name":"Balancer
         GHO/USDT/USDC"},"gauge":{"id":"0xf720e9137baa9c7612e6ca59149a5057ab320cfa"},"isFactoryPool":true,"rewardPool":"0xbdd6984c3179b099e9d383ee2f44f3a57764bf7d"},{"id":"158","totalSupply":"1337750569206336879531","depositToken":{"id":"0xa1dc8d486368e1b421e28913b1155edd63ae5987","decimals":18,"symbol":"aura50KNC-25WETH-25USDC-BPT","name":"Balancer
         50KNC-25WETH-25USDC Aura Deposit"},"lpToken":{"id":"0x6f0ed6f346007563d3266de350d174a831bde0ca","decimals":18,"symbol":"50KNC-25WETH-25USDC-BPT","name":"Balancer
@@ -201,7 +152,7 @@ interactions:
         ePENDLE/PENDLE Aura Deposit"},"lpToken":{"id":"0xa2e9242163d54b536583368a01b5d232c95aa884","decimals":18,"symbol":"ePENDLE/PENDLE","name":"Balancer
         ePENDLE/PENDLE"},"gauge":{"id":"0xc40f4abc616ab3136a002a667a7830f3f7dec5fa"},"isFactoryPool":true,"rewardPool":"0x4631b77382e4efde3e5808d6b30a330b91b2376b"},{"id":"198","totalSupply":"1485708602116658254558","depositToken":{"id":"0xf51e192cf66c3e2985073845a9337d20a36cdf4f","decimals":18,"symbol":"auraweETH/ezETH/rswETH","name":"Balancer
         weETH/ezETH/rswETH Aura Deposit"},"lpToken":{"id":"0x848a5564158d84b8a8fb68ab5d004fae11619a54","decimals":18,"symbol":"weETH/ezETH/rswETH","name":"Balancer
-        weETH/ezETH/rswETH"},"gauge":{"id":"0x253ed65fff980aee7e94a0dc57be304426048b35"},"isFactoryPool":true,"rewardPool":"0xce98eb8b2fb98049b3f2db0a212ba7ca3efd63b0"},{"id":"199","totalSupply":"2529658175308824905512963","depositToken":{"id":"0xf1b81ece04188d7367f43a486c0868d3e90b5dff","decimals":18,"symbol":"aurasDOLA-DOLA
+        weETH/ezETH/rswETH"},"gauge":{"id":"0x253ed65fff980aee7e94a0dc57be304426048b35"},"isFactoryPool":true,"rewardPool":"0xce98eb8b2fb98049b3f2db0a212ba7ca3efd63b0"},{"id":"199","totalSupply":"2618876745998924905512963","depositToken":{"id":"0xf1b81ece04188d7367f43a486c0868d3e90b5dff","decimals":18,"symbol":"aurasDOLA-DOLA
         BSP","name":"sDOLA Stable Pool Aura Deposit"},"lpToken":{"id":"0x264062ca46a1322c2e6464471764089e01f22f19","decimals":18,"symbol":"sDOLA-DOLA
         BSP","name":"sDOLA Stable Pool"},"gauge":{"id":"0xcd19892916929f013930ed628547cc1f439b230e"},"isFactoryPool":true,"rewardPool":"0xa36d3799ea28f4b75653ebf9d91dda4519578086"},{"id":"2","totalSupply":"1110521894467324720043","depositToken":{"id":"0x7deca3ff1d7d31a8d2126278809d539798b0f035","decimals":18,"symbol":"aurabb-a-USD","name":"Balancer
         Aave Boosted StablePool Aura Deposit"},"lpToken":{"id":"0xa13a9247ea42d743238089903570127dda72fe44","decimals":18,"symbol":"bb-a-USD","name":"Balancer
@@ -211,9 +162,9 @@ interactions:
         InstETH/wstETH Aura Deposit"},"lpToken":{"id":"0xe3e0022d25194431a98e8bf5034d2617c96e1d44","decimals":18,"symbol":"InstETH/wstETH","name":"Balancer
         InstETH/wstETH"},"gauge":{"id":"0xcda1b6704b108df230d2a36da4c088c6afd6f335"},"isFactoryPool":true,"rewardPool":"0x8353839f58b9f44efacbeedb822157f7c204efed"},{"id":"204","totalSupply":"17831137658915835924","depositToken":{"id":"0xd887e23865d98413d6c48156dbaa8dec3b341823","decimals":18,"symbol":"auragenETH/wstETH","name":"Balancer
         genETH/wstETH Aura Deposit"},"lpToken":{"id":"0x6aa5a6b9257ca6e18b2da94e1a5fbe57ce2947ca","decimals":18,"symbol":"genETH/wstETH","name":"Balancer
-        genETH/wstETH"},"gauge":{"id":"0x7d631e72eb15285da57eeaf40a971724a94ced05"},"isFactoryPool":true,"rewardPool":"0x772359b46faa01cbe08fb0d34907a72f593d0fce"},{"id":"205","totalSupply":"273017276632906403974","depositToken":{"id":"0xcf7d682167f7cadae06aadfe63710dca194dcd2b","decimals":18,"symbol":"aurapufETH/wstETH","name":"Balancer
+        genETH/wstETH"},"gauge":{"id":"0x7d631e72eb15285da57eeaf40a971724a94ced05"},"isFactoryPool":true,"rewardPool":"0x772359b46faa01cbe08fb0d34907a72f593d0fce"},{"id":"205","totalSupply":"273255719472793459516","depositToken":{"id":"0xcf7d682167f7cadae06aadfe63710dca194dcd2b","decimals":18,"symbol":"aurapufETH/wstETH","name":"Balancer
         pufETH/wstETH Aura Deposit"},"lpToken":{"id":"0x63e0d47a6964ad1565345da9bfa66659f4983f02","decimals":18,"symbol":"pufETH/wstETH","name":"Balancer
-        pufETH/wstETH"},"gauge":{"id":"0x0b9ea598757c7d03fb1937cc16bdd2c9d416ff80"},"isFactoryPool":true,"rewardPool":"0x6ea41486a8f21eed7b20afdb681b90a5b6c6d029"},{"id":"206","totalSupply":"280587099873476654921446","depositToken":{"id":"0x397ce53d17c5125fe0fb11117be4033337c0a973","decimals":18,"symbol":"auraShezUSD/sDAI","name":"Balancer
+        pufETH/wstETH"},"gauge":{"id":"0x0b9ea598757c7d03fb1937cc16bdd2c9d416ff80"},"isFactoryPool":true,"rewardPool":"0x6ea41486a8f21eed7b20afdb681b90a5b6c6d029"},{"id":"206","totalSupply":"282616005714680885570992","depositToken":{"id":"0x397ce53d17c5125fe0fb11117be4033337c0a973","decimals":18,"symbol":"auraShezUSD/sDAI","name":"Balancer
         ShezUSD/sDAI Aura Deposit"},"lpToken":{"id":"0xed0df9cd16d806e8a523805e53cf0c56e6db4d1d","decimals":18,"symbol":"ShezUSD/sDAI","name":"Balancer
         ShezUSD/sDAI"},"gauge":{"id":"0xa71adac76a2e34f8f988fa6992e3bdad08d92c01"},"isFactoryPool":true,"rewardPool":"0x5153dd9b05ac642e387c87a12c89e97fe1be6860"},{"id":"207","totalSupply":"158189233280142939854","depositToken":{"id":"0x0df3d164788e3ace6e1ec68a6db4890ec6ff94d8","decimals":18,"symbol":"auraETHx/wstETH","name":"Balancer
         ETHx/wstETH Aura Deposit"},"lpToken":{"id":"0xb91159aa527d4769cb9faf3e4adb760c7e8c8ea7","decimals":18,"symbol":"ETHx/wstETH","name":"Balancer
@@ -261,21 +212,21 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Sun, 07 Jul 2024 16:58:13 GMT
+      - Mon, 08 Jul 2024 00:15:09 GMT
       Ratelimit-Limit:
       - '30'
       Ratelimit-Remaining:
-      - '26'
+      - '29'
       Transfer-Encoding:
       - chunked
       Vary:
       - Accept-Encoding
       Via:
-      - 1.1 c2f5ee6ba5014f6e87c653c3d17bbed2.cloudfront.net (CloudFront)
+      - 1.1 f8e1c94fca9ebf20fb6b0f71a5cafb9a.cloudfront.net (CloudFront)
       X-Amz-Cf-Id:
-      - fNT99sokXmYmO-oism0NoawE2L6kqUit1wcjldJM5P7xRD7Sgm0LeA==
+      - ilErpjqxxmUMnLfIfcigzKljS_nwr-NqgiQ4HQe5qrRTmH-hN7vOZA==
       X-Amz-Cf-Pop:
-      - LIS50-C1
+      - MAD53-P1
       X-Cache:
       - Miss from cloudfront
     status:

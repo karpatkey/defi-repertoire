@@ -19,7 +19,7 @@ def test_read_main():
 
 
 def test_list_strategies():
-    response = client.get("/strategies")
+    response = client.get("/strategies/ethereum")
     assert response.status_code == 200, response.text
 
     first_strategy = response.json()["strategies"][0]
@@ -198,7 +198,7 @@ def test_disassembly_balancer():
             ]
 
             response = client.post(
-                "/txns/disassembly/balancer/withdraw_all_assets_proportional/?"
+                "/txns/disassembly/balancer/withdraw_all_assets_proportional?"
                 "blockchain=ethereum&"
                 "avatar_safe_address=0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF&",
                 json={

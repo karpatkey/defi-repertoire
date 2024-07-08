@@ -98,7 +98,8 @@ class WithdrawAllAssetsProportional:
 
     kind = "disassembly"
     protocol = "balancer"
-    name = "withdraw_all_assets_proportional"
+    id = "withdraw_all_assets_proportional"
+    name = "Withdraw Proportionally"
 
     class Args(BaseModel):
         bpt_address: ChecksumAddress
@@ -149,7 +150,8 @@ class WithdrawSingle:
 
     kind = "disassembly"
     protocol = "balancer"
-    name = "withdraw_single"
+    id = "withdraw_single"
+    name = "Withdraw (Single Token)"
 
     class Args(BaseModel):
         bpt_address: ChecksumAddress
@@ -162,10 +164,10 @@ class WithdrawSingle:
     @classmethod
     async def get_options(
         cls,
-        ctx: GenericTxContext,
+        blockchain: Blockchain,
         arguments: OptArgs,
     ):
-        pools = await fetch_pools(ctx.blockchain)
+        pools = await fetch_pools(blockchain)
         if arguments.bpt_address:
             bpt_address = str.lower(arguments.bpt_address)
             pool = next(
@@ -277,7 +279,8 @@ class UnstakeAndWithdrawProportionally:
 
     kind = "disassembly"
     protocol = "balancer"
-    name = "exit_2_1"
+    id = "unstake_withdraw_proportionally"
+    name = "Unstake + Withdraw (proportional)"
 
     class Args(BaseModel):
         gauge_address: ChecksumAddress
@@ -327,8 +330,8 @@ class UnstakeAndWithdrawSingleToken:
 
     kind = "disassembly"
     protocol = "balancer"
-    name = "Unstake + Windraw (Single token out)"
-    id = "exit_2_2"
+    id = "unstake_withdraw_single"
+    name = "Unstake + Windraw (Single Token)"
 
     class Args(BaseModel):
         gauge_address: ChecksumAddress
@@ -375,7 +378,7 @@ class UnstakeAndWithdrawSingleToken:
 
 
 @register
-class Exit23:
+class UnstakeAndWithdrawProportionallyInRecovery:
     """
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets
     in proportional way for pools in recovery mode.
@@ -383,7 +386,8 @@ class Exit23:
 
     kind = "disassembly"
     protocol = "balancer"
-    name = "exit_2_3"
+    id = "unstake_withdraw_proportionally_recovery"
+    name = "Unstake + Withdraw (proportional) (Rocovery)"
 
     class Args(BaseModel):
         gauge_address: ChecksumAddress

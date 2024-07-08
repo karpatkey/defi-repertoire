@@ -92,7 +92,8 @@ class Withdraw:
 
     kind = "disassembly"
     protocol = "aura"
-    name = "exit_1"
+    id = "withdraw"
+    name = "Withdraw"
 
     class Args(BaseModel):
         rewards_address: ChecksumAddress
@@ -101,8 +102,8 @@ class Withdraw:
     OptArgs = optional_args(Args)
 
     @classmethod
-    async def get_options(cls, ctx: GenericTxContext, arguments: OptArgs):
-        pools = await fetch_pools(ctx.blockchain)
+    async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
+        pools = await fetch_pools(blockchain)
         if arguments.rewards_address:
             address = str.lower(arguments.rewards_address)
             pool = next(
@@ -138,6 +139,7 @@ class Withdraw2:
 
     kind = "disassembly"
     protocol = "aura"
+    id = "exit_2_1"
     name = "exit_2_1"
 
     class Args(BaseModel):
@@ -182,6 +184,7 @@ class WithdrawSingle:
 
     kind = "disassembly"
     protocol = "aura"
+    id = "exit_2_2"
     name = "exit_2_2"
 
     class Args(BaseModel):
@@ -193,8 +196,8 @@ class WithdrawSingle:
     OptArgs = optional_args(Args)
 
     @classmethod
-    async def get_options(cls, ctx: GenericTxContext, arguments: OptArgs):
-        pools = await fetch_pools(ctx.blockchain)
+    async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
+        pools = await fetch_pools(blockchain)
         if arguments.rewards_address:
 
             address = str.lower(arguments.rewards_address)
@@ -207,7 +210,7 @@ class WithdrawSingle:
 
             bpt_address = pool["lpToken"]["id"]
             balancer_options = await balancer.WithdrawSingle.get_options(
-                ctx=ctx,
+                blockchain=blockchain,
                 arguments=balancer.WithdrawSingle.OptArgs(
                     **{
                         "bpt_address": bpt_address,
@@ -265,6 +268,7 @@ class Exit23:
 
     kind = "disassembly"
     protocol = "aura"
+    id = "exit_2_3"
     name = "exit_2_3"
 
     class Args(BaseModel):

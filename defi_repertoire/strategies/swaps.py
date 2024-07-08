@@ -147,7 +147,8 @@ class SwapCowswap:
 
     kind = "swap"
     protocol = "cowswap"
-    name = "swap"
+    id = "swap_on_cowswap"
+    name = "Swap on CoWswap"
 
     @classmethod
     def get_txns(
@@ -197,7 +198,8 @@ class SwapBalancer:
 
     kind = "swap"
     protocol = "balancer"
-    name = "swap"
+    id = "swap_on_balancer"
+    name = "Swap on Balancer"
 
     @classmethod
     def get_txns(
@@ -254,7 +256,8 @@ class SwapOnCurve:
 
     kind = "swap"
     protocol = "balancer"
-    name = "swap"
+    id = "swap_on_curve"
+    name = "Swap on Curve"
 
     @classmethod
     def get_txns(
@@ -313,7 +316,8 @@ class SwapUniswapV3:
 
     kind = "swap"
     protocol = "uniswapv3"
-    name = "swap"
+    id = "swap_on_uniswapv3"
+    name = "Swap on UniswapV3"
 
     @classmethod
     def get_txns(

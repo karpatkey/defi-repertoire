@@ -49,6 +49,7 @@ class LidoUnstakeStETH:
 
     kind = "disassembly"
     protocol = "lido"
+    id = "unstake_stETH"
     name = "unstake_stETH"
 
     @classmethod
@@ -94,6 +95,7 @@ class LidoUnwrapAndUnstakeWstETH:
 
     kind = "disassembly"
     protocol = "lido"
+    id = "unwrap_and_unstake_wstETH"
     name = "unwrap_and_unstake_wstETH"
 
     @classmethod
@@ -141,6 +143,7 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
 
     kind = "disassembly"
     protocol = "lido"
+    id = "swap_stETH_for_ETH"
     name = "swap_stETH_for_ETH"
 
     @classmethod

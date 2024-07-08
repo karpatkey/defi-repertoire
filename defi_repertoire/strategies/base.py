@@ -50,6 +50,7 @@ class Strategy(Protocol):
 
     kind: str
     protocol: str
+    id: str
     name: str
 
     @classmethod
@@ -69,6 +70,7 @@ class StrategyDefinitionModel(BaseModel):
     id: str
     description: str
     arguments: dict[str, Any]
+    options: dict[str, Any]
 
 
 class StrategyAmountArguments(BaseModel):
@@ -123,20 +125,26 @@ def get_strategy_arguments_type(strategy):
 
 
 def get_strategy_id(strategy):
-    return f"{strategy.protocol}__{strategy.name}"
+    return f"{strategy.protocol}__{strategy.id}"
 
 
 def get_strategy_by_id(strategy_id: str):
     return STRATEGIES[strategy_id]
 
 
-def strategy_as_dict(strategy):
+async def strategy_as_dict(blockchain, strategy):
+    options = (
+        hasattr(strategy, "get_options")
+        and await strategy.get_options(blockchain, arguments=strategy.OptArgs(**{}))
+        or {}
+    )
     data = StrategyDefinitionModel(
         kind=strategy.kind,
         protocol=strategy.protocol,
         name=strategy.name,
         id=get_strategy_id(strategy),
         arguments=get_strategy_arguments_type(strategy).model_json_schema(),
+        options=options,
         description=str.strip(strategy.__doc__),
     )
     return data

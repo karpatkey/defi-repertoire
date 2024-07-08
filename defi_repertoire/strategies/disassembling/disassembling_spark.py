@@ -26,6 +26,7 @@ class Exit1:
 
     kind = "disassembly"
     protocol = "spark"
+    id = "exit_1"
     name = "exit_1"
 
     @classmethod
@@ -49,6 +50,7 @@ class Exit2:
 
     kind = "disassembly"
     protocol = "spark"
+    id = "exit_2"
     name = "exit_2"
 
     @classmethod
