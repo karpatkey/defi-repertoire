@@ -132,15 +132,15 @@ class Withdraw:
 
 
 @register
-class Withdraw2:
+class WithdrawProportional:
     """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way
     (not used for pools in recovery mode!).
     """
 
     kind = "disassembly"
     protocol = "aura"
-    id = "exit_2_1"
-    name = "exit_2_1"
+    id = "withdraw_proportional"
+    name = "Withdraw proportional"
 
     class Args(BaseModel):
         rewards_address: ChecksumAddress
@@ -184,8 +184,8 @@ class WithdrawSingle:
 
     kind = "disassembly"
     protocol = "aura"
-    id = "exit_2_2"
-    name = "exit_2_2"
+    id = "withdraw_single_token"
+    name = "Withdraw (Single Token)"
 
     class Args(BaseModel):
         rewards_address: ChecksumAddress
@@ -261,15 +261,15 @@ class WithdrawSingle:
 
 
 @register
-class Exit23:
+class WithdrawProportionalRecovery:
     """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way when
     pool is in recovery mode.
     """
 
     kind = "disassembly"
     protocol = "aura"
-    id = "exit_2_3"
-    name = "exit_2_3"
+    id = "withdraw_proportional_recovery"
+    name = "Withdraw proportional (Recovery)"
 
     class Args(BaseModel):
         rewards_address: ChecksumAddress
@@ -287,13 +287,11 @@ class Exit23:
             reward_address=aura_rewards_address, amount=arguments.amount
         )
 
-        withdraw_balancer = (
-            balancer.WithdrawAllAssetsProportionalPoolsInRecovery.get_txns(
-                ctx=ctx,
-                arguments=balancer.WithdrawAllAssetsProportionalPoolsInRecovery.Args(
-                    **{"bpt_address": bpt_address, "amount": arguments.amount}
-                ),
-            )
+        withdraw_balancer = balancer.WithdrawProportionalRecovery.get_txns(
+            ctx=ctx,
+            arguments=balancer.WithdrawProportionalRecovery.Args(
+                **{"bpt_address": bpt_address, "amount": arguments.amount}
+            ),
         )
 
         txns.append(withdraw_aura)

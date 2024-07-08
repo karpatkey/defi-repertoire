@@ -223,7 +223,7 @@ class WithdrawSingle:
 
 
 @register
-class WithdrawAllAssetsProportionalPoolsInRecovery:
+class WithdrawProportionalRecovery:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
     """
@@ -271,7 +271,7 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
 
 
 @register
-class UnstakeAndWithdrawProportionally:
+class UnstakeAndWithdrawProportional:
     """
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets
     in proportional way (not used for pools in recovery mode!).
@@ -279,7 +279,7 @@ class UnstakeAndWithdrawProportionally:
 
     kind = "disassembly"
     protocol = "balancer"
-    id = "unstake_withdraw_proportionally"
+    id = "unstake_withdraw_proportional"
     name = "Unstake + Withdraw (proportional)"
 
     class Args(BaseModel):
@@ -378,7 +378,7 @@ class UnstakeAndWithdrawSingleToken:
 
 
 @register
-class UnstakeAndWithdrawProportionallyInRecovery:
+class UnstakeAndWithdrawProportionalRecovery:
     """
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets
     in proportional way for pools in recovery mode.
@@ -386,7 +386,7 @@ class UnstakeAndWithdrawProportionallyInRecovery:
 
     kind = "disassembly"
     protocol = "balancer"
-    id = "unstake_withdraw_proportionally_recovery"
+    id = "unstake_withdraw_proportional_recovery"
     name = "Unstake + Withdraw (proportional) (Rocovery)"
 
     class Args(BaseModel):
@@ -411,9 +411,9 @@ class UnstakeAndWithdrawProportionallyInRecovery:
         )
         bpt_address = gauge_contract.functions.lp_token().call()
 
-        withdraw_balancer = WithdrawAllAssetsProportionalPoolsInRecovery.get_txns(
+        withdraw_balancer = WithdrawProportionalRecovery.get_txns(
             ctx=ctx,
-            arguments=WithdrawAllAssetsProportionalPoolsInRecovery.Args(
+            arguments=WithdrawProportionalRecovery.Args(
                 **{"bpt_address": bpt_address, "amount": amount}
             ),
         )

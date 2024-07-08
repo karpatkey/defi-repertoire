@@ -29,7 +29,7 @@ class WithdrawWithProxy:
     kind = "disassembly"
     protocol = "dsr"
     id = "withdraw_with_proxy"
-    name = "withdraw_with_proxy"
+    name = "Withdraw with Proxy"
 
     @classmethod
     def get_txns(
@@ -55,7 +55,7 @@ class WithdrawWithoutProxy:
     kind = "disassembly"
     protocol = "dsr"
     id = "withdraw_without_proxy"
-    name = "withdraw_without_proxy"
+    name = "Withdraw without Proxy"
 
     @classmethod
     def get_txns(

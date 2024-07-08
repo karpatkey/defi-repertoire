@@ -112,7 +112,10 @@ STRATEGIES: Dict[str, Strategy] = {}
 
 
 def _register_strategy(strategy: Strategy):
-    STRATEGIES[get_strategy_id(strategy)] = strategy
+    id = get_strategy_id(strategy)
+    if STRATEGIES.get(id):
+        raise ValueError(f"Already registered {id}. Duplicated?")
+    STRATEGIES[id] = strategy
 
 
 def register(cls):
