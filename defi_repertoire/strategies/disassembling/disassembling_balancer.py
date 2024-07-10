@@ -31,6 +31,14 @@ GRAPHS[Chain.get_blockchain_by_chain_id(100)] = (
     f"https://gateway-arbitrum.network.thegraph.com/api/{API_KEY}/subgraphs/id/EJezH1Cp31QkKPaBDerhVPRWsKVZLrDfzjrLqpmv6cGg"
 )
 
+GAUGE_GRAPHS: Dict[Blockchain, str] = {}
+GAUGE_GRAPHS[Chain.get_blockchain_by_chain_id(1)] = (
+    f"https://gateway-arbitrum.network.thegraph.com/api/{API_KEY}/subgraphs/id/4sESujoqmztX6pbichs4wZ1XXyYrkooMuHA8sKkYxpTn"
+)
+GAUGE_GRAPHS[Chain.get_blockchain_by_chain_id(100)] = (
+    f"https://gateway-arbitrum.network.thegraph.com/api/{API_KEY}/subgraphs/id/HW5XpZBi2iYDLBqqEEMiRJFx8ZJAQak9uu5TzyH9BBxy"
+)
+
 
 def get_bpt_amount_to_redeem_from_gauge(
     ctx: GenericTxContext, gauge_address: ChecksumAddress, fraction: float | Decimal
@@ -88,6 +96,29 @@ async def fetch_pools(blockchain: Blockchain):
 
     response = requests.post(url=graph_url, json={"query": req})
     return response.json()["data"]["pools"]
+
+
+@stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
+async def fetch_gauges(blockchain: Blockchain):
+    req = """
+    {
+      gaugeFactories {
+        id
+        gauges {
+          id
+          symbol
+          poolAddress
+        }
+      }
+    }
+    """
+    graph_url = GAUGE_GRAPHS.get(blockchain)
+    if not graph_url:
+        raise ValueError(f"Blockchain not supported: {blockchain}")
+
+    response = requests.post(url=graph_url, json={"query": req})
+    factories = response.json()["data"]["gaugeFactories"]
+    return [g for f in factories for g in f["gauges"]]
 
 
 @register
@@ -286,6 +317,26 @@ class UnstakeAndWithdrawProportional:
         gauge_address: ChecksumAddress
         amount: Amount
         max_slippage: Percentage
+
+    OptArgs = optional_args(Args)
+
+    @classmethod
+    async def get_options(
+        cls,
+        blockchain: Blockchain,
+        arguments: OptArgs,
+    ):
+        gauges = await fetch_gauges(blockchain)
+        return {
+            "gauge_address": [
+                {
+                    "symbol": p["symbol"],
+                    "address": p["id"],
+                    "poolAddress": p["poolAddress"],
+                }
+                for p in gauges
+            ]
+        }
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
