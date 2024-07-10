@@ -1,4 +1,4 @@
 fastapi<=0.111.0
 uvicorn[standard]
-rolesroyce @ git+https://github.com/Karpatkey/roles_royce.git@6016be88a6fc8a8a73cdbe1dc865a032bd5ed4a9
+rolesroyce @ git+https://github.com/Karpatkey/roles_royce.git@7f81036d366d1d7c76b8a55d7f4107e3afebc476
 karpatkit @ git+https://github.com/karpatkey/karpatkit.git

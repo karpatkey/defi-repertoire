@@ -1,12 +1,13 @@
-import dataclasses
 import enum
+import json
 import os
 from collections import defaultdict
 
 from defabipedia.types import Blockchain, Chain
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 from roles_royce.generic_method import Operation
+from roles_royce.protocols import ContractMethod
 from roles_royce.protocols.roles_modifier.contract_methods import (
     get_exec_transaction_with_role_method,
 )
@@ -59,6 +60,25 @@ class TransactableData(BaseModel):
         )
 
 
+class DecodeNode(BaseModel):
+    txn: TransactableData
+    decoded: dict
+    children: list["DecodeNode"] | None
+
+    @field_serializer("decoded")
+    def serialize_decoded(self, decoded: dict, _info):
+        # Inefficient way to use the Web3 json normalizers
+        return json.loads(Web3.to_json(decoded))
+
+    @classmethod
+    def from_contract_method(
+        cls, method: ContractMethod, children: list["DecodeNode"] | None
+    ) -> "DecodeNode":
+        txn = TransactableData.from_transactable(method)
+        decoded = {"name": method.name, "inputs": method.inputs}
+        return DecodeNode(txn=txn, decoded=decoded, children=children)
+
+
 def get_endpoint_for_blockchain(blockchain: Blockchain):
     if blockchain == Chain.ETHEREUM:
         url = ENDPOINTS[blockchain][0]
@@ -67,27 +87,20 @@ def get_endpoint_for_blockchain(blockchain: Blockchain):
     return Web3(Web3.HTTPProvider(url))
 
 
-def strategies_to_transactions(
+def strategies_to_contract_methods(
     blockchain: Blockchain,
     avatar_safe_address: ChecksumAddress,
     strategy_calls: list[StrategyCall],
-):
+) -> list[ContractMethod]:
     w3 = get_endpoint_for_blockchain(blockchain)
     ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
-    txns: list[TransactableData] = []
+    txns = []
     for call in strategy_calls:
         strategy = STRATEGIES[call.id]
         arguments = get_strategy_arguments_type(strategy)(**call.arguments)
         strategy_txns = strategy.get_txns(ctx=ctx, arguments=arguments)
         for txn in strategy_txns:
-            txns.append(
-                TransactableData(
-                    operation=txn.operation,
-                    value=txn.value,
-                    data=txn.data,
-                    contract_address=txn.contract_address,
-                )
-            )
+            txns.append(txn)
     return txns
 
 
@@ -117,10 +130,13 @@ def strategy_transactions(
     multisend: bool = False,
 ):
     blockchain = Chain.get_blockchain_by_name(blockchain)
-    txns = strategies_to_transactions(blockchain, avatar_safe_address, strategy_calls)
+    txns = strategies_to_contract_methods(
+        blockchain, avatar_safe_address, strategy_calls
+    )
     if multisend:
         txns = [multi_or_one(txs=txns, blockchain=blockchain)]
-    return {"txns": txns}
+
+    return {"txns": [TransactableData.from_transactable(txn) for txn in txns]}
 
 
 @app.post(f"/strategies-to-exec-with-role")
@@ -132,29 +148,49 @@ def strategies_to_exec_with_role(
     strategy_calls: list[StrategyCall],
 ):
     blockchain = Chain.get_blockchain_by_name(blockchain)
-    txns = strategies_to_transactions(blockchain, avatar_safe_address, strategy_calls)
-    txn = multi_or_one(txs=txns, blockchain=blockchain)
-    role_method = get_exec_transaction_with_role_method(
-        roles_mod_address=roles_mod_address,
-        operation=txn.operation,
-        role=role,
-        to=txn.contract_address,
-        value=txn.value,
-        data=txn.data,
-        should_revert=True,
+
+    # strategy methods layer
+    strategy_methods = strategies_to_contract_methods(
+        blockchain, avatar_safe_address, strategy_calls
+    )
+    strategy_decode_nodes = [
+        DecodeNode.from_contract_method(method, children=None)
+        for method in strategy_methods
+    ]
+
+    # multisend layer
+    multisend_method = multi_or_one(txs=strategy_methods, blockchain=blockchain)
+    multisend_txn = TransactableData.from_transactable(multisend_method)
+    multisend_decode_node = DecodeNode.from_contract_method(
+        multisend_method, children=strategy_decode_nodes
     )
 
-    return {"txn": TransactableData.from_transactable(role_method)}
+    # role layer
+    role_method = get_exec_transaction_with_role_method(
+        roles_mod_address=roles_mod_address,
+        operation=multisend_txn.operation,
+        role=role,
+        to=multisend_txn.contract_address,
+        value=multisend_txn.value,
+        data=multisend_txn.data,
+        should_revert=True,
+    )
+    role_txn = TransactableData.from_transactable(role_method)
+    # build the decode tree
+    role_txn_decode_tree = DecodeNode.from_contract_method(
+        role_method, children=[multisend_decode_node]
+    )
+    return {"txn": role_txn, "decoded": role_txn_decode_tree}
 
 
 @app.post(
     f"/multisend-transactions",
-    description="Build one multisend call from multiple Transactables",
+    description="Build one multisend call from multiple TransactableData",
 )
 def multisend_transactions(blockchain: BlockchainOption, txns: list[TransactableData]):
     blockchain = Chain.get_blockchain_by_name(blockchain)
     txn = multi_or_one(txs=txns, blockchain=blockchain)
-    return {"txn": dataclasses.asdict(txn)}
+    return {"txn": TransactableData.from_transactable(txn)}
 
 
 def generate_strategy_endpoints():
