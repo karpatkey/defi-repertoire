@@ -98,6 +98,11 @@ def get_strategy_id(strategy):
     return f"{strategy.protocol}__{strategy.name}"
 
 
+def get_strategy_by_id(strategy_id):
+
+    return
+
+
 def strategy_as_dict(strategy):
     data = StrategyDefinitionModel(
         kind=strategy.kind,
