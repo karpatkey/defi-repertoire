@@ -1,13 +1,15 @@
 from dataclasses import dataclass
-from fastapi.testclient import TestClient
-from unittest.mock import patch, ANY
-from defi_repertoire.main import app
+from unittest.mock import ANY, patch
+
 from defabipedia.types import Chain
-from defi_repertoire.strategies.disassembling.disassembling_balancer import (
-    WithdrawAllAssetsProportional,
-    Exit11ArgumentElement,
-)
+from fastapi.testclient import TestClient
 from roles_royce.generic_method import TxData
+
+from defi_repertoire.main import app
+from defi_repertoire.strategies.disassembling.disassembling_balancer import (
+    Exit11ArgumentElement,
+    WithdrawAllAssetsProportional,
+)
 
 client = TestClient(app)
 

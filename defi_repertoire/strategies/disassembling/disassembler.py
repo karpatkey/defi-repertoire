@@ -1,9 +1,9 @@
+from roles_royce import roles
+from roles_royce.generic_method import Transactable
 from web3 import Web3
 from web3.types import Address, ChecksumAddress, TxParams, TxReceipt
 
 from defi_repertoire.strategies.base import GenericTxContext
-from roles_royce import roles
-from roles_royce.generic_method import Transactable
 
 
 class Disassembler:

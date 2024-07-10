@@ -1,15 +1,16 @@
 from decimal import Decimal
+
 from defabipedia.spark import ContractSpecs
 from defabipedia.tokens import Addresses
 from roles_royce.generic_method import Transactable
-from roles_royce.protocols.eth import spark
 from roles_royce.protocols import cowswap
+from roles_royce.protocols.eth import spark
 
 from ..base import (
     GenericTxContext,
-    register,
     StrategyAmountArguments,
     StrategyAmountWithSlippageArguments,
+    register,
 )
 
 

@@ -1,26 +1,26 @@
-from collections import defaultdict
 import dataclasses
 import enum
 import os
+from collections import defaultdict
 
+from defabipedia.types import Blockchain, Chain
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-from defi_repertoire.strategies.base import (
-    GenericTxContext,
-    STRATEGIES,
-    get_strategy_arguments_type,
-    strategy_as_dict,
-    ChecksumAddress,
-)
-from defi_repertoire.strategies import disassembling, swaps
 from roles_royce.generic_method import Operation
 from roles_royce.protocols.roles_modifier.contract_methods import (
     get_exec_transaction_with_role_method,
 )
 from roles_royce.utils import multi_or_one
-from defabipedia.types import Chain, Blockchain
 from web3 import Web3
+
+from defi_repertoire.strategies import disassembling, swaps
+from defi_repertoire.strategies.base import (
+    STRATEGIES,
+    ChecksumAddress,
+    GenericTxContext,
+    get_strategy_arguments_type,
+    strategy_as_dict,
+)
 
 Protocols = enum.StrEnum(
     "Protocols", {s.protocol: s.protocol for s in STRATEGIES.values()}
@@ -31,6 +31,8 @@ StrategyKinds = enum.StrEnum(
 BlockchainOption = enum.StrEnum(
     "BlockchainOption", {name: name for name in Chain._by_name.values()}
 )
+
+ENDPOINTS = {Chain.ETHEREUM: [os.getenv("RPC_MAINNET_URL")]}
 
 ENDPOINTS = {Chain.ETHEREUM: [os.getenv("RPC_MAINNET_URL")]}
 

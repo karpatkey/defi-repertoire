@@ -1,15 +1,14 @@
 from decimal import Decimal
 
-from pydantic import BaseModel
-
 from defabipedia.balancer import Abis
-from web3.exceptions import ContractLogicError
-
+from pydantic import BaseModel
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols import balancer
-#from roles_royce.protocols.base import Address
+from web3.exceptions import ContractLogicError
 
-from ..base import GenericTxContext, register, Amount, Percentage, ChecksumAddress
+from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, register
+
+# from roles_royce.protocols.base import Address
 
 
 class Exit11ArgumentElement(BaseModel):
@@ -50,7 +49,7 @@ class Exit23ArgumentElement(BaseModel):
 
 
 def get_bpt_amount_to_redeem_from_gauge(
-        ctx: GenericTxContext, gauge_address: ChecksumAddress, fraction: float | Decimal
+    ctx: GenericTxContext, gauge_address: ChecksumAddress, fraction: float | Decimal
 ) -> int:
     gauge_contract = ctx.w3.eth.contract(
         address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi
@@ -62,7 +61,7 @@ def get_bpt_amount_to_redeem_from_gauge(
 
 
 def get_bpt_amount_to_redeem(
-        ctx: GenericTxContext, bpt_address: ChecksumAddress, fraction: float | Decimal
+    ctx: GenericTxContext, bpt_address: ChecksumAddress, fraction: float | Decimal
 ) -> int:
     bpt_contract = ctx.w3.eth.contract(
         address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
@@ -86,7 +85,7 @@ class WithdrawAllAssetsProportional:
 
     @classmethod
     def get_txns(
-            cls, ctx: GenericTxContext, arguments: Exit11ArgumentElement
+        cls, ctx: GenericTxContext, arguments: Exit11ArgumentElement
     ) -> list[Transactable]:
 
         txns = []
@@ -137,9 +136,9 @@ class WithdrawSingle:
 
     @classmethod
     def get_txns(
-            cls,
-            ctx: GenericTxContext,
-            arguments: Exit12ArgumemntElement,
+        cls,
+        ctx: GenericTxContext,
+        arguments: Exit12ArgumemntElement,
     ) -> list[Transactable]:
 
         txns = []
@@ -192,9 +191,9 @@ class WithdrawAllAssetsProportionalPoolsInRecovery:
 
     @classmethod
     def get_txns(
-            cls,
-            ctx: GenericTxContext,
-            arguments: Exit13ArgumentElement,
+        cls,
+        ctx: GenericTxContext,
+        arguments: Exit13ArgumentElement,
     ) -> list[Transactable]:
 
         txns = []
@@ -239,7 +238,7 @@ class Exit21:
 
     @classmethod
     def get_txns(
-            cls, ctx: GenericTxContext, arguments: Exit21ArgumentElement
+        cls, ctx: GenericTxContext, arguments: Exit21ArgumentElement
     ) -> list[Transactable]:
 
         txns = []
@@ -262,12 +261,13 @@ class Exit21:
 
         withdraw_balancer = WithdrawAllAssetsProportional.get_txns(
             ctx=ctx,
-            arguments=Exit11ArgumentElement(**
-            {
-                "bpt_address": bpt_address,
-                "max_slippage": max_slippage,
-                "amount": amount,
-            })
+            arguments=Exit11ArgumentElement(
+                **{
+                    "bpt_address": bpt_address,
+                    "max_slippage": max_slippage,
+                    "amount": amount,
+                }
+            ),
         )
         for transactable in withdraw_balancer:
             txns.append(transactable)
@@ -287,7 +287,7 @@ class Exit22:
 
     @classmethod
     def get_txns(
-            cls, ctx: GenericTxContext, arguments: Exit22ArgumentElement
+        cls, ctx: GenericTxContext, arguments: Exit22ArgumentElement
     ) -> list[Transactable]:
 
         txns = []
@@ -310,14 +310,14 @@ class Exit22:
 
         withdraw_balancer = WithdrawSingle.get_txns(
             ctx=ctx,
-            arguments=Exit12ArgumemntElement(**
-                {
+            arguments=Exit12ArgumemntElement(
+                **{
                     "bpt_address": bpt_address,
                     "token_out_address": token_out_address,
                     "max_slippage": max_slippage,
                     "amount": amount,
                 }
-            )
+            ),
         )
         for transactable in withdraw_balancer:
             txns.append(transactable)
@@ -338,7 +338,7 @@ class Exit23:
 
     @classmethod
     def get_txns(
-            cls, ctx: GenericTxContext, arguments: Exit23ArgumentElement
+        cls, ctx: GenericTxContext, arguments: Exit23ArgumentElement
     ) -> list[Transactable]:
         txns = []
 
@@ -356,7 +356,10 @@ class Exit23:
         bpt_address = gauge_contract.functions.lp_token().call()
 
         withdraw_balancer = WithdrawAllAssetsProportionalPoolsInRecovery.get_txns(
-            ctx=ctx, arguments=Exit13ArgumentElement(**{"bpt_address": bpt_address, "amount": amount})
+            ctx=ctx,
+            arguments=Exit13ArgumentElement(
+                **{"bpt_address": bpt_address, "amount": amount}
+            ),
         )
         for transactable in withdraw_balancer:
             txns.append(transactable)

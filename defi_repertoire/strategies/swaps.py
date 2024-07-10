@@ -3,16 +3,13 @@ from time import time
 
 from defabipedia.balancer import Abis as BalancerAbis
 from defabipedia.swap_pools import SwapPoolInstances
-from defabipedia.tokens import Abis, Addresses, NATIVE
-from defabipedia.types import Chain, SwapPools, Blockchain
-from web3 import Web3
-
+from defabipedia.tokens import NATIVE, Abis, Addresses
+from defabipedia.types import Blockchain, Chain, SwapPools
 from roles_royce.generic_method import Transactable
+from roles_royce.protocols import balancer, cowswap
 from roles_royce.protocols.balancer.methods_general import ApproveForVault
-from roles_royce.protocols import balancer
 from roles_royce.protocols.balancer.types_and_enums import SwapKind
 from roles_royce.protocols.base import Address
-from roles_royce.protocols import cowswap
 from roles_royce.protocols.swap_pools.quote_methods import QuoteCurve, QuoteUniswapV3
 from roles_royce.protocols.swap_pools.swap_methods import (
     ApproveCurve,
@@ -21,11 +18,9 @@ from roles_royce.protocols.swap_pools.swap_methods import (
     SwapUniswapV3,
     WrapNativeToken,
 )
-from defi_repertoire.strategies.base import (
-    GenericTxContext,
-    register,
-    SwapArguments,
-)
+from web3 import Web3
+
+from defi_repertoire.strategies.base import GenericTxContext, SwapArguments, register
 
 
 def get_amount_to_redeem(
