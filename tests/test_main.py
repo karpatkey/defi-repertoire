@@ -6,8 +6,10 @@ from fastapi.testclient import TestClient
 from roles_royce.generic_method import TxData
 
 from defi_repertoire.main import app
-from defi_repertoire.strategies.disassembling.disassembling_balancer import \
-    WithdrawAllAssetsProportional
+from defi_repertoire.strategies.disassembling.disassembling_balancer import (
+    WithdrawAllAssetsProportional,
+)
+from tests.vcr import my_vcr
 
 client = TestClient(app)
 
@@ -18,6 +20,7 @@ def test_read_main():
     assert response.json() == {"message": "DeFi Repertoire API"}
 
 
+@my_vcr.use_cassette()
 def test_list_strategies():
     response = client.get("/strategies/ethereum")
     assert response.status_code == 200, response.text

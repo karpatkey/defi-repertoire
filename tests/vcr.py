@@ -31,5 +31,7 @@ def transform_path(path: str) -> str:
 
 my_vcr = vcr.VCR(
     path_transformer=transform_path,
+    ignore_localhost=True,
+    ignore_hosts=["testserver"],
     before_record_request=scrub_api_keys,
 )

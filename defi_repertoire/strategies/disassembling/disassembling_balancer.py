@@ -100,6 +100,7 @@ async def fetch_pools(blockchain: Blockchain):
 
 @stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
 async def fetch_gauges(blockchain: Blockchain):
+    print(f"\nFETCHING BALANCER GAUGES {blockchain.name}\n")
     req = """
     {
       gaugeFactories {
