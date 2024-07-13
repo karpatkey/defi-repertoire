@@ -15,32 +15,6 @@ from ..base import (
 )
 
 
-def get_amount_to_redeem(
-    ctx: GenericTxContext, address: Address, fraction: float | Decimal
-) -> int:
-    """
-    Calculates the amount of tokens to redeem based on the percentage of the total holdings.
-
-    Args:
-        address (Address): Token address; can be stETH or wstETH.
-        fraction (float): Percentage of the total holdings to redeem.
-
-    Returns:
-        int: Amount of tokens to redeem.
-    """
-    if address == ContractSpecs[ctx.blockchain].wstETH.address:
-        contract = ContractSpecs[ctx.blockchain].wstETH.contract(ctx.w3)
-    elif address == ContractSpecs[ctx.blockchain].stETH.address:
-        contract = ContractSpecs[ctx.blockchain].stETH.contract(ctx.w3)
-    else:
-        raise ValueError("Invalid token address")
-
-    return int(
-        Decimal(contract.functions.balanceOf(ctx.avatar_safe_address).call())
-        * Decimal(fraction)
-    )
-
-
 @register
 class LidoUnstakeStETH:
     """

@@ -14,12 +14,6 @@ from ..base import (
 )
 
 
-def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) -> int:
-    sdai = ContractSpecs[ctx.blockchain].sDAI.contract(ctx.w3)
-    balance = sdai.functions.balanceOf(ctx.avatar_safe_address).call()
-    return int(Decimal(balance) * Decimal(fraction))
-
-
 @register
 class WithdrawWithProxy:
     """Withdraw funds from Spark with proxy."""

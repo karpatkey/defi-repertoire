@@ -7,7 +7,6 @@ from defi_repertoire.strategies.base import GenericTxContext
 
 
 class Disassembler:
-
     def send(
         self,
         ctx: GenericTxContext,
