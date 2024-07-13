@@ -1,5 +1,4 @@
 import asyncio
-import dataclasses
 import enum
 import json
 import os
@@ -16,7 +15,6 @@ from roles_royce.protocols.roles_modifier.contract_methods import (
 from roles_royce.utils import multi_or_one
 from web3 import Web3
 
-from defi_repertoire.strategies import disassembling, swaps
 from defi_repertoire.strategies.base import (
     STRATEGIES,
     ChecksumAddress,
@@ -218,7 +216,6 @@ def generate_strategy_endpoints():
             #
             # For the time being the option 3) is implemented
             url = f"/txns/{kind}/{protocol}/{id}"
-            print(url)
 
             # @app.get(url)
             @app.post(url, description=strategy.__doc__)

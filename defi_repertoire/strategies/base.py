@@ -89,6 +89,11 @@ class SwapArguments(BaseModel):
     max_slippage: Percentage
 
 
+class OptSwapArguments(BaseModel):
+    token_in_address: ChecksumAddress | None
+    token_out_address: ChecksumAddress | None
+
+
 T = TypeVar("T", bound=BaseModel)
 
 
