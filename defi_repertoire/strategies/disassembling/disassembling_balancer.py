@@ -12,14 +12,7 @@ from web3.exceptions import ContractLogicError
 
 from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
 
-from ..base import (
-    Amount,
-    ChecksumAddress,
-    GenericTxContext,
-    Percentage,
-    optional_args,
-    register,
-)
+from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, register
 
 API_KEY = os.getenv("THEGRAPH_API_KEY", "MOCK_KEY")
 
@@ -191,7 +184,16 @@ class WithdrawSingle:
         max_slippage: Percentage
         token_out_address: ChecksumAddress
 
-    OptArgs = optional_args(Args)
+    class OptArgs(BaseModel):
+        bpt_address: ChecksumAddress
+
+    @classmethod
+    async def get_base_options(
+        cls,
+        blockchain: Blockchain,
+    ):
+        pools = await fetch_pools(blockchain)
+        return {"bpt_address": [p["address"] for p in pools]}
 
     @classmethod
     async def get_options(
@@ -200,18 +202,14 @@ class WithdrawSingle:
         arguments: OptArgs,
     ):
         pools = await fetch_pools(blockchain)
-        if arguments.bpt_address:
-            bpt_address = str.lower(arguments.bpt_address)
-            pool = next(
-                (p for p in pools if str.lower(p["address"]) == bpt_address),
-                None,
-            )
-            if not pool:
-                raise ValueError("Pool not found")
-            return {"bpt_address": [bpt_address], "token_out_address": pool["tokens"]}
-
-        else:
-            return {"bpt_address": [p["address"] for p in pools]}
+        bpt_address = str.lower(arguments.bpt_address)
+        pool = next(
+            (p for p in pools if str.lower(p["address"]) == bpt_address),
+            None,
+        )
+        if not pool:
+            raise ValueError("Pool not found")
+        return {"bpt_address": [bpt_address], "token_out_address": pool["tokens"]}
 
     @classmethod
     def get_txns(
@@ -319,13 +317,10 @@ class UnstakeAndWithdrawProportional:
         amount: Amount
         max_slippage: Percentage
 
-    OptArgs = optional_args(Args)
-
     @classmethod
-    async def get_options(
+    async def get_base_options(
         cls,
         blockchain: Blockchain,
-        arguments: OptArgs,
     ):
         gauges = await fetch_gauges(blockchain)
         return {

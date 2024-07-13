@@ -14,15 +14,12 @@ async def test_balancer_options_gnosis(web3_gnosis, accounts):
 
     cow_gno_pool_address = "0x21d4c792Ea7E38e0D0819c2011A2b1Cb7252Bd99"
 
-    opts = await balancer.WithdrawSingle.get_options(
-        blockchain,
-        balancer.WithdrawSingle.OptArgs(**{}),
-    )
+    opts = await balancer.WithdrawSingle.get_base_options(blockchain)
     assert str.lower(cow_gno_pool_address) in opts["bpt_address"]
 
     opts2 = await balancer.WithdrawSingle.get_options(
         blockchain,
-        balancer.WithdrawSingle.OptArgs(**{"bpt_address": cow_gno_pool_address}),
+        balancer.WithdrawSingle.OptArgs(bpt_address=cow_gno_pool_address),
     )
     assert str.lower(cow_gno_pool_address) in opts2["bpt_address"]
     assert len(opts2["bpt_address"]) == 1
@@ -47,14 +44,12 @@ async def test_balancer_options_eth(accounts):
 
     cow_gno_pool_address = "0x92762b42a06dcdddc5b7362cfb01e631c4d44b40"
 
-    opts = await balancer.WithdrawSingle.get_options(
-        blockchain, balancer.WithdrawSingle.OptArgs(**{})
-    )
+    opts = await balancer.WithdrawSingle.get_base_options(blockchain)
     assert str.lower(cow_gno_pool_address) in opts["bpt_address"]
 
     opts2 = await balancer.WithdrawSingle.get_options(
         blockchain,
-        balancer.WithdrawSingle.OptArgs(**{"bpt_address": cow_gno_pool_address}),
+        balancer.WithdrawSingle.OptArgs(bpt_address=cow_gno_pool_address),
     )
     assert str.lower(cow_gno_pool_address) in opts2["bpt_address"]
     assert len(opts2["bpt_address"]) == 1

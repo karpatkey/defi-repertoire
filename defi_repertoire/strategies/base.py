@@ -92,22 +92,6 @@ class SwapArguments(BaseModel):
 T = TypeVar("T", bound=BaseModel)
 
 
-def optional_args(cls: Type[T]) -> Type[T]:
-    """
-    Create a new model class with all fields of the original class set to Optional.
-    """
-    # Retrieve the fields from the original class
-    fields: Dict[str, Any] = cls.__annotations__
-
-    # Create a dictionary for the new fields with all attributes turned to Optional
-    optional_fields = {
-        name: (Optional[typ], Field(default=None)) for name, typ in fields.items()
-    }
-
-    # Create and return the new model
-    return create_model(cls.__name__ + "Optional", **optional_fields, __base__=cls)
-
-
 STRATEGIES: Dict[str, Strategy] = {}
 
 
@@ -138,7 +122,7 @@ def get_strategy_by_id(strategy_id: str):
 async def strategy_as_dict(blockchain, strategy):
     options = (
         hasattr(strategy, "get_options")
-        and await strategy.get_options(blockchain, arguments=strategy.OptArgs(**{}))
+        and await strategy.get_base_options(blockchain)
         or {}
     )
     data = StrategyDefinitionModel(

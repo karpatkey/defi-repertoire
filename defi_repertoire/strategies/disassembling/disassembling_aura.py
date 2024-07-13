@@ -11,7 +11,7 @@ from roles_royce.protocols.eth import aura
 from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
 from defi_repertoire.strategies import register
 
-from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, optional_args
+from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage
 from . import disassembling_balancer as balancer
 
 GRAPHS: Dict[Blockchain, str] = {}
@@ -99,23 +99,26 @@ class Withdraw:
         rewards_address: ChecksumAddress
         amount: Amount
 
-    OptArgs = optional_args(Args)
+    class OptArgs(BaseModel):
+        rewards_address: ChecksumAddress
+
+    @classmethod
+    async def get_base_options(cls, blockchain: Blockchain):
+        pools = await fetch_pools(blockchain)
+        reward_addresses = [p["rewardPool"] for p in pools]
+        return {"rewards_address": reward_addresses}
 
     @classmethod
     async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
         pools = await fetch_pools(blockchain)
-        if arguments.rewards_address:
-            address = str.lower(arguments.rewards_address)
-            pool = next(
-                (p for p in pools if str.lower(p["rewardPool"]) == address),
-                None,
-            )
-            if not pool:
-                raise ValueError("Pool not found")
-            return {"rewards_address": [pool["rewardPool"]]}
-        else:
-            reward_addresses = [p["rewardPool"] for p in pools]
-            return {"rewards_address": reward_addresses}
+        address = str.lower(arguments.rewards_address)
+        pool = next(
+            (p for p in pools if str.lower(p["rewardPool"]) == address),
+            None,
+        )
+        if not pool:
+            raise ValueError("Pool not found")
+        return {"rewards_address": [pool["rewardPool"]]}
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
@@ -193,38 +196,39 @@ class WithdrawSingle:
         token_out_address: ChecksumAddress
         amount: Amount
 
-    OptArgs = optional_args(Args)
+    class OptArgs(BaseModel):
+        rewards_address: ChecksumAddress
+
+    @classmethod
+    async def get_base_options(cls, blockchain: Blockchain):
+        pools = await fetch_pools(blockchain)
+        reward_addresses = [p["rewardPool"] for p in pools]
+        return {"rewards_address": reward_addresses}
 
     @classmethod
     async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
         pools = await fetch_pools(blockchain)
-        if arguments.rewards_address:
+        address = str.lower(arguments.rewards_address)
+        pool = next(
+            (p for p in pools if str.lower(p["rewardPool"]) == address),
+            None,
+        )
+        if not pool:
+            raise ValueError("Pool not found")
 
-            address = str.lower(arguments.rewards_address)
-            pool = next(
-                (p for p in pools if str.lower(p["rewardPool"]) == address),
-                None,
-            )
-            if not pool:
-                raise ValueError("Pool not found")
-
-            bpt_address = pool["lpToken"]["id"]
-            balancer_options = await balancer.WithdrawSingle.get_options(
-                blockchain=blockchain,
-                arguments=balancer.WithdrawSingle.OptArgs(
-                    **{
-                        "bpt_address": bpt_address,
-                    }
-                ),
-            )
-            return {
-                "rewards_address": [address],
-                "token_out_address": balancer_options["token_out_address"],
-            }
-
-        else:
-            reward_addresses = [p["rewardPool"] for p in pools]
-            return {"rewards_address": reward_addresses}
+        bpt_address = pool["lpToken"]["id"]
+        balancer_options = await balancer.WithdrawSingle.get_options(
+            blockchain=blockchain,
+            arguments=balancer.WithdrawSingle.OptArgs(
+                **{
+                    "bpt_address": bpt_address,
+                }
+            ),
+        )
+        return {
+            "rewards_address": [address],
+            "token_out_address": balancer_options["token_out_address"],
+        }
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
