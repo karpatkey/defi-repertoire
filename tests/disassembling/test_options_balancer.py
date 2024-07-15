@@ -10,27 +10,27 @@ from tests.vcr import my_vcr
 async def test_balancer_options_gnosis():
     blockchain = Chain.get_blockchain_by_chain_id(100)
 
-    cow_gno_pool_address = "0x21d4c792Ea7E38e0D0819c2011A2b1Cb7252Bd99"
+    bpt_address = "0x21d4c792ea7e38e0d0819c2011a2b1cb7252bd99"
 
     opts = await balancer.WithdrawSingle.get_base_options(blockchain)
-    assert str.lower(cow_gno_pool_address) in opts["bpt_address"]
+
+    assert next(o for o in opts["bpt_address"] if o["label"] == "50COW-50GNO") == {
+        "address": bpt_address,
+        "label": "50COW-50GNO",
+    }
 
     opts2 = await balancer.WithdrawSingle.get_options(
         blockchain,
-        balancer.WithdrawSingle.OptArgs(bpt_address=cow_gno_pool_address),
+        balancer.WithdrawSingle.OptArgs(bpt_address=bpt_address),
     )
-    assert str.lower(cow_gno_pool_address) in opts2["bpt_address"]
-    assert len(opts2["bpt_address"]) == 1
     assert opts2["token_out_address"] == [
         {
             "address": "0x177127622c4a00f3d409b75571e12cb3c8973d3c",
-            "name": "CoW Protocol Token from Mainnet",
-            "symbol": "COW",
+            "label": "COW",
         },
         {
             "address": "0x9c58bacc331c9aa871afd802db6379a98e80cedb",
-            "name": "Gnosis Token on xDai",
-            "symbol": "GNO",
+            "label": "GNO",
         },
     ]
 
@@ -43,23 +43,18 @@ async def test_balancer_options_eth():
     cow_gno_pool_address = "0x92762b42a06dcdddc5b7362cfb01e631c4d44b40"
 
     opts = await balancer.WithdrawSingle.get_base_options(blockchain)
-    assert str.lower(cow_gno_pool_address) in opts["bpt_address"]
 
     opts2 = await balancer.WithdrawSingle.get_options(
         blockchain,
         balancer.WithdrawSingle.OptArgs(bpt_address=cow_gno_pool_address),
     )
-    assert str.lower(cow_gno_pool_address) in opts2["bpt_address"]
-    assert len(opts2["bpt_address"]) == 1
     assert opts2["token_out_address"] == [
         {
             "address": "0x6810e776880c02933d47db1b9fc05908e5386b96",
-            "name": "Gnosis Token",
-            "symbol": "GNO",
+            "label": "GNO",
         },
         {
             "address": "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab",
-            "name": "CoW Protocol Token",
-            "symbol": "COW",
+            "label": "COW",
         },
     ]

@@ -1,0 +1,265 @@
+interactions:
+- request:
+    body: '{"query": "\n    {\n      pools(where: { totalLiquidity_gt: \"500000\"
+      }, orderBy: totalLiquidity) {\n        name\n        address\n        poolType\n        strategyType\n        oracleEnabled\n        symbol\n        swapEnabled\n        isPaused\n        isInRecoveryMode\n        totalLiquidity\n        tokens
+      {\n          symbol\n          name\n          address\n        }\n      }\n    }\n    "}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '405'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://gateway-arbitrum.network.thegraph.com/api/MOCK_KEY/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV
+  response:
+    body:
+      string: '{"data":{"pools":[{"address":"0xb721a3b209f8b598b926826f69280bee7a6bb796","isInRecoveryMode":null,"isPaused":false,"name":"10RAI-6FLX-3rETH-26WETH-55RPL","oracleEnabled":false,"poolType":"Weighted","strategyType":1,"swapEnabled":true,"symbol":"10RAI-6FLX-3rETH-26WETH-55RPL","tokens":[{"address":"0x03ab458634910aad20ef5f1c8ee96f1d6ac54919","name":"Rai
+        Reflex Index","symbol":"RAI"},{"address":"0x6243d8cea23066d098a15582d81a598b4e8391f4","name":"Flex
+        Ungovernance Token","symbol":"FLX"},{"address":"0xae78736cd615f374d3085123a210448e74fc6393","name":"Rocket
+        Pool ETH","symbol":"rETH"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xd33526068d116ce69f19a9ee46f0bd304f21a51f","name":"Rocket
+        Pool Protocol","symbol":"RPL"}],"totalLiquidity":"626356.3063979868642395597646604371"},{"address":"0x798b112420ad6391a4129ac25ef59663a44c88bb","isInRecoveryMode":true,"isPaused":false,"name":"Balancer
+        50wstETH-50ACX Pool","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"wstETH-ACX","tokens":[{"address":"0x44108f0223a3c3028f5fe7aec7f9bb2e66bef82f","name":"Across
+        Protocol Token","symbol":"ACX"},{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"}],"totalLiquidity":"648620.9047652815448808801069357201"},{"address":"0x1cce5169bde03f3d5ad0206f6bd057953539dae6","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
+        ECLP GYD/sDAI","oracleEnabled":false,"poolType":"GyroE","strategyType":2,"swapEnabled":true,"symbol":"ECLP-GYD-sDAI","tokens":[{"address":"0x83f20f44975d03b1b09e64809b757c47f942beea","name":"Savings
+        Dai","symbol":"sDAI"},{"address":"0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a","name":"Gyro
+        Dollar","symbol":"GYD"}],"totalLiquidity":"657515.4802293368320546618901697129"},{"address":"0xe8cc7e765647625b95f59c15848379d10b9ab4af","isInRecoveryMode":null,"isPaused":false,"name":"20WETH-80WNCG","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"20WETH-80WNCG","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xf203ca1769ca8e9e8fe1da9d147db68b6c919817","name":"Wrapped
+        NCG","symbol":"WNCG"}],"totalLiquidity":"679565.0170169804662885606925632815"},{"address":"0xaac98ee71d4f8a156b6abaa6844cdb7789d086ce","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        60 MKR 40 WETH","oracleEnabled":true,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-60MKR-40WETH","tokens":[{"address":"0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2","name":"","symbol":""},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"713409.3166848896810285549299149666"},{"address":"0x08775ccb6674d6bdceb0797c364c2653ed84f384","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        50WETH-50-3pool","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50WETH-50-3pool","tokens":[{"address":"0x79c58f70905f734641735bc61e45c19dd9ad60bc","name":"Balancer
+        USDC-DAI-USDT Stable Pool","symbol":"USDC-DAI-USDT"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"738868.5290646554102624498391706835"},{"address":"0xb91159aa527d4769cb9faf3e4adb760c7e8c8ea7","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        ETHx/wstETH","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"ETHx/wstETH","tokens":[{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0xa35b1b31ce002fbf2058d22f30f95d405200a15b","name":"ETHx","symbol":"ETHx"},{"address":"0xb91159aa527d4769cb9faf3e4adb760c7e8c8ea7","name":"Balancer
+        ETHx/wstETH","symbol":"ETHx/wstETH"}],"totalLiquidity":"740319.2792349401268219396238361834"},{"address":"0x577a7f7ee659aa14dc16fd384b3f8078e23f1920","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        20 WETH 80 VCX","oracleEnabled":true,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"BAL-20WETH-80VCX","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xce246eea10988c495b4a90a905ee9237a0f91543","name":"VaultCraft","symbol":"VCX"}],"totalLiquidity":"745396.8826964429098561932955163362"},{"address":"0x68e3266c9c8bbd44ad9dca5afbfe629022aee9fe","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        wjAURA wETH Pool","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-wjAura-wETH","tokens":[{"address":"0x198d7387fa97a73f05b8578cdeff8f2a1f34cd1f","name":"Wrapped
+        Jones AURA","symbol":"wjAURA"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"764465.3297283240625396709932464152"},{"address":"0x133d241f225750d2c92948e464a5a80111920331","isInRecoveryMode":true,"isPaused":true,"name":"DOLA-bb-e-USD","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":false,"symbol":"DOLA-bb-e-USD-BPT","tokens":[{"address":"0x133d241f225750d2c92948e464a5a80111920331","name":"DOLA-bb-e-USD","symbol":"DOLA-bb-e-USD-BPT"},{"address":"0x50cf90b954958480b8df7958a9e965752f627124","name":"bb-euler-USD","symbol":"bb-euler-USD-BPT"},{"address":"0x865377367054516e17014ccded1e7d814edc9ce4","name":"Dola
+        USD Stablecoin","symbol":"DOLA"}],"totalLiquidity":"782470.9742015353525238514938894525"},{"address":"0xae8535c23afedda9304b03c68a3563b75fc8f92b","isInRecoveryMode":true,"isPaused":true,"name":"swETH/Boosted
+        Aave v3 WETH","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":false,"symbol":"swETH-bb-a-WETH-BPT","tokens":[{"address":"0xae8535c23afedda9304b03c68a3563b75fc8f92b","name":"swETH/Boosted
+        Aave v3 WETH","symbol":"swETH-bb-a-WETH-BPT"},{"address":"0xbb6881874825e60e1160416d6c426eae65f2459e","name":"Balancer
+        Aave v3 Boosted Pool (WETH)","symbol":"bb-a-WETH"},{"address":"0xf951e335afb289353dc249e82926178eac7ded78","name":"swETH","symbol":"swETH"}],"totalLiquidity":"791422.9728319819323749860083524728"},{"address":"0x8167a1117691f39e05e9131cfa88f0e3a620e967","isInRecoveryMode":null,"isPaused":false,"name":"20WETH-80T","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"20WETH-80T","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xcdf7028ceab81fa0c6971208e83fa7872994bee5","name":"Threshold
+        Network Token","symbol":"T"}],"totalLiquidity":"856727.899269132790539817016729189"},{"address":"0x6228f64d5ba8376652bfe7e36569d595347cf6fb","isInRecoveryMode":null,"isPaused":false,"name":"80T-20TBTC","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"80T-20TBTC","tokens":[{"address":"0x18084fba666a33d37592fa2633fd49a74dd93a88","name":"tBTC
+        v2","symbol":"tBTC"},{"address":"0xcdf7028ceab81fa0c6971208e83fa7872994bee5","name":"Threshold
+        Network Token","symbol":"T"}],"totalLiquidity":"874208.6167559486044179901549876705"},{"address":"0x50cf90b954958480b8df7958a9e965752f627124","isInRecoveryMode":true,"isPaused":true,"name":"bb-euler-USD","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":false,"symbol":"bb-euler-USD-BPT","tokens":[{"address":"0x3c640f0d3036ad85afa2d5a9e32be651657b874f","name":"Balancer
+        Euler Boosted Pool (USDT)","symbol":"bb-e-USDT"},{"address":"0x50cf90b954958480b8df7958a9e965752f627124","name":"bb-euler-USD","symbol":"bb-euler-USD-BPT"},{"address":"0xd4e7c1f3da1144c9e2cfd1b015eda7652b4a4399","name":"Balancer
+        Euler Boosted Pool (USDC)","symbol":"bb-e-USDC"},{"address":"0xeb486af868aeb3b6e53066abc9623b1041b42bc0","name":"Balancer
+        Euler Boosted Pool (DAI)","symbol":"bb-e-DAI"}],"totalLiquidity":"882306.30876890486782858224505941"},{"address":"0x79c58f70905f734641735bc61e45c19dd9ad60bc","isInRecoveryMode":false,"isPaused":false,"name":"Balancer
+        USDC-DAI-USDT Stable Pool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"USDC-DAI-USDT","tokens":[{"address":"0x6b175474e89094c44da98b954eedeac495271d0f","name":"Dai
+        Stablecoin","symbol":"DAI"},{"address":"0x79c58f70905f734641735bc61e45c19dd9ad60bc","name":"Balancer
+        USDC-DAI-USDT Stable Pool","symbol":"USDC-DAI-USDT"},{"address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD
+        Coin","symbol":"USDC"},{"address":"0xdac17f958d2ee523a2206206994597c13d831ec7","name":"Tether
+        USD","symbol":"USDT"}],"totalLiquidity":"919487.220381120819110052"},{"address":"0xdd59f89b5b07b7844d72996fc9d83d81acc82196","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        uniETH-WETH","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"uniETH-WETH","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xdd59f89b5b07b7844d72996fc9d83d81acc82196","name":"Balancer
+        uniETH-WETH","symbol":"uniETH-WETH"},{"address":"0xf1376bcef0f78459c0ed0ba5ddce976f1ddf51f4","name":"Universal
+        ETH","symbol":"uniETH"}],"totalLiquidity":"960670.6413334011256032585254384285"},{"address":"0xe4e72f872c4048925a78e1e6fddac411c9ae348a","isInRecoveryMode":null,"isPaused":false,"name":"2BTC","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"2BTC","tokens":[{"address":"0x18084fba666a33d37592fa2633fd49a74dd93a88","name":"tBTC
+        v2","symbol":"tBTC"},{"address":"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599","name":"Wrapped
+        BTC","symbol":"WBTC"},{"address":"0xe4e72f872c4048925a78e1e6fddac411c9ae348a","name":"2BTC","symbol":"2BTC"}],"totalLiquidity":"1016705.060650032121563743807948408"},{"address":"0x49cbd67651fbabce12d1df18499896ec87bef46f","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        sDAI/3Pool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"sDAI/3Pool","tokens":[{"address":"0x49cbd67651fbabce12d1df18499896ec87bef46f","name":"Balancer
+        sDAI/3Pool","symbol":"sDAI/3Pool"},{"address":"0x79c58f70905f734641735bc61e45c19dd9ad60bc","name":"Balancer
+        USDC-DAI-USDT Stable Pool","symbol":"USDC-DAI-USDT"},{"address":"0x83f20f44975d03b1b09e64809b757c47f942beea","name":"Savings
+        Dai","symbol":"sDAI"}],"totalLiquidity":"1112983.306965194837024304531046184"},{"address":"0x3932b187f440ce7703653b3908edc5bb7676c283","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
+        ECLP GHO/USDC 2","oracleEnabled":false,"poolType":"GyroE","strategyType":2,"swapEnabled":true,"symbol":"ECLP-GHO-USDC-2","tokens":[{"address":"0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f","name":"Gho
+        Token","symbol":"GHO"},{"address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD
+        Coin","symbol":"USDC"}],"totalLiquidity":"1146888.73692946287375300653626877"},{"address":"0xf01b0684c98cd7ada480bfdf6e43876422fa1fc1","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
+        ECLP wstETH/wETH","oracleEnabled":false,"poolType":"GyroE","strategyType":2,"swapEnabled":true,"symbol":"ECLP-wstETH-wETH","tokens":[{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"1171551.432822360277656011729394619"},{"address":"0xaa7a70070e7495fe86c67225329dbd39baa2f63b","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
+        ECLP GHO/GYD","oracleEnabled":false,"poolType":"GyroE","strategyType":2,"swapEnabled":true,"symbol":"ECLP-GHO-GYD","tokens":[{"address":"0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f","name":"Gho
+        Token","symbol":"GHO"},{"address":"0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a","name":"Gyro
+        Dollar","symbol":"GYD"}],"totalLiquidity":"1213877.718689852262695493211604867"},{"address":"0xf7a826d47c8e02835d94fb0aa40f0cc9505cb134","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
+        ECLP wstETH/cbETH","oracleEnabled":false,"poolType":"GyroE","strategyType":2,"swapEnabled":true,"symbol":"ECLP-wstETH-cbETH","tokens":[{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0xbe9895146f7af43049ca1c1ae358b0541ea49704","name":"Coinbase
+        Wrapped Staked ETH","symbol":"cbETH"}],"totalLiquidity":"1415134.872153535341043663048642056"},{"address":"0x4216d5900a6109bba48418b5e2ab6cc4e61cf477","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        Total Rewards Enhanced stETH","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"trenSTETH","tokens":[{"address":"0x4216d5900a6109bba48418b5e2ab6cc4e61cf477","name":"Balancer
+        Total Rewards Enhanced stETH","symbol":"trenSTETH"},{"address":"0x5fd13359ba15a84b76f7f87568309040176167cd","name":"Amphor
+        Restaked ETH","symbol":"amphrETH"},{"address":"0x7a4effd87c2f3c55ca251080b1343b605f327e3a","name":"Restaking
+        Vault ETH","symbol":"rstETH"},{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0x84631c0d0081fde56deb72f6de77abbbf6a9f93a","name":"Re7
+        Labs LRT","symbol":"Re7LRT"},{"address":"0xbeef69ac7870777598a04b2bd4771c71212e6abc","name":"Steakhouse
+        Resteaking Vault","symbol":"steakLRT"}],"totalLiquidity":"1441237.009698605592947285829024623"},{"address":"0xa8210885430aaa333c9f0d66ab5d0c312bed5e43","isInRecoveryMode":null,"isPaused":false,"name":"50wstETH-50sUSDe","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50wstETH-50sUSDe","tokens":[{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0x9d39a5de30e57443bff2a8307a4256c8797a3497","name":"Staked
+        USDe","symbol":"sUSDe"}],"totalLiquidity":"1449490.623004157814205735162601082"},{"address":"0xc2aa60465bffa1a88f5ba471a59ca0435c3ec5c1","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
+        ECLP GYD/USDC","oracleEnabled":false,"poolType":"GyroE","strategyType":2,"swapEnabled":true,"symbol":"ECLP-GYD-USDC","tokens":[{"address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD
+        Coin","symbol":"USDC"},{"address":"0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a","name":"Gyro
+        Dollar","symbol":"GYD"}],"totalLiquidity":"1654038.856100595838737047487757308"},{"address":"0x9232a548dd9e81bac65500b5e0d918f8ba93675c","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        20 WETH 80 LIT","oracleEnabled":true,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"BAL-20WETH-80LIT","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xfd0205066521550d7d7ab19da8f72bb004b4c341","name":"Liquidity
+        Incentive Token","symbol":"LIT"}],"totalLiquidity":"1685841.59986161818144435944679837"},{"address":"0xc29562b045d80fd77c69bec09541f5c16fe20d9d","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        80 AURA 20 WETH","oracleEnabled":true,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-80AURA-20WETH","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xc0c293ce456ff0ed870add98a0828dd4d2903dbf","name":"Aura","symbol":"AURA"}],"totalLiquidity":"1768144.068039495264817836552418094"},{"address":"0x5122e01d819e58bb2e22528c0d68d310f0aa6fd7","isInRecoveryMode":null,"isPaused":false,"name":"Staked
+        NOTE Weighted Pool","oracleEnabled":true,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"sNOTE-BPT","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xcfeaead4947f0705a14ec42ac3d44129e1ef3ed5","name":"Notional","symbol":"NOTE"}],"totalLiquidity":"1828871.341810189404171123829550861"},{"address":"0xff4ce5aaab5a627bf82f4a571ab1ce94aa365ea6","isInRecoveryMode":null,"isPaused":false,"name":"DOLA
+        USDC Stable Pool","oracleEnabled":false,"poolType":"Stable","strategyType":2,"swapEnabled":true,"symbol":"DOLA-USDC
+        BSP","tokens":[{"address":"0x865377367054516e17014ccded1e7d814edc9ce4","name":"Dola
+        USD Stablecoin","symbol":"DOLA"},{"address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD
+        Coin","symbol":"USDC"}],"totalLiquidity":"1948720.119987514090154055800621287"},{"address":"0xfeadd389a5c427952d8fdb8057d6c8ba1156cc56","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        BTC Stable Pool","oracleEnabled":false,"poolType":"Stable","strategyType":0,"swapEnabled":true,"symbol":"staBAL3-BTC","tokens":[{"address":"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599","name":"Wrapped
+        BTC","symbol":"WBTC"},{"address":"0xeb4c2781e4eba804ce9a9803c67d0893436bb27d","name":"renBTC","symbol":"renBTC"},{"address":"0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6","name":"Synth
+        sBTC","symbol":"sBTC"}],"totalLiquidity":"1956070.795510597275716007510212825"},{"address":"0x98b76fb35387142f97d601a297276bb152ae8ab0","isInRecoveryMode":null,"isPaused":false,"name":"20WETH-80ONDO","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"20WETH-80ONDO","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3","name":"Ondo","symbol":"ONDO"}],"totalLiquidity":"1991221.567005472694485230036257425"},{"address":"0xdfe6e7e18f6cc65fa13c8d8966013d4fda74b6ba","isInRecoveryMode":false,"isPaused":false,"name":"Balancer
+        ankrETH/wstETH StablePool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"ankrETH/wstETH","tokens":[{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0xdfe6e7e18f6cc65fa13c8d8966013d4fda74b6ba","name":"Balancer
+        ankrETH/wstETH StablePool","symbol":"ankrETH/wstETH"},{"address":"0xe95a203b1a91a908f9b9ce46459d101078c2c3cb","name":"Ankr
+        Staked ETH","symbol":"ankrETH"}],"totalLiquidity":"2387050.272364864328664530167531462"},{"address":"0x8bd4a1e74a27182d23b98c10fd21d4fbb0ed4ba0","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        50TEMPLE-50DAI","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50TEMPLE-50DAI","tokens":[{"address":"0x470ebf5f030ed85fc1ed4c2d36b9dd02e77cf1b7","name":"Temple","symbol":"TEMPLE"},{"address":"0x6b175474e89094c44da98b954eedeac495271d0f","name":"Dai
+        Stablecoin","symbol":"DAI"}],"totalLiquidity":"2425116.945500298229315558"},{"address":"0xb986fd52697f16be888bfad2c5bf12cd67ce834b","isInRecoveryMode":null,"isPaused":false,"name":"80$ADS-20WETH","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"stADS","tokens":[{"address":"0x3106a0a076bedae847652f42ef07fd58589e001f","name":"Alkimi
+        Exchange","symbol":"$ADS"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"2465202.290645422878680221182473627"},{"address":"0x264062ca46a1322c2e6464471764089e01f22f19","isInRecoveryMode":null,"isPaused":false,"name":"sDOLA
+        Stable Pool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"sDOLA-DOLA
+        BSP","tokens":[{"address":"0x264062ca46a1322c2e6464471764089e01f22f19","name":"sDOLA
+        Stable Pool","symbol":"sDOLA-DOLA BSP"},{"address":"0x865377367054516e17014ccded1e7d814edc9ce4","name":"Dola
+        USD Stablecoin","symbol":"DOLA"},{"address":"0xb45ad160634c528cc3d2926d9807104fa3157305","name":"Staked
+        Dola","symbol":"sDOLA"}],"totalLiquidity":"2478965.164312416381649364040406689"},{"address":"0x32296969ef14eb0c6d29669c550d4a0449130230","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        stETH Stable Pool","oracleEnabled":true,"poolType":"MetaStable","strategyType":2,"swapEnabled":true,"symbol":"B-stETH-STABLE","tokens":[{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"2575975.80861683424432549958449648"},{"address":"0x39eb558131e5ebeb9f76a6cbf6898f6e6dce5e4e","isInRecoveryMode":null,"isPaused":false,"name":"QiDao
+        Governance Pool","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"QI
+        BPT","tokens":[{"address":"0x559b7bfc48a5274754b08819f75c5f27af53d53b","name":"QiDao","symbol":"QI"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"2656654.787489533162314767134576739"},{"address":"0xbc5f4f9332d8415aaf31180ab4661c9141cc84e4","isInRecoveryMode":null,"isPaused":false,"name":"98TXJP-2WETH","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"98TXJP-2WETH","tokens":[{"address":"0x961dd84059505d59f82ce4fb87d3c09bec65301d","name":"TenX
+        Community JAPAN","symbol":"TXJP"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"2792118.084860148949868143659887918"},{"address":"0xa6f548df93de924d73be7d25dc02554c6bd66db5","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        50 WBTC 50 WETH","oracleEnabled":true,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-50WBTC-50WETH","tokens":[{"address":"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599","name":"Wrapped
+        BTC","symbol":"WBTC"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"3212241.483596092103292337151003912"},{"address":"0xb819feef8f0fcdc268afe14162983a69f6bf179e","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        sUSDe/USDC","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"sUSDe/USDC","tokens":[{"address":"0x9d39a5de30e57443bff2a8307a4256c8797a3497","name":"Staked
+        USDe","symbol":"sUSDe"},{"address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD
+        Coin","symbol":"USDC"},{"address":"0xb819feef8f0fcdc268afe14162983a69f6bf179e","name":"Balancer
+        sUSDe/USDC","symbol":"sUSDe/USDC"}],"totalLiquidity":"3881867.199546919915338919194139221"},{"address":"0x92762b42a06dcdddc5b7362cfb01e631c4d44b40","isInRecoveryMode":null,"isPaused":false,"name":"50COW-50GNO
+        BPT","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50COW-50GNO","tokens":[{"address":"0x6810e776880c02933d47db1b9fc05908e5386b96","name":"Gnosis
+        Token","symbol":"GNO"},{"address":"0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab","name":"CoW
+        Protocol Token","symbol":"COW"}],"totalLiquidity":"3983796.2688340524236678305296735"},{"address":"0xfd1cf6fd41f229ca86ada0584c63c49c3d66bbc9","isInRecoveryMode":null,"isPaused":false,"name":"50PENDLE-50WETH","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50PENDLE-50WETH","tokens":[{"address":"0x808507121b80c02388fad14726482e061b8da827","name":"Pendle","symbol":"PENDLE"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"4066583.032344227171136650691004946"},{"address":"0x63e0d47a6964ad1565345da9bfa66659f4983f02","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        pufETH/wstETH","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"pufETH/wstETH","tokens":[{"address":"0x63e0d47a6964ad1565345da9bfa66659f4983f02","name":"Balancer
+        pufETH/wstETH","symbol":"pufETH/wstETH"},{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0xd9a442856c234a39a81a089c06451ebaa4306a72","name":"pufETH","symbol":"pufETH"}],"totalLiquidity":"4256214.682376512226847810896066754"},{"address":"0xde8c195aa41c11a0c4787372defbbddaa31306d2","isInRecoveryMode":null,"isPaused":false,"name":"50COW-50WETH
+        BPT","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50COW-50WETH","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab","name":"CoW
+        Protocol Token","symbol":"COW"}],"totalLiquidity":"4257930.14442644240428830327356623"},{"address":"0xcfca23ca9ca720b6e98e3eb9b6aa0ffc4a5c08b9","isInRecoveryMode":null,"isPaused":false,"name":"50WETH-50AURA","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50WETH-50AURA","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xc0c293ce456ff0ed870add98a0828dd4d2903dbf","name":"Aura","symbol":"AURA"}],"totalLiquidity":"4286225.579731168895235511507068863"},{"address":"0x5aee1e99fe86960377de9f88689616916d5dcabe","isInRecoveryMode":true,"isPaused":false,"name":"wstETH-rETH-sfrxETH
+        StablePool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"wstETH-rETH-sfrxETH-BPT","tokens":[{"address":"0x5aee1e99fe86960377de9f88689616916d5dcabe","name":"wstETH-rETH-sfrxETH
+        StablePool","symbol":"wstETH-rETH-sfrxETH-BPT"},{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0xac3e018457b222d93114458476f3e3416abbe38f","name":"Staked
+        Frax Ether","symbol":"sfrxETH"},{"address":"0xae78736cd615f374d3085123a210448e74fc6393","name":"Rocket
+        Pool ETH","symbol":"rETH"}],"totalLiquidity":"4400712.680452589785865207365231192"},{"address":"0xcf7b51ce5755513d4be016b0e28d6edeffa1d52a","isInRecoveryMode":null,"isPaused":false,"name":"RDNT-WETH","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"RDNT-WETH","tokens":[{"address":"0x137ddb47ee24eaa998a535ab00378d6bfa84f893","name":"Radiant","symbol":"RDNT"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"5132797.617296531107174917030056145"},{"address":"0x3dd0843a028c86e0b760b1a76929d1c5ef93a2dd","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        auraBAL Stable Pool","oracleEnabled":false,"poolType":"Stable","strategyType":2,"swapEnabled":true,"symbol":"B-auraBAL-STABLE","tokens":[{"address":"0x5c6ee304399dbdb9c8ef030ab642b10820db8f56","name":"Balancer
+        80 BAL 20 WETH","symbol":"B-80BAL-20WETH"},{"address":"0x616e8bfa43f920657b3497dbf40d6b1a02d4608d","name":"Aura
+        BAL","symbol":"auraBAL"}],"totalLiquidity":"5291065.020909025422723001854407639"},{"address":"0x8353157092ed8be69a9df8f95af097bbf33cb2af","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        GHO/USDT/USDC","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"GHO/USDT/USDC","tokens":[{"address":"0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f","name":"Gho
+        Token","symbol":"GHO"},{"address":"0x8353157092ed8be69a9df8f95af097bbf33cb2af","name":"Balancer
+        GHO/USDT/USDC","symbol":"GHO/USDT/USDC"},{"address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD
+        Coin","symbol":"USDC"},{"address":"0xdac17f958d2ee523a2206206994597c13d831ec7","name":"Tether
+        USD","symbol":"USDT"}],"totalLiquidity":"5337372.547341802137693582322736933"},{"address":"0x7761b6e0daa04e70637d81f1da7d186c205c2ade","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        rsETH / ETHx","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"rsETH
+        / ETHx","tokens":[{"address":"0x7761b6e0daa04e70637d81f1da7d186c205c2ade","name":"Balancer
+        rsETH / ETHx","symbol":"rsETH / ETHx"},{"address":"0xa1290d69c65a6fe4df752f95823fae25cb99e5a7","name":"rsETH","symbol":"rsETH"},{"address":"0xa35b1b31ce002fbf2058d22f30f95d405200a15b","name":"ETHx","symbol":"ETHx"}],"totalLiquidity":"5671679.60953429448166929711833314"},{"address":"0x9f9d900462492d4c21e9523ca95a7cd86142f298","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        50rETH-50RPL","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50rETH-50RPL","tokens":[{"address":"0xae78736cd615f374d3085123a210448e74fc6393","name":"Rocket
+        Pool ETH","symbol":"rETH"},{"address":"0xd33526068d116ce69f19a9ee46f0bd304f21a51f","name":"Rocket
+        Pool Protocol","symbol":"RPL"}],"totalLiquidity":"5725724.33675315977236475482005143"},{"address":"0xf16aee6a71af1a9bc8f56975a4c2705ca7a782bc","isInRecoveryMode":null,"isPaused":false,"name":"20WETH-80ALCX","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"20WETH-80ALCX","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xdbdb4d16eda451d0503b854cf79d55697f90c8df","name":"Alchemix","symbol":"ALCX"}],"totalLiquidity":"6882409.282417092692396015498259626"},{"address":"0x42ed016f826165c2e5976fe5bc3df540c5ad0af7","isInRecoveryMode":null,"isPaused":false,"name":"wstETH-rETH-sfrxETH-BPT","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"wstETH-rETH-sfrxETH-BPT","tokens":[{"address":"0x42ed016f826165c2e5976fe5bc3df540c5ad0af7","name":"wstETH-rETH-sfrxETH-BPT","symbol":"wstETH-rETH-sfrxETH-BPT"},{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0xac3e018457b222d93114458476f3e3416abbe38f","name":"Staked
+        Frax Ether","symbol":"sfrxETH"},{"address":"0xae78736cd615f374d3085123a210448e74fc6393","name":"Rocket
+        Pool ETH","symbol":"rETH"}],"totalLiquidity":"6926090.932210013642425766439121196"},{"address":"0xcb0e14e96f2cefa8550ad8e4aea344f211e5061d","isInRecoveryMode":null,"isPaused":false,"name":"20WETH-80PSP","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"20WETH-80PSP","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xcafe001067cdef266afb7eb5a286dcfd277f3de5","name":"ParaSwap","symbol":"PSP"}],"totalLiquidity":"7220563.8114150205492926081756396"},{"address":"0x88794c65550deb6b4087b7552ecf295113794410","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        pxETH/wETH StablePool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"pxETH/wETH","tokens":[{"address":"0x04c154b66cb340f3ae24111cc767e0184ed00cc6","name":"Pirex
+        Ether","symbol":"pxETH"},{"address":"0x88794c65550deb6b4087b7552ecf295113794410","name":"Balancer
+        pxETH/wETH StablePool","symbol":"pxETH/wETH"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"8243996.491960337273572924509742807"},{"address":"0x36be1e97ea98ab43b4debf92742517266f5731a3","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        50wstETH-ACX","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50wstETH-50ACX","tokens":[{"address":"0x44108f0223a3c3028f5fe7aec7f9bb2e66bef82f","name":"Across
+        Protocol Token","symbol":"ACX"},{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"}],"totalLiquidity":"8430290.241129282664765681852406093"},{"address":"0x3ff3a210e57cfe679d9ad1e9ba6453a716c56a2e","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        STG/USDC","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"STG/USDC","tokens":[{"address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD
+        Coin","symbol":"USDC"},{"address":"0xaf5191b0de278c7286d6c7cc6ab6bb8a73ba2cd6","name":"StargateToken","symbol":"STG"}],"totalLiquidity":"8460715.388498"},{"address":"0x05ff47afada98a98982113758878f9a8b9fdda0a","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        weETH/rETH StablePool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"weETH/rETH","tokens":[{"address":"0x05ff47afada98a98982113758878f9a8b9fdda0a","name":"Balancer
+        weETH/rETH StablePool","symbol":"weETH/rETH"},{"address":"0xae78736cd615f374d3085123a210448e74fc6393","name":"Rocket
+        Pool ETH","symbol":"rETH"},{"address":"0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee","name":"Wrapped
+        eETH","symbol":"weETH"}],"totalLiquidity":"8896261.723212683523203546427656391"},{"address":"0x848a5564158d84b8a8fb68ab5d004fae11619a54","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        weETH/ezETH/rswETH","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"weETH/ezETH/rswETH","tokens":[{"address":"0x848a5564158d84b8a8fb68ab5d004fae11619a54","name":"Balancer
+        weETH/ezETH/rswETH","symbol":"weETH/ezETH/rswETH"},{"address":"0xbf5495efe5db9ce00f80364c8b423567e58d2110","name":"Renzo
+        Restaked ETH","symbol":"ezETH"},{"address":"0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee","name":"Wrapped
+        eETH","symbol":"weETH"},{"address":"0xfae103dc9cf190ed75350761e95403b7b8afa6c0","name":"rswETH","symbol":"rswETH"}],"totalLiquidity":"9219088.49678776261356638465564524"},{"address":"0xf4c0dd9b82da36c07605df83c8a416f11724d88b","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        80 GNO 20 WETH","oracleEnabled":true,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-80GNO-20WETH","tokens":[{"address":"0x6810e776880c02933d47db1b9fc05908e5386b96","name":"Gnosis
+        Token","symbol":"GNO"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"12128428.88106483874080069309838404"},{"address":"0x93d199263632a4ef4bb438f1feb99e57b4b5f0bd","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        wstETH-WETH Stable Pool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"wstETH-WETH-BPT","tokens":[{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0x93d199263632a4ef4bb438f1feb99e57b4b5f0bd","name":"Balancer
+        wstETH-WETH Stable Pool","symbol":"wstETH-WETH-BPT"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"15823919.34535019354384662091584421"},{"address":"0x2191df821c198600499aa1f0031b1a7514d7a7d9","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
+        ECLP GYD/sDAI","oracleEnabled":false,"poolType":"GyroE","strategyType":2,"swapEnabled":true,"symbol":"ECLP-GYD-sDAI","tokens":[{"address":"0x83f20f44975d03b1b09e64809b757c47f942beea","name":"Savings
+        Dai","symbol":"sDAI"},{"address":"0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a","name":"Gyro
+        Dollar","symbol":"GYD"}],"totalLiquidity":"19976506.94391189696246645038483429"},{"address":"0x58aadfb1afac0ad7fca1148f3cde6aedf5236b6d","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        rsETH-WETH Stable Pool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"rsETH
+        / WETH","tokens":[{"address":"0x58aadfb1afac0ad7fca1148f3cde6aedf5236b6d","name":"Balancer
+        rsETH-WETH Stable Pool","symbol":"rsETH / WETH"},{"address":"0xa1290d69c65a6fe4df752f95823fae25cb99e5a7","name":"rsETH","symbol":"rsETH"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"24312357.48630803006995016713177884"},{"address":"0x596192bb6e41802428ac943d2f1476c1af25cc0e","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        ezETH-WETH Stable Pool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"ezETH-WETH-BPT","tokens":[{"address":"0x596192bb6e41802428ac943d2f1476c1af25cc0e","name":"Balancer
+        ezETH-WETH Stable Pool","symbol":"ezETH-WETH-BPT"},{"address":"0xbf5495efe5db9ce00f80364c8b423567e58d2110","name":"Renzo
+        Restaked ETH","symbol":"ezETH"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"40708693.09581870050665017796497122"},{"address":"0x1e19cf2d73a72ef1332c882f20534b6519be0276","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        rETH Stable Pool","oracleEnabled":true,"poolType":"MetaStable","strategyType":2,"swapEnabled":true,"symbol":"B-rETH-STABLE","tokens":[{"address":"0xae78736cd615f374d3085123a210448e74fc6393","name":"Rocket
+        Pool ETH","symbol":"rETH"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"54521150.25960956340099637466901786"},{"address":"0x5c6ee304399dbdb9c8ef030ab642b10820db8f56","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        80 BAL 20 WETH","oracleEnabled":true,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-80BAL-20WETH","tokens":[{"address":"0xba100000625a3754423978a60c9317c58a424e3d","name":"Balancer","symbol":"BAL"},{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"}],"totalLiquidity":"61722214.57743312893704089818962621"},{"address":"0xdacf5fa19b1f720111609043ac67a9818262850c","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        osETH/wETH StablePool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"osETH/wETH-BPT","tokens":[{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped
+        Ether","symbol":"WETH"},{"address":"0xdacf5fa19b1f720111609043ac67a9818262850c","name":"Balancer
+        osETH/wETH StablePool","symbol":"osETH/wETH-BPT"},{"address":"0xf1c9acdc66974dfb6decb12aa385b9cd01190e38","name":"Staked
+        ETH","symbol":"osETH"}],"totalLiquidity":"63994376.64844822279021276156023842"},{"address":"0x3de27efa2f1aa663ae5d458857e731c129069f29","isInRecoveryMode":null,"isPaused":false,"name":"20wstETH-80AAVE","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"20wstETH-80AAVE","tokens":[{"address":"0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0","name":"Wrapped
+        liquid staked Ether 2.0","symbol":"wstETH"},{"address":"0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9","name":"Aave
+        Token","symbol":"AAVE"}],"totalLiquidity":"131278007.5808620569091041387521984"}]}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 8a38df3f2ace34b4-LIS
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 15 Jul 2024 09:54:36 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=r7HkKURpMeBHVO1UMYVwoo2nj3XgrKl65PANcOd6G4c-1721037276-1.0.1.1-HKvD2jB8NEWwhM9It3Jj7MBX.NrZ.zpaDLRTMrTD6IkTzA32SZTFDNQH6UHJP1t9jKZnEV833vB1enV2kKMMZA;
+        path=/; expires=Mon, 15-Jul-24 10:24:36 GMT; domain=.thegraph.com; HttpOnly;
+        Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - origin, access-control-request-method, access-control-request-headers, Accept-Encoding
+      access-control-allow-credentials:
+      - 'true'
+      access-control-allow-headers:
+      - DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization
+      access-control-allow-methods:
+      - PUT, GET, POST, OPTIONS
+      access-control-max-age:
+      - '3600'
+      graph-attestation:
+      - '{"requestCID":"0xded9b761f8fd5403eafba482e0d53f7bf72095e2fe41476616d6f5051bea41b7","responseCID":"0xdc9e7ffc11c468ccdbea456d912aa0a6b88088a162d5d9588e2f206e6235f36a","subgraphDeploymentID":"0x19d2ee1e97ea19f34bb8808dc09271f7934393ff392a1bed2ad22de8bb89578a","r":"0x9df4ac895554877b944c9b08cd7fe035476c85a3247df567eb73d76d00b283dd","s":"0x411cd731297c0785e55f95bb973bb41bcd2982fe30aa26bbac10f2537a9e19a3","v":27}'
+    status:
+      code: 200
+      message: OK
+version: 1

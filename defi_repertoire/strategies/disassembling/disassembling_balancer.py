@@ -198,7 +198,11 @@ class WithdrawSingle:
         blockchain: Blockchain,
     ):
         pools = await fetch_pools(blockchain)
-        return {"bpt_address": [p["address"] for p in pools]}
+        return {
+            "bpt_address": [
+                {"address": p["address"], "label": p["symbol"]} for p in pools
+            ]
+        }
 
     @classmethod
     async def get_options(
@@ -214,7 +218,11 @@ class WithdrawSingle:
         )
         if not pool:
             raise ValueError("Pool not found")
-        return {"bpt_address": [bpt_address], "token_out_address": pool["tokens"]}
+        return {
+            "token_out_address": [
+                {"address": t["address"], "label": t["symbol"]} for t in pool["tokens"]
+            ]
+        }
 
     @classmethod
     def get_txns(
@@ -331,9 +339,9 @@ class UnstakeAndWithdrawProportional:
         return {
             "gauge_address": [
                 {
-                    "symbol": p["symbol"],
+                    "label": p["symbol"],
                     "address": p["id"],
-                    "poolAddress": p["poolAddress"],
+                    # "poolAddress": p["poolAddress"],
                 }
                 for p in gauges
             ]

@@ -25,7 +25,8 @@ def test_list_ethereum_strategies():
     response = client.get("/strategies/ethereum")
     assert response.status_code == 200, response.text
 
-    first_strategy = response.json()["strategies"][0]
+    strategies = response.json()["strategies"]
+    first_strategy = strategies[0]
     assert "id" in first_strategy
     assert "protocol" in first_strategy
     assert "name" in first_strategy
@@ -34,18 +35,126 @@ def test_list_ethereum_strategies():
 
 
 @my_vcr.use_cassette()
+def test_list_ethereum_strategies_options():
+    response = client.get("/strategies/ethereum")
+    assert response.status_code == 200, response.text
+
+    strategies = response.json()["strategies"]
+
+    __import__("pprint").pprint(strategies)
+
+    cowswap = next(s for s in strategies if s["protocol"] == "cowswap")
+    assert next(
+        o for o in cowswap["options"]["token_in_address"] if o["label"] == "USDC"
+    ) == {
+        "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "label": "USDC",
+    }
+
+    curve = next(s for s in strategies if s["id"] == "balancer__swap_on_curve")
+    assert next(
+        o for o in curve["options"]["token_in_address"] if o["label"] == "USDC"
+    ) == {
+        "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "label": "USDC",
+    }
+
+    auraWithdraw = next(s for s in strategies if s["id"] == "aura__withdraw")
+    assert next(
+        o
+        for o in auraWithdraw["options"]["rewards_address"]
+        if o["label"] == "aura50COW-50GNO"
+    ) == {
+        "address": "0x82feb430d9d14ee5e635c41807e03fd8f5fffdec",
+        "label": "aura50COW-50GNO",
+    }
+
+    balancerUnP = next(
+        s for s in strategies if s["id"] == "balancer__unstake_withdraw_proportional"
+    )
+    assert next(
+        o
+        for o in balancerUnP["options"]["gauge_address"]
+        if o["label"] == "50COW-50GNO-gauge"
+    ) == {
+        "address": "0xa6468eca7633246dcb24e5599681767d27d1f978",
+        "label": "50COW-50GNO-gauge",
+    }
+
+    balancerWithdrawSingle = next(
+        s for s in strategies if s["id"] == "balancer__withdraw_single"
+    )
+    print(balancerWithdrawSingle)
+    assert next(
+        o
+        for o in balancerWithdrawSingle["options"]["bpt_address"]
+        if o["label"] == "50COW-50GNO"
+    ) == {
+        "address": "0x92762b42a06dcdddc5b7362cfb01e631c4d44b40",
+        "label": "50COW-50GNO",
+    }
+
+
+@my_vcr.use_cassette()
 def test_list_gnosis_strategies():
     response = client.get("/strategies/gnosis")
     assert response.status_code == 200, response.text
 
     strategies = response.json()["strategies"]
-    # __import__("pprint").pprint(strategies)
     first_strategy = strategies[0]
     assert "id" in first_strategy
     assert "protocol" in first_strategy
     assert "name" in first_strategy
     assert "kind" in first_strategy
     assert "arguments" in first_strategy
+
+
+@my_vcr.use_cassette()
+def test_list_gnosis_strategies_options():
+    response = client.get("/strategies/gnosis")
+    assert response.status_code == 200, response.text
+
+    strategies = response.json()["strategies"]
+
+    cowswap = next(s for s in strategies if s["protocol"] == "cowswap")
+    assert next(
+        o for o in cowswap["options"]["token_in_address"] if o["label"] == "USDC"
+    ) == {
+        "address": "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+        "label": "USDC",
+    }
+
+    curve = next(s for s in strategies if s["id"] == "balancer__swap_on_curve")
+    assert next(
+        o for o in curve["options"]["token_in_address"] if o["label"] == "USDC"
+    ) == {
+        "address": "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83",
+        "label": "USDC",
+    }
+
+    auraWithdraw = next(s for s in strategies if s["id"] == "aura__withdraw")
+    print(auraWithdraw)
+    assert next(
+        o
+        for o in auraWithdraw["options"]["rewards_address"]
+        if o["label"] == "aura50COW-50GNO"
+    ) == {
+        "address": "0x8b59f9d4f24a266630756131fe62c3476886e496",
+        "label": "aura50COW-50GNO",
+    }
+
+    balancerUnP = next(
+        s for s in strategies if s["id"] == "balancer__unstake_withdraw_proportional"
+    )
+    print(balancerUnP)
+    assert next(
+        o
+        for o in balancerUnP["options"]["gauge_address"]
+        if o["label"] == "50COW-50GNO-gauge"
+    ) == {
+        "address": "0x91151ba698253e24c23a754d94f94049a17e8084",
+        "label": "50COW-50GNO-gauge",
+    }
 
 
 def test_multiple_strategies():

@@ -51,6 +51,10 @@ async def fetch_tokens(blockchain: Blockchain):
     return uniqBy(flatten(tokens), "address")
 
 
+def tokens_to_options(tokens):
+    return [{"address": t["address"], "label": t["symbol"]} for t in tokens]
+
+
 @register
 class SwapCowswap:
     """Make a swap on CowSwap with best amount out"""
@@ -63,7 +67,7 @@ class SwapCowswap:
     @classmethod
     async def get_base_options(cls, blockchain: Blockchain):
         tokens = await fetch_tokens(blockchain)
-        return {"token_in": tokens}
+        return {"token_in_address": tokens_to_options(tokens)}
 
     @classmethod
     def get_txns(

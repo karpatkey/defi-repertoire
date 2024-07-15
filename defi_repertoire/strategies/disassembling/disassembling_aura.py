@@ -58,7 +58,7 @@ async def fetch_pools(blockchain: Blockchain):
     logger.debug(f"\nFETCHING AURA POOLS {blockchain.name}\n")
     req = """
     {
-      pools(where: { totalSupply_gt: "500000" }) {
+      pools(where: { totalSupply_gt: "500000" }, first: 300) {
         id
         totalSupply
         depositToken {
@@ -89,6 +89,13 @@ async def fetch_pools(blockchain: Blockchain):
     return response.json()["data"]["pools"]
 
 
+def pools_to_options(pools):
+    return [
+        {"address": p["rewardPool"], "label": p["depositToken"]["symbol"]}
+        for p in pools
+    ]
+
+
 @register
 class Withdraw:
     """Withdraw funds from Aura."""
@@ -108,20 +115,7 @@ class Withdraw:
     @classmethod
     async def get_base_options(cls, blockchain: Blockchain):
         pools = await fetch_pools(blockchain)
-        reward_addresses = [p["rewardPool"] for p in pools]
-        return {"rewards_address": reward_addresses}
-
-    @classmethod
-    async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
-        pools = await fetch_pools(blockchain)
-        address = str.lower(arguments.rewards_address)
-        pool = next(
-            (p for p in pools if str.lower(p["rewardPool"]) == address),
-            None,
-        )
-        if not pool:
-            raise ValueError("Pool not found")
-        return {"rewards_address": [pool["rewardPool"]]}
+        return {"rewards_address": pools_to_options(pools)}
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
@@ -205,8 +199,7 @@ class WithdrawSingle:
     @classmethod
     async def get_base_options(cls, blockchain: Blockchain):
         pools = await fetch_pools(blockchain)
-        reward_addresses = [p["rewardPool"] for p in pools]
-        return {"rewards_address": reward_addresses}
+        return {"rewards_address": pools_to_options(pools)}
 
     @classmethod
     async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
@@ -223,13 +216,10 @@ class WithdrawSingle:
         balancer_options = await balancer.WithdrawSingle.get_options(
             blockchain=blockchain,
             arguments=balancer.WithdrawSingle.OptArgs(
-                **{
-                    "bpt_address": bpt_address,
-                }
+                bpt_address=bpt_address,
             ),
         )
         return {
-            "rewards_address": [address],
             "token_out_address": balancer_options["token_out_address"],
         }
 

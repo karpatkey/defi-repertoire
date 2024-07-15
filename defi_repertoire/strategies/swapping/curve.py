@@ -28,6 +28,10 @@ async def fetch_pools(blockchain: Blockchain):
     return response.json()["data"]["poolData"]
 
 
+def tokens_to_options(tokens):
+    return [{"address": t["address"], "label": t["symbol"]} for t in tokens]
+
+
 @register
 class SwapOnCurve:
     """Make a swap on Curve with best amount out"""
@@ -44,14 +48,14 @@ class SwapOnCurve:
     async def get_base_options(cls, blockchain: Blockchain):
         pools = await fetch_pools(blockchain)
         tokens = uniqBy(flatten([p["coins"] for p in pools]), "address")
-        return {"token_in": tokens}
+        return {"token_in_address": tokens_to_options(tokens)}
 
     @classmethod
     async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
         pools = await fetch_pools(blockchain)
         poolPairs = [p["coins"] for p in pools]
         outs = find_reachable_tokens(poolPairs, arguments.token_in_address, 3)
-        return {"token_out": outs}
+        return {"token_out_address": tokens_to_options(outs)}
 
     @classmethod
     def get_txns(
