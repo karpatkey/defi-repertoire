@@ -1,8 +1,7 @@
 import pytest
 from defabipedia import Chain
 
-from defi_repertoire.strategies.disassembling import \
-    disassembling_balancer as balancer
+from defi_repertoire.strategies.disassembling import disassembling_balancer as balancer
 from tests.vcr import my_vcr
 
 

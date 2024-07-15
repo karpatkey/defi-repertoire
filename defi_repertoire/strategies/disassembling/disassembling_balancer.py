@@ -13,8 +13,7 @@ from web3.exceptions import ContractLogicError
 
 from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
 
-from ..base import (Amount, ChecksumAddress, GenericTxContext, Percentage,
-                    register)
+from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, register
 
 logger = logging.getLogger(__name__)
 

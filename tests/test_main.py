@@ -6,8 +6,9 @@ from fastapi.testclient import TestClient
 from roles_royce.generic_method import TxData
 
 from defi_repertoire.main import app
-from defi_repertoire.strategies.disassembling.disassembling_balancer import \
-    WithdrawAllAssetsProportional
+from defi_repertoire.strategies.disassembling.disassembling_balancer import (
+    WithdrawAllAssetsProportional,
+)
 from tests.vcr import my_vcr
 
 client = TestClient(app)

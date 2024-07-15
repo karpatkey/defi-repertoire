@@ -5,13 +5,16 @@ from defabipedia.tokens import NATIVE
 from defabipedia.types import Blockchain, Chain
 from pydantic import BaseModel
 from roles_royce.generic_method import Transactable
-from roles_royce.protocols.swap_pools.swap_methods import (ApproveCurve,
-                                                           SwapCurve)
+from roles_royce.protocols.swap_pools.swap_methods import ApproveCurve, SwapCurve
 
 from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
-from defi_repertoire.strategies.base import (ChecksumAddress, GenericTxContext,
-                                             OptSwapArguments, SwapArguments,
-                                             register)
+from defi_repertoire.strategies.base import (
+    ChecksumAddress,
+    GenericTxContext,
+    OptSwapArguments,
+    SwapArguments,
+    register,
+)
 from defi_repertoire.utils import flatten, uniqBy
 
 from .swapper import find_reachable_tokens, get_quote, get_swap_pools

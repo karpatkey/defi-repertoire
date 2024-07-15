@@ -23,52 +23,52 @@ interactions:
       string: '{"data":{"pools":[{"address":"0x00df7f58e1cf932ebe5f54de5970fb2bdf0ef06d","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
         50wstETH-25BAL-25AURA","oracleEnabled":false,"poolType":"Weighted","strategyType":1,"swapEnabled":true,"symbol":"B-50wstETH-25BAL-25AURA","tokens":[{"address":"0x1509706a6c66ca549ff0cb464de88231ddbe213b","name":"Aura","symbol":"AURA"},{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
         liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"},{"address":"0x7ef541e2a22058048904fe5744f9c7e4c57af717","name":"Balancer
-        on xDai","symbol":"BAL"}],"totalLiquidity":"1022128.131227252758170179492279022"},{"address":"0xa9b2234773cc6a4f3a34a770c52c931cba5c24b2","isInRecoveryMode":null,"isPaused":false,"name":"B-50SAFE-50GNO","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50SAFE-50GNO","tokens":[{"address":"0x4d18815d14fe5c3304e87b3fa18318baa5c23820","name":"Safe
+        on xDai","symbol":"BAL"}],"totalLiquidity":"1100929.13039364192203132264368028"},{"address":"0xa9b2234773cc6a4f3a34a770c52c931cba5c24b2","isInRecoveryMode":null,"isPaused":false,"name":"B-50SAFE-50GNO","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50SAFE-50GNO","tokens":[{"address":"0x4d18815d14fe5c3304e87b3fa18318baa5c23820","name":"Safe
         Token from Mainnet","symbol":"SAFE"},{"address":"0x9c58bacc331c9aa871afd802db6379a98e80cedb","name":"Gnosis
-        Token on xDai","symbol":"GNO"}],"totalLiquidity":"1355656.628138702216822167103790117"},{"address":"0x21d4c792ea7e38e0d0819c2011a2b1cb7252bd99","isInRecoveryMode":null,"isPaused":false,"name":"50COW-50GNO","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50COW-50GNO","tokens":[{"address":"0x177127622c4a00f3d409b75571e12cb3c8973d3c","name":"CoW
+        Token on xDai","symbol":"GNO"}],"totalLiquidity":"1439035.377888353256341971411637"},{"address":"0x21d4c792ea7e38e0d0819c2011a2b1cb7252bd99","isInRecoveryMode":null,"isPaused":false,"name":"50COW-50GNO","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50COW-50GNO","tokens":[{"address":"0x177127622c4a00f3d409b75571e12cb3c8973d3c","name":"CoW
         Protocol Token from Mainnet","symbol":"COW"},{"address":"0x9c58bacc331c9aa871afd802db6379a98e80cedb","name":"Gnosis
-        Token on xDai","symbol":"GNO"}],"totalLiquidity":"1379529.729678496537278767023235104"},{"address":"0x4cdabe9e07ca393943acfb9286bbbd0d0a310ff6","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        Token on xDai","symbol":"GNO"}],"totalLiquidity":"1513357.92482929277774757988721453"},{"address":"0x4cdabe9e07ca393943acfb9286bbbd0d0a310ff6","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
         50wstETH-50COW","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-50wstETH-50COW","tokens":[{"address":"0x177127622c4a00f3d409b75571e12cb3c8973d3c","name":"CoW
         Protocol Token from Mainnet","symbol":"COW"},{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
-        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"}],"totalLiquidity":"1456700.146818483709247535135788435"},{"address":"0x79c872ed3acb3fc5770dd8a0cd9cd5db3b3ac985","isInRecoveryMode":null,"isPaused":false,"name":"50OLAS-50WXDAI","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50OLAS-50WXDAI","tokens":[{"address":"0xce11e14225575945b8e6dc0d4f2dd4c570f79d9f","name":"Autonolas
+        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"}],"totalLiquidity":"1586892.513186427372323337414970697"},{"address":"0x79c872ed3acb3fc5770dd8a0cd9cd5db3b3ac985","isInRecoveryMode":null,"isPaused":false,"name":"50OLAS-50WXDAI","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50OLAS-50WXDAI","tokens":[{"address":"0xce11e14225575945b8e6dc0d4f2dd4c570f79d9f","name":"Autonolas
         from Mainnet","symbol":"OLAS"},{"address":"0xe91d153e0b41518a2ce8dd3d7944fa863463a97d","name":"Wrapped
-        XDAI","symbol":"WXDAI"}],"totalLiquidity":"1793683.810040449705739558"},{"address":"0xe2343512dcf8a23d81e6cdc2fac656db1ff83aa1","isInRecoveryMode":null,"isPaused":false,"name":"B-50WBTC-50WETH","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50WBTC-50WETH","tokens":[{"address":"0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1","name":"Wrapped
+        XDAI","symbol":"WXDAI"}],"totalLiquidity":"1873331.746533476277305578"},{"address":"0xe2343512dcf8a23d81e6cdc2fac656db1ff83aa1","isInRecoveryMode":null,"isPaused":false,"name":"B-50WBTC-50WETH","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"50WBTC-50WETH","tokens":[{"address":"0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1","name":"Wrapped
         Ether on xDai","symbol":"WETH"},{"address":"0x8e5bbbb09ed1ebde8674cda39a0c169401db4252","name":"Wrapped
-        BTC on xDai","symbol":"WBTC"}],"totalLiquidity":"2301173.223903629936145650080149906"},{"address":"0x7644fa5d0ea14fcf3e813fdf93ca9544f8567655","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        BTC on xDai","symbol":"WBTC"}],"totalLiquidity":"2439786.0906194276100709191272675"},{"address":"0x7644fa5d0ea14fcf3e813fdf93ca9544f8567655","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
         Stable USD","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"sBAL3","tokens":[{"address":"0x4ecaba5870353805a9f068101a40e0f32ed605c6","name":"Tether
         USD on xDai","symbol":"USDT"},{"address":"0x7644fa5d0ea14fcf3e813fdf93ca9544f8567655","name":"Balancer
         Stable USD","symbol":"sBAL3"},{"address":"0xaf204776c7245bf4147c2612bf6e5972ee483701","name":"Savings
         xDAI","symbol":"sDAI"},{"address":"0xddafbb505ad214d7b80b1f830fccc89b60fb7a83","name":"USD//C
-        on xDai","symbol":"USDC"}],"totalLiquidity":"3037259.84256897878409467557736639"},{"address":"0x8dd4df4ce580b9644437f3375e54f1ab09808228","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
+        on xDai","symbol":"USDC"}],"totalLiquidity":"3011555.06017890333192079846516662"},{"address":"0x8dd4df4ce580b9644437f3375e54f1ab09808228","isInRecoveryMode":null,"isPaused":false,"name":"Gyroscope
         ECLP wstETH/WETH","oracleEnabled":false,"poolType":"GyroE","strategyType":2,"swapEnabled":true,"symbol":"ECLP-wstETH-WETH","tokens":[{"address":"0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1","name":"Wrapped
         Ether on xDai","symbol":"WETH"},{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
-        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"}],"totalLiquidity":"3346133.891435318641216868351979773"},{"address":"0xdd439304a77f54b1f7854751ac1169b279591ef7","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"}],"totalLiquidity":"3665606.084785685249249382670792389"},{"address":"0xdd439304a77f54b1f7854751ac1169b279591ef7","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
         EURe/sDAI","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"EURe/sDAI","tokens":[{"address":"0xaf204776c7245bf4147c2612bf6e5972ee483701","name":"Savings
         xDAI","symbol":"sDAI"},{"address":"0xcb444e90d8198415266c6a2724b7900fb12fc56e","name":"Monerium
         EUR emoney","symbol":"EURe"},{"address":"0xdd439304a77f54b1f7854751ac1169b279591ef7","name":"Balancer
-        EURe/sDAI","symbol":"EURe/sDAI"}],"totalLiquidity":"4014490.766675079388141996799783654"},{"address":"0xfc095c811fe836ed12f247bcf042504342b73fb7","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        EURe/sDAI","symbol":"EURe/sDAI"}],"totalLiquidity":"4039095.398727856949346997960505035"},{"address":"0xfc095c811fe836ed12f247bcf042504342b73fb7","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
         Stable USD3","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"sBAL3","tokens":[{"address":"0x2a22f9c3b484c3629090feed35f17ff8f88f76f0","name":"Bridged
         USDC (Gnosis)","symbol":"USDC.e"},{"address":"0x4ecaba5870353805a9f068101a40e0f32ed605c6","name":"Tether
         USD on xDai","symbol":"USDT"},{"address":"0xaf204776c7245bf4147c2612bf6e5972ee483701","name":"Savings
         xDAI","symbol":"sDAI"},{"address":"0xfc095c811fe836ed12f247bcf042504342b73fb7","name":"Balancer
-        Stable USD3","symbol":"sBAL3"}],"totalLiquidity":"5549648.879406170078435485221105295"},{"address":"0xbad20c15a773bf03ab973302f61fabcea5101f0a","isInRecoveryMode":false,"isPaused":false,"name":"Balancer
+        Stable USD3","symbol":"sBAL3"}],"totalLiquidity":"5552415.810812587472866130951551615"},{"address":"0xbad20c15a773bf03ab973302f61fabcea5101f0a","isInRecoveryMode":false,"isPaused":false,"name":"Balancer
         Stable WETH wstETH pool","oracleEnabled":false,"poolType":"ComposableStable","strategyType":0,"swapEnabled":true,"symbol":"bb-WETH-wstETH","tokens":[{"address":"0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1","name":"Wrapped
         Ether on xDai","symbol":"WETH"},{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
         liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"},{"address":"0xbad20c15a773bf03ab973302f61fabcea5101f0a","name":"Balancer
-        Stable WETH wstETH pool","symbol":"bb-WETH-wstETH"}],"totalLiquidity":"14244091.59947066278540265513813752"},{"address":"0xbc2acf5e821c5c9f8667a36bb1131dad26ed64f9","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        Stable WETH wstETH pool","symbol":"bb-WETH-wstETH"}],"totalLiquidity":"15258718.78236872797578022293428376"},{"address":"0xbc2acf5e821c5c9f8667a36bb1131dad26ed64f9","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
         50sDAI-50wstETH","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-50sDAI-50wstETH","tokens":[{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
         liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"},{"address":"0xaf204776c7245bf4147c2612bf6e5972ee483701","name":"Savings
-        xDAI","symbol":"sDAI"}],"totalLiquidity":"15255345.67497735874500910380321451"},{"address":"0x4683e340a8049261057d5ab1b29c8d840e75695e","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
+        xDAI","symbol":"sDAI"}],"totalLiquidity":"15842793.32276286109643655752858089"},{"address":"0x4683e340a8049261057d5ab1b29c8d840e75695e","isInRecoveryMode":null,"isPaused":false,"name":"Balancer
         50wstETH-50GNO","oracleEnabled":false,"poolType":"Weighted","strategyType":2,"swapEnabled":true,"symbol":"B-50wstETH-50GNO","tokens":[{"address":"0x6c76971f98945ae98dd7d4dfca8711ebea946ea6","name":"Wrapped
         liquid staked Ether 2.0 from Mainnet","symbol":"wstETH"},{"address":"0x9c58bacc331c9aa871afd802db6379a98e80cedb","name":"Gnosis
-        Token on xDai","symbol":"GNO"}],"totalLiquidity":"27664403.53383113084755947448207588"}]}}'
+        Token on xDai","symbol":"GNO"}],"totalLiquidity":"30226847.00082535962387198954765945"}]}}'
     headers:
       Access-Control-Allow-Origin:
       - '*'
       CF-Cache-Status:
       - DYNAMIC
       CF-Ray:
-      - 89fbe0d6fa826926-LIS
+      - 8a317b191d5548a0-LIS
       Connection:
       - keep-alive
       Content-Encoding:
@@ -76,12 +76,12 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 08 Jul 2024 00:15:14 GMT
+      - Sun, 14 Jul 2024 12:22:55 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=Yig4BpK4xILk3gScgKyJgWJyyLlF.4PQzzb8fGoVq.c-1720397714-1.0.1.1-qboLjlWO7QCxcOIJBpqUezObY6zimw3q9zgWzRhppqCuSFRwnZ4lvp2vGNmGrWr61eMHnImbulpv.5i.JNmRRA;
-        path=/; expires=Mon, 08-Jul-24 00:45:14 GMT; domain=.thegraph.com; HttpOnly;
+      - __cf_bm=JIkIH45tCdlC6dvRK7OO2SanlKm3iXMLsPYZgIW8OA8-1720959775-1.0.1.1-NHYmEthgASamsCn_aWnQ272fy2LN7bxuLuibCTkfFxEYTnr.yEQ_tygHWrxpltBRcA3qeIA98mE.tXcScQB5GA;
+        path=/; expires=Sun, 14-Jul-24 12:52:55 GMT; domain=.thegraph.com; HttpOnly;
         Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
@@ -98,7 +98,7 @@ interactions:
       access-control-max-age:
       - '3600'
       graph-attestation:
-      - '{"requestCID":"0x22f426a589cdd43c33a1ca83186ca9c2922babfaebd7cc6deaf3fbc2a6772c7a","responseCID":"0x63951eabd85054bdb544ca23b5d6f0924fd19f61200030b6f2aaf5987a5d5751","subgraphDeploymentID":"0x887c909d345acd34702a79aaba8ef973ecb01f3bafffbf5b938a7c077b3dcc7d","r":"0x748fa45a197bceac827cb635f8cc877701a42cdb61e65cc20b6543c18f0c8140","s":"0x33517ef3e24cc5d3b7c2d0bfef21c4f67c9cd73e3c9020ffb9d9189a3df10374","v":28}'
+      - '{"requestCID":"0xf1dc4bff1fed0ea639a95265fde7cc689f1f41c738eb08d8ff163c3e657b8120","responseCID":"0x8a3cc61a77deb35c1f9775c255eff3138b542b9171f64bf741dc4458b36976b4","subgraphDeploymentID":"0x887c909d345acd34702a79aaba8ef973ecb01f3bafffbf5b938a7c077b3dcc7d","r":"0xe2dc76da0a75dfa921289b323091b6abae9afcfd86cb198520c8dd5746060372","s":"0x1bb2fe3dd690a02065100b18bbd4c02168a07df608f3ba31e8ea82afcc750778","v":27}'
     status:
       code: 200
       message: OK
