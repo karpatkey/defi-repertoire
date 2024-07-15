@@ -1,17 +1,28 @@
 from decimal import Decimal
 
+import requests
 from defabipedia.tokens import NATIVE
+from defabipedia.types import Blockchain, Chain
+from pydantic import BaseModel
 from roles_royce.generic_method import Transactable
-from roles_royce.protocols.swap_pools.swap_methods import ApproveCurve, SwapCurve
+from roles_royce.protocols.swap_pools.swap_methods import (ApproveCurve,
+                                                           SwapCurve)
 
-from defi_repertoire.strategies.base import (
-    GenericTxContext,
-    OptSwapArguments,
-    SwapArguments,
-    register,
-)
+from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
+from defi_repertoire.strategies.base import (ChecksumAddress, GenericTxContext,
+                                             OptSwapArguments, SwapArguments,
+                                             register)
+from defi_repertoire.utils import flatten, uniqBy
 
-from .swapper import get_quote, get_swap_pools
+from .swapper import find_reachable_tokens, get_quote, get_swap_pools
+
+
+@stale_while_revalidate_cache()
+async def fetch_pools(blockchain: Blockchain):
+    chain = {"ethereum": "ethereum", "gnosis": "xdai"}[blockchain]
+    url = f"https://api.curve.fi/v1/getPools/big/{chain}"
+    response = requests.get(url=url)
+    return response.json()["data"]["poolData"]
 
 
 @register
@@ -22,6 +33,22 @@ class SwapOnCurve:
     protocol = "balancer"
     id = "swap_on_curve"
     name = "Swap on Curve"
+
+    class OptArgs(BaseModel):
+        token_in_address: ChecksumAddress
+
+    @classmethod
+    async def get_base_options(cls, blockchain: Blockchain):
+        pools = await fetch_pools(blockchain)
+        tokens = uniqBy(flatten([p["coins"] for p in pools]), "address")
+        return {"token_in": tokens}
+
+    @classmethod
+    async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
+        pools = await fetch_pools(blockchain)
+        poolPairs = [p["coins"] for p in pools]
+        outs = find_reachable_tokens(poolPairs, arguments.token_in_address, 3)
+        return {"token_out": outs}
 
     @classmethod
     def get_txns(

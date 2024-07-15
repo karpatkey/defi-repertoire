@@ -1,3 +1,4 @@
+from collections import defaultdict, deque
 from decimal import Decimal
 
 from defabipedia.balancer import Abis as BalancerAbis
@@ -104,3 +105,40 @@ def get_quote(
 
     else:
         raise ValueError("Protocol not supported")
+
+
+def get_address(token):
+    return token["address"]
+
+
+def find_reachable_tokens(pairs, token_in_address, max_hops: int = 2):
+    graph = defaultdict(list)
+    address_to_token = {}
+
+    for pair in pairs:
+        for token in pair:
+            address = get_address(token)
+            address_to_token[address] = token
+            for neighbor in pair:
+                if get_address(neighbor) != address:
+                    graph[address].append(get_address(neighbor))
+
+    # Use BFS to find all reachable tokens within max_hops
+    reachable_tokens = set()
+    queue: deque[tuple[str, int]] = deque([(token_in_address, 0)])
+    visited = set([token_in_address])
+
+    while queue:
+        current_address, hops = queue.popleft()
+        if hops < max_hops:
+            for neighbor_address in graph[current_address]:
+                if neighbor_address not in visited:
+                    visited.add(neighbor_address)
+                    queue.append((neighbor_address, hops + 1))
+                    reachable_tokens.add(neighbor_address)
+
+    # Convert addresses back to {"symbol": symbol, "address": address} pairs
+    result = [address_to_token[address] for address in reachable_tokens]
+
+    result.sort(key=get_address)
+    return result
