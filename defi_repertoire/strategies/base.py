@@ -126,7 +126,7 @@ def get_strategy_by_id(strategy_id: str):
 
 async def strategy_as_dict(blockchain, strategy):
     options = (
-        hasattr(strategy, "get_options")
+        hasattr(strategy, "get_base_options")
         and await strategy.get_base_options(blockchain)
         or {}
     )

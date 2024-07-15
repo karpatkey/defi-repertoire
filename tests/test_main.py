@@ -6,9 +6,8 @@ from fastapi.testclient import TestClient
 from roles_royce.generic_method import TxData
 
 from defi_repertoire.main import app
-from defi_repertoire.strategies.disassembling.disassembling_balancer import (
-    WithdrawAllAssetsProportional,
-)
+from defi_repertoire.strategies.disassembling.disassembling_balancer import \
+    WithdrawAllAssetsProportional
 from tests.vcr import my_vcr
 
 client = TestClient(app)
@@ -21,11 +20,26 @@ def test_read_main():
 
 
 @my_vcr.use_cassette()
-def test_list_strategies():
+def test_list_ethereum_strategies():
     response = client.get("/strategies/ethereum")
     assert response.status_code == 200, response.text
 
     first_strategy = response.json()["strategies"][0]
+    assert "id" in first_strategy
+    assert "protocol" in first_strategy
+    assert "name" in first_strategy
+    assert "kind" in first_strategy
+    assert "arguments" in first_strategy
+
+
+@my_vcr.use_cassette()
+def test_list_gnosis_strategies():
+    response = client.get("/strategies/gnosis")
+    assert response.status_code == 200, response.text
+
+    strategies = response.json()["strategies"]
+    # __import__("pprint").pprint(strategies)
+    first_strategy = strategies[0]
     assert "id" in first_strategy
     assert "protocol" in first_strategy
     assert "name" in first_strategy

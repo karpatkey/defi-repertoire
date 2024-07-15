@@ -15,6 +15,7 @@ from roles_royce.protocols.roles_modifier.contract_methods import (
 from roles_royce.utils import multi_or_one
 from web3 import Web3
 
+from defi_repertoire.strategies import disassembling, swapping
 from defi_repertoire.strategies.base import (
     STRATEGIES,
     ChecksumAddress,
