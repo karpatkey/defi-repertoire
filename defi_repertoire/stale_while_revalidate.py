@@ -54,7 +54,7 @@ class StaleWhileRevalidateCache:
                     del self.pending_updates[key]
 
 
-def stale_while_revalidate_cache(ttl: int, use_stale_ttl: int):
+def stale_while_revalidate_cache(ttl: int = 30 * 60, use_stale_ttl: int = 120 * 60):
     def decorator(func):
         return StaleWhileRevalidateCache(func, ttl, use_stale_ttl)
 

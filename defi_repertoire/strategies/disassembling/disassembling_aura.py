@@ -53,7 +53,7 @@ def aura_to_bpt_address(
     return aura_rewards_contract.functions.asset().call()
 
 
-@stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
+@stale_while_revalidate_cache()
 async def fetch_pools(blockchain: Blockchain):
     logger.debug(f"\nFETCHING AURA POOLS {blockchain.name}\n")
     req = """

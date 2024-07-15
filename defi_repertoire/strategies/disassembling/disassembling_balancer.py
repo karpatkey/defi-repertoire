@@ -62,7 +62,7 @@ def get_bpt_amount_to_redeem(
     )
 
 
-@stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
+@stale_while_revalidate_cache()
 async def fetch_pools(blockchain: Blockchain):
     logger.debug(f"\nFETCHING BALANCER POOLS {blockchain.name}\n")
 
@@ -96,7 +96,7 @@ async def fetch_pools(blockchain: Blockchain):
     return response.json()["data"]["pools"]
 
 
-@stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
+@stale_while_revalidate_cache()
 async def fetch_gauges(blockchain: Blockchain):
     logger.debug(f"\nFETCHING BALANCER GAUGES {blockchain.name}\n")
 
