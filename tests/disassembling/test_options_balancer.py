@@ -1,15 +1,14 @@
 import pytest
 from defabipedia import Chain
 
-from defi_repertoire.strategies.base import GenericTxContext
-from defi_repertoire.strategies.disassembling import disassembling_balancer as balancer
-from tests.utils import web3_eth, web3_gnosis
+from defi_repertoire.strategies.disassembling import \
+    disassembling_balancer as balancer
 from tests.vcr import my_vcr
 
 
 @my_vcr.use_cassette()
 @pytest.mark.asyncio
-async def test_balancer_options_gnosis(web3_gnosis, accounts):
+async def test_balancer_options_gnosis():
     blockchain = Chain.get_blockchain_by_chain_id(100)
 
     cow_gno_pool_address = "0x21d4c792Ea7E38e0D0819c2011A2b1Cb7252Bd99"
@@ -39,7 +38,7 @@ async def test_balancer_options_gnosis(web3_gnosis, accounts):
 
 @my_vcr.use_cassette()
 @pytest.mark.asyncio
-async def test_balancer_options_eth(accounts):
+async def test_balancer_options_eth():
     blockchain = Chain.get_blockchain_by_chain_id(1)
 
     cow_gno_pool_address = "0x92762b42a06dcdddc5b7362cfb01e631c4d44b40"

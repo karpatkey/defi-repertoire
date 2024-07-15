@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal
 from typing import Dict
 
@@ -13,6 +14,8 @@ from defi_repertoire.strategies import register
 
 from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage
 from . import disassembling_balancer as balancer
+
+logger = logging.getLogger(__name__)
 
 GRAPHS: Dict[Blockchain, str] = {}
 GRAPHS[Chain.get_blockchain_by_chain_id(1)] = (
@@ -52,7 +55,7 @@ def aura_to_bpt_address(
 
 @stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
 async def fetch_pools(blockchain: Blockchain):
-    print(f"\nFETCHING AURA POOLS {blockchain.name}\n")
+    logger.debug(f"\nFETCHING AURA POOLS {blockchain.name}\n")
     req = """
     {
       pools(where: { totalSupply_gt: "500000" }) {

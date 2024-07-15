@@ -1,3 +1,4 @@
+import logging
 import os
 from decimal import Decimal
 from typing import Dict
@@ -12,7 +13,10 @@ from web3.exceptions import ContractLogicError
 
 from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
 
-from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, register
+from ..base import (Amount, ChecksumAddress, GenericTxContext, Percentage,
+                    register)
+
+logger = logging.getLogger(__name__)
 
 API_KEY = os.getenv("THEGRAPH_API_KEY", "MOCK_KEY")
 
@@ -60,7 +64,8 @@ def get_bpt_amount_to_redeem(
 
 @stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
 async def fetch_pools(blockchain: Blockchain):
-    print(f"\nFETCHING BALANCER POOLS {blockchain.name}\n")
+    logger.debug(f"\nFETCHING BALANCER POOLS {blockchain.name}\n")
+
     req = """
     {
       pools(where: { totalLiquidity_gt: "500000" }, orderBy: totalLiquidity) {
@@ -93,7 +98,8 @@ async def fetch_pools(blockchain: Blockchain):
 
 @stale_while_revalidate_cache(ttl=5 * 60, use_stale_ttl=10 * 60)
 async def fetch_gauges(blockchain: Blockchain):
-    print(f"\nFETCHING BALANCER GAUGES {blockchain.name}\n")
+    logger.debug(f"\nFETCHING BALANCER GAUGES {blockchain.name}\n")
+
     req = """
     {
       gaugeFactories {
