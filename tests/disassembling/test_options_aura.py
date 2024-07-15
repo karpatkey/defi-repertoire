@@ -9,7 +9,6 @@ from tests.vcr import my_vcr
 @pytest.mark.asyncio
 async def test_aura_options_gnosis():
     blockchain = Chain.get_blockchain_by_chain_id(100)
-    weth_wsteth_address = "0x026d163c28cc7dbf57d6ed57f14208ee412ca526"
 
     opts = await aura.Withdraw.get_base_options(blockchain)
     assert len(opts["rewards_address"]) == 18
@@ -21,7 +20,7 @@ async def test_aura_options_ethereum():
     blockchain = Chain.get_blockchain_by_chain_id(1)
 
     opts = await aura.Withdraw.get_base_options(blockchain)
-    assert len(opts["rewards_address"]) == 100
+    assert len(opts["rewards_address"]) == 142
 
 
 @my_vcr.use_cassette()
@@ -32,7 +31,7 @@ async def test_aura_options_ethereum_single_out():
     bpt_address = "0x82feb430d9d14ee5e635c41807e03fd8f5fffdec"
 
     opts = await aura.WithdrawSingle.get_base_options(blockchain)
-    assert len(opts["rewards_address"]) == 100
+    assert len(opts["rewards_address"]) == 142
 
     opts2 = await aura.WithdrawSingle.get_options(
         blockchain,

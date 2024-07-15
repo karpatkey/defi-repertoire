@@ -28,7 +28,7 @@ interactions:
       CF-Cache-Status:
       - DYNAMIC
       CF-Ray:
-      - 8a31b9cb3e5094f4-LIS
+      - 8a39941d9ef34891-LIS
       Connection:
       - keep-alive
       Content-Encoding:
@@ -36,12 +36,12 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Sun, 14 Jul 2024 13:05:41 GMT
+      - Mon, 15 Jul 2024 11:58:04 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=v.aVUQsq6wSE0HHbfiDxkQklYG3er.iwoEwNj3eMFbU-1720962341-1.0.1.1-inIjz7wxP.eSvHiJHnnxsq22rRURegkwwcx8VN5dkdbCs67QCP6fVO_blsCZrKCsSlskz0soEJ.C1V09Q3SpMA;
-        path=/; expires=Sun, 14-Jul-24 13:35:41 GMT; domain=.thegraph.com; HttpOnly;
+      - __cf_bm=RtPvloWB8GTjEXU604EsoYMrF1_t0EDesZpYIzTR.1Y-1721044684-1.0.1.1-VoiZLQt5oQ8OYE7PB8BKERFv.KrsM4BuOm6Yf5VNv6lYHSEN2_CiP4RINM1u3IexDmC7lT.M528_nt4r71BluQ;
+        path=/; expires=Mon, 15-Jul-24 12:28:04 GMT; domain=.thegraph.com; HttpOnly;
         Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
@@ -58,67 +58,7 @@ interactions:
       access-control-max-age:
       - '3600'
       graph-attestation:
-      - '{"requestCID":"0xcac74ab3e3e742ac9166a084f752eea15f2e96870faf4c055c80ed0346e69bc3","responseCID":"0x11d7b30cb32259a771a1109e5aac187c048c0a140ac148fe27e39439edf81871","subgraphDeploymentID":"0xeaeca6c79e186959a7d28d8333848093047630ffcb605232066d029e77466c24","r":"0xef19fd7ee1b97865b7c5ed49f475441b8f671be42631a746ce3e0fbb94de8f7a","s":"0x662230a3184fa8dad192694f97a5a20a56438afb3a5cad6b5004b99e0a15aace","v":28}'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.32.3
-    method: GET
-    uri: https://api.curve.fi/v1/getPools/big/xdai
-  response:
-    body:
-      string: '{"success":true,"data":{"poolData":[{"id":"0","address":"0x7f90122BF0700F9E7e1F688fe926940E8839F353","coinsAddresses":["0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d","0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83","0x4ECaBa5870353805a9F068101A40E0f32ed605C6","0x0000000000000000000000000000000000000000"],"decimals":["18","6","6","0"],"virtualPrice":"1008506857493610386","amplificationCoefficient":"1000","totalSupply":"2214714275292773594121542","name":"Curve.fi
-        wxDAI/USDC/USDT","assetType":"0","lpTokenAddress":"0x1337BedC9D22ecbe766dF105c9623922A27963EC","priceOracle":null,"priceOracles":null,"symbol":"x3CRV","implementation":"","assetTypeName":"usd","coins":[{"address":"0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d","usdPrice":0.999591,"decimals":"18","isBasePoolLpToken":false,"symbol":"WXDAI","poolBalance":"794162416493263997830186"},{"address":"0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83","usdPrice":0.999798,"decimals":"6","isBasePoolLpToken":false,"symbol":"USDC","poolBalance":"652000420045"},{"address":"0x4ECaBa5870353805a9F068101A40E0f32ed605C6","usdPrice":1,"decimals":"6","isBasePoolLpToken":false,"symbol":"USDT","poolBalance":"787400791939"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/3pool/swap","https://xdai.curve.fi/3pool"],"deposit":["https://curve.fi/#/gnosis/pools/3pool/deposit","https://xdai.curve.fi/3pool/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/3pool/withdraw","https://xdai.curve.fi/3pool/withdraw"]},"usdTotal":2233107.1119640693,"isMetaPool":false,"usdTotalExcludingBasePool":2233107.1119640693,"gaugeAddress":"0xb721cc32160ab0da2614cc6ab16ed822aeebc101","gaugeRewards":[{"gaugeAddress":"0xb721cc32160ab0da2614cc6ab16ed822aeebc101","tokenPrice":266.98,"name":"Gnosis
-        Token on xDai","symbol":"GNO","decimals":"18","apy":0,"metaData":{"rate":"165766296873687","periodFinish":1668086450},"tokenAddress":"0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"}],"gaugeCrvApy":[1.1998308560590858,2.9995771401477143],"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":false,"exchange_extended":false},"blockchainId":"xdai","registryId":"main"},{"id":"factory-v2-0","address":"0xBdF4488Dcf7165788D438b62B4C8A333879B7078","coinsAddresses":["0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445","0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb","0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000"],"decimals":["18","18","0","0"],"virtualPrice":"1001367599056292189","amplificationCoefficient":"50","totalSupply":"16436597587697683417991","name":"Curve.fi
-        Factory Plain Pool: sGNO/GNO","assetType":"1","implementationAddress":"0xC9438d8928486bD9621D326002F4672bF684187A","symbol":"sgnoCRV-f","priceOracle":null,"implementation":"plain2balances","assetTypeName":"xdai","coins":[{"address":"0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445","usdPrice":261.24149658980605,"decimals":"18","isBasePoolLpToken":false,"symbol":"sGNO","poolBalance":"11387097949917747916637"},{"address":"0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb","usdPrice":266.69,"decimals":"18","isBasePoolLpToken":false,"symbol":"GNO","poolBalance":"5099355205710114118615"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/factory-v2-0/swap","https://xdai.curve.fi/factory/0"],"deposit":["https://curve.fi/#/gnosis/pools/factory-v2-0/deposit","https://xdai.curve.fi/factory/0/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/factory-v2-0/withdraw","https://xdai.curve.fi/factory/0/withdraw"]},"lpTokenAddress":"0xBdF4488Dcf7165788D438b62B4C8A333879B7078","usdTotal":4334729.550062055,"isMetaPool":false,"usdTotalExcludingBasePool":4334729.550062055,"gaugeAddress":"0x2686d5e477d1aaa58bf8ce598fa95d97985c7fb1","gaugeRewards":[],"gaugeCrvApy":[0,0],"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":false,"exchange_extended":false},"blockchainId":"xdai","registryId":"factory","factory":true},{"id":"factory-v2-1","address":"0x5D7309a01B727d6769153fCB1dF5587858d53B9C","coinsAddresses":["0x6aC78efae880282396a335CA2F79863A1e6831D4","0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445","0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000"],"decimals":["18","18","0","0"],"virtualPrice":"1003229386930999222","amplificationCoefficient":"50","totalSupply":"1626476630245029223286","name":"Curve.fi
-        Factory Plain Pool: rGNO/sGNO","assetType":"1","implementationAddress":"0xC9438d8928486bD9621D326002F4672bF684187A","symbol":"rgnoCRV-f","priceOracle":null,"implementation":"plain2balances","assetTypeName":"xdai","coins":[{"address":"0x6aC78efae880282396a335CA2F79863A1e6831D4","usdPrice":259.45851115590824,"decimals":"18","isBasePoolLpToken":false,"symbol":"rGNO","poolBalance":"887539176730681355056"},{"address":"0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445","usdPrice":261.3872342874284,"decimals":"18","isBasePoolLpToken":false,"symbol":"sGNO","poolBalance":"744314145930281037408"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/factory-v2-1/swap","https://xdai.curve.fi/factory/1"],"deposit":["https://curve.fi/#/gnosis/pools/factory-v2-1/deposit","https://xdai.curve.fi/factory/1/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/factory-v2-1/withdraw","https://xdai.curve.fi/factory/1/withdraw"]},"lpTokenAddress":"0x5D7309a01B727d6769153fCB1dF5587858d53B9C","usdTotal":424833.80943280866,"isMetaPool":false,"usdTotalExcludingBasePool":424833.80943280866,"gaugeAddress":"0x9509a9d5c55793858fe8b1c00a99e012a7af4aab","gaugeRewards":[],"gaugeCrvApy":[0,0],"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":false,"exchange_extended":false},"blockchainId":"xdai","registryId":"factory","factory":true},{"id":"crypto-1","address":"0x056C6C5e684CeC248635eD86033378Cc444459B0","coinsAddresses":["0xcB444e90D8198415266c6a2724b7900fb12FC56E","0x1337BedC9D22ecbe766dF105c9623922A27963EC","0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000"],"decimals":["18","18","0","0","0","0","0","0"],"virtualPrice":"1004888690066500941","amplificationCoefficient":"20000000","lpTokenAddress":"0x0CA1C1eC4EBf3CC67a9f545fF90a3795b318cA4a","priceOracle":0.924481666862085,"name":"Curve
-        EURe-3Crv","symbol":"crvEUReUSD","totalSupply":"1196869583948619864256463","implementation":"","zapAddress":"0xe3fff29d4dc930ebb787fecd49ee5963dadf60b6","assetTypeName":"unknown","coins":[{"address":"0xcB444e90D8198415266c6a2724b7900fb12FC56E","usdPrice":1.090670449357613,"decimals":"18","isBasePoolLpToken":false,"symbol":"EURe","poolBalance":"997242229462861631858403"},{"address":"0x1337BedC9D22ecbe766dF105c9623922A27963EC","usdPrice":1.0083048350193453,"decimals":"18","isBasePoolLpToken":true,"symbol":"x3CRV","poolBalance":"1422186216106389669562883"}],"poolUrls":{"swap":[],"deposit":[],"withdraw":[]},"usdTotal":2521659.8685245877,"isMetaPool":true,"basePoolAddress":"0x7f90122BF0700F9E7e1F688fe926940E8839F353","underlyingCoins":[{"address":"0xcB444e90D8198415266c6a2724b7900fb12FC56E","usdPrice":1.090670449357613,"decimals":"18","isBasePoolLpToken":false,"symbol":"EURe","poolBalance":"997242229462861631858403"},{"address":"0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d","usdPrice":0.999591,"decimals":"18","isBasePoolLpToken":false,"symbol":"WXDAI","poolBalance":"509974065136305140822263"},{"address":"0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83","usdPrice":0.999798,"decimals":"6","isBasePoolLpToken":false,"symbol":"USDC","poolBalance":"418684261274"},{"address":"0x4ECaBa5870353805a9F068101A40E0f32ed605C6","usdPrice":1,"decimals":"6","isBasePoolLpToken":false,"symbol":"USDT","poolBalance":"505632065201"}],"usdTotalExcludingBasePool":1087662.630526647,"gaugeAddress":"0xd91770e868c7471a9585d1819143063a40c54d00","gaugeRewards":[{"gaugeAddress":"0xd91770e868c7471a9585d1819143063a40c54d00","tokenPrice":266.98,"name":"Gnosis
-        Token on xDai","symbol":"GNO","decimals":"18","apy":0,"metaData":{"rate":"132275132275132","periodFinish":1694084570},"tokenAddress":"0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"},{"gaugeAddress":"0xd91770e868c7471a9585d1819143063a40c54d00","tokenPrice":3736.76,"name":"Wrapped
-        liquid staked Ether 2.0 from Mainnet","symbol":"wstETH","decimals":"18","apy":13.673402974988571,"metaData":{"rate":"1984126984126","periodFinish":1721383690},"tokenAddress":"0x6C76971f98945AE98dD7d4DFcA8711ebea946eA6"}],"gaugeCrvApy":[0,0],"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":false,"exchange_extended":true},"blockchainId":"xdai","registryId":"crypto"},{"id":"factory-twocrypto-4","address":"0x0fF26A978A61d40F6591fc700EF878E96aF6C2C0","coinsAddresses":["0x5Cb9073902F2035222B9749F8fB0c9BFe5527108","0x1337BedC9D22ecbe766dF105c9623922A27963EC"],"decimals":["18","18"],"virtualPrice":"1000896562105582362","amplificationCoefficient":"2000000","name":"GBPe/x3CRV","symbol":"gbpeusd","totalSupply":"120001867611366074233964","implementationAddress":"0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223","priceOracle":0.7780299699907958,"implementation":"twocrypto-optimized","assetTypeName":"unknown","coins":[{"address":"0x5Cb9073902F2035222B9749F8fB0c9BFe5527108","usdPrice":1.2959717156284787,"decimals":"18","isBasePoolLpToken":false,"symbol":"GBPe","poolBalance":"101780161294646195193154"},{"address":"0x1337BedC9D22ecbe766dF105c9623922A27963EC","usdPrice":1.0083048350193453,"decimals":"18","isBasePoolLpToken":false,"symbol":"x3CRV","poolBalance":"141444355833610970762397"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/factory-twocrypto-4/swap","https://xdai.curve.fi/factory-twocrypto-4"],"deposit":["https://curve.fi/#/gnosis/pools/factory-twocrypto-4/deposit","https://xdai.curve.fi/factory-twocrypto-4/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/factory-twocrypto-4/withdraw","https://xdai.curve.fi/factory-twocrypto-4/withdraw"]},"lpTokenAddress":"0x0fF26A978A61d40F6591fc700EF878E96aF6C2C0","usdTotal":274523.23812319257,"isMetaPool":false,"usdTotalExcludingBasePool":274523.23812319257,"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":true,"exchange_extended":false},"blockchainId":"xdai","registryId":"factory-twocrypto","factory":true},{"id":"factory-twocrypto-7","address":"0x592878b920101946Fb5915aB97961bC546f211CC","coinsAddresses":["0xcB444e90D8198415266c6a2724b7900fb12FC56E","0x712b3d230F3C1c19db860d80619288b1F0BDd0Bd"],"decimals":["18","18"],"virtualPrice":"1001306462964687145","amplificationCoefficient":"400000","name":"CRV/EURe","symbol":"CRVEURe","totalSupply":"102645796801415625400512","implementationAddress":"0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223","priceOracle":0.26297048865253686,"implementation":"twocrypto-optimized","assetTypeName":"unknown","coins":[{"address":"0xcB444e90D8198415266c6a2724b7900fb12FC56E","usdPrice":1.088,"decimals":"18","isBasePoolLpToken":false,"symbol":"EURe","poolBalance":"52282597967563894104875"},{"address":"0x712b3d230F3C1c19db860d80619288b1F0BDd0Bd","usdPrice":0.283634,"decimals":"18","isBasePoolLpToken":false,"symbol":"CRV","poolBalance":"201900619935708623171764"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/factory-twocrypto-7/swap","https://xdai.curve.fi/factory-twocrypto-7"],"deposit":["https://curve.fi/#/gnosis/pools/factory-twocrypto-7/deposit","https://xdai.curve.fi/factory-twocrypto-7/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/factory-twocrypto-7/withdraw","https://xdai.curve.fi/factory-twocrypto-7/withdraw"]},"lpTokenAddress":"0x592878b920101946Fb5915aB97961bC546f211CC","usdTotal":114149.34702355432,"isMetaPool":false,"usdTotalExcludingBasePool":114149.34702355432,"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":true,"exchange_extended":false},"blockchainId":"xdai","registryId":"factory-twocrypto","factory":true},{"id":"factory-stable-ng-3","address":"0x0c8FA74c7b2De5a92B39217DC98D2D609439a2e5","coinsAddresses":["0xaBEf652195F98A91E490f047A5006B71c85f058d","0xaf204776c7245bF4147c2612BF6e5972Ee483701"],"decimals":["18","18"],"virtualPrice":"1029763238697082505","amplificationCoefficient":"100","totalSupply":"142002454349335047908527","name":"crvUSD/sDAI","implementationAddress":"0x3d6cB2F6DcF47CDd9C13E4e3beAe9af041d8796a","symbol":"crvUSDsDAI","implementation":"plainstableng","assetTypeName":"unknown","coins":[{"address":"0xaBEf652195F98A91E490f047A5006B71c85f058d","usdPrice":0.9967554853081431,"decimals":"18","isBasePoolLpToken":false,"symbol":"crvUSD","poolBalance":"98266020572171792152272"},{"address":"0xaf204776c7245bF4147c2612BF6e5972Ee483701","usdPrice":1.1006624971072871,"decimals":"18","isBasePoolLpToken":false,"symbol":"sDAI","poolBalance":"43883419913059861817474"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/factory-stable-ng-3/swap","https://xdai.curve.fi/factory-stable-ng-3"],"deposit":["https://curve.fi/#/gnosis/pools/factory-stable-ng-3/deposit","https://xdai.curve.fi/factory-stable-ng-3/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/factory-stable-ng-3/withdraw","https://xdai.curve.fi/factory-stable-ng-3/withdraw"]},"lpTokenAddress":"0x0c8FA74c7b2De5a92B39217DC98D2D609439a2e5","usdTotal":146248.0295678312,"isMetaPool":false,"usdTotalExcludingBasePool":146248.0295678312,"gaugeAddress":"0x05cd911ee9b60c28fcee4ea03cc5670637d955b1","gaugeRewards":[{"gaugeAddress":"0x05cd911ee9b60c28fcee4ea03cc5670637d955b1","tokenPrice":0.9967554853081431,"name":"Curve.Fi
-        USD Stablecoin from Mainnet","symbol":"crvUSD","decimals":"18","apy":0,"metaData":{"rate":"8267195767195767","periodFinish":1708095705},"tokenAddress":"0xaBEf652195F98A91E490f047A5006B71c85f058d"}],"gaugeCrvApy":[15.758056452945656,39.39514113236414],"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":true,"exchange_extended":false},"blockchainId":"xdai","registryId":"factory-stable-ng","factory":true},{"id":"factory-stable-ng-11","address":"0xd4b7769dFFA274DaA8EC351b67609804faFB4307","coinsAddresses":["0xaBEf652195F98A91E490f047A5006B71c85f058d","0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83"],"decimals":["18","6"],"virtualPrice":"1001824268857280074","amplificationCoefficient":"1000","totalSupply":"75517710389388509851069","name":"crvUSD/USDC","implementationAddress":"0x3d6cB2F6DcF47CDd9C13E4e3beAe9af041d8796a","symbol":"crvusdusdc","implementation":"plainstableng","assetTypeName":"unknown","coins":[{"address":"0xaBEf652195F98A91E490f047A5006B71c85f058d","usdPrice":0.9967554853081431,"decimals":"18","isBasePoolLpToken":false,"symbol":"crvUSD","poolBalance":"66728573343266015139316"},{"address":"0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83","usdPrice":0.999798,"decimals":"6","isBasePoolLpToken":false,"symbol":"USDC","poolBalance":"8979412100"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/factory-stable-ng-11/swap","https://xdai.curve.fi/factory-stable-ng-11"],"deposit":["https://curve.fi/#/gnosis/pools/factory-stable-ng-11/deposit","https://xdai.curve.fi/factory-stable-ng-11/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/factory-stable-ng-11/withdraw","https://xdai.curve.fi/factory-stable-ng-11/withdraw"]},"lpTokenAddress":"0xd4b7769dFFA274DaA8EC351b67609804faFB4307","usdTotal":75489.66976544293,"isMetaPool":false,"usdTotalExcludingBasePool":75489.66976544293,"gaugeAddress":"0x6729c5b5d08a141ea9c2b0c79726333a5bc399a8","gaugeRewards":[{"gaugeAddress":"0x6729c5b5d08a141ea9c2b0c79726333a5bc399a8","tokenPrice":0.9967554853081431,"name":"Curve.Fi
-        USD Stablecoin from Mainnet","symbol":"crvUSD","decimals":"18","apy":0,"metaData":{"rate":"8267195767195767","periodFinish":1708788695},"tokenAddress":"0xaBEf652195F98A91E490f047A5006B71c85f058d"}],"gaugeCrvApy":[18.752946552081358,46.88236638020339],"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":true,"exchange_extended":false},"blockchainId":"xdai","registryId":"factory-stable-ng","factory":true},{"id":"factory-stable-ng-12","address":"0x892406491a47eF0Db3AbaD92064Fb5551ff776E0","coinsAddresses":["0xaBEf652195F98A91E490f047A5006B71c85f058d","0x4ECaBa5870353805a9F068101A40E0f32ed605C6"],"decimals":["18","6"],"virtualPrice":"1000538001232700520","amplificationCoefficient":"1000","totalSupply":"28001366013521859135311","name":"crvUSD/USDT","implementationAddress":"0x3d6cB2F6DcF47CDd9C13E4e3beAe9af041d8796a","symbol":"crvusdusdt","implementation":"plainstableng","assetTypeName":"unknown","coins":[{"address":"0xaBEf652195F98A91E490f047A5006B71c85f058d","usdPrice":0.9967554853081431,"decimals":"18","isBasePoolLpToken":false,"symbol":"crvUSD","poolBalance":"24673478607819215219670"},{"address":"0x4ECaBa5870353805a9F068101A40E0f32ed605C6","usdPrice":1,"decimals":"6","isBasePoolLpToken":false,"symbol":"USDT","poolBalance":"3362080710"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/factory-stable-ng-12/swap","https://xdai.curve.fi/factory-stable-ng-12"],"deposit":["https://curve.fi/#/gnosis/pools/factory-stable-ng-12/deposit","https://xdai.curve.fi/factory-stable-ng-12/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/factory-stable-ng-12/withdraw","https://xdai.curve.fi/factory-stable-ng-12/withdraw"]},"lpTokenAddress":"0x892406491a47eF0Db3AbaD92064Fb5551ff776E0","usdTotal":27955.50585397693,"isMetaPool":false,"usdTotalExcludingBasePool":27955.50585397693,"gaugeAddress":"0xc2efdbc1a21d82a677380380eb282a963a6a6ada","gaugeRewards":[{"gaugeAddress":"0xc2efdbc1a21d82a677380380eb282a963a6a6ada","tokenPrice":0.9967554853081431,"name":"Curve.Fi
-        USD Stablecoin from Mainnet","symbol":"crvUSD","decimals":"18","apy":0,"metaData":{"rate":"8267195767195767","periodFinish":1708788705},"tokenAddress":"0xaBEf652195F98A91E490f047A5006B71c85f058d"}],"gaugeCrvApy":[0,0],"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":true,"exchange_extended":false},"blockchainId":"xdai","registryId":"factory-stable-ng","factory":true},{"id":"factory-stable-ng-14","address":"0x845C8bc94610807fCbaB5dd2bc7aC9DAbaFf3c55","coinsAddresses":["0xcB444e90D8198415266c6a2724b7900fb12FC56E","0x54E4cB2a4Fa0ee46E3d9A98D13Bea119666E09f6"],"decimals":["18","6"],"virtualPrice":"1000112667003149970","amplificationCoefficient":"500","totalSupply":"500000000000000000000000","name":"EURe/EURC","implementationAddress":"0x3d6cB2F6DcF47CDd9C13E4e3beAe9af041d8796a","symbol":"EUReEURC","implementation":"plainstableng","assetTypeName":"unknown","coins":[{"address":"0xcB444e90D8198415266c6a2724b7900fb12FC56E","usdPrice":1.091,"decimals":"18","isBasePoolLpToken":false,"symbol":"EURe","poolBalance":"163917024116672992297869"},{"address":"0x54E4cB2a4Fa0ee46E3d9A98D13Bea119666E09f6","usdPrice":1.0888403722438778,"decimals":"6","isBasePoolLpToken":false,"symbol":"EURC.e","poolBalance":"336206492790"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/factory-stable-ng-14/swap","https://xdai.curve.fi/factory-stable-ng-14"],"deposit":["https://curve.fi/#/gnosis/pools/factory-stable-ng-14/deposit","https://xdai.curve.fi/factory-stable-ng-14/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/factory-stable-ng-14/withdraw","https://xdai.curve.fi/factory-stable-ng-14/withdraw"]},"lpTokenAddress":"0x845C8bc94610807fCbaB5dd2bc7aC9DAbaFf3c55","usdTotal":544908.6760715625,"isMetaPool":false,"usdTotalExcludingBasePool":544908.6760715625,"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":true,"exchange_extended":false},"blockchainId":"xdai","registryId":"factory-stable-ng","factory":true},{"id":"factory-stable-ng-15","address":"0xf3D8F3dE71657D342db60dd714c8a2aE37Eac6B4","coinsAddresses":["0xa555d5344f6FB6c65da19e403Cb4c1eC4a1a5Ee3","0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"],"decimals":["18","18"],"virtualPrice":"1000290623583603424","amplificationCoefficient":"1000","totalSupply":"19498015946384926739271","name":"BREAD
-        / WXDAI","implementationAddress":"0x3d6cB2F6DcF47CDd9C13E4e3beAe9af041d8796a","symbol":"BUTTER","implementation":"plainstableng","assetTypeName":"unknown","coins":[{"address":"0xa555d5344f6FB6c65da19e403Cb4c1eC4a1a5Ee3","usdPrice":0.9988988222258414,"decimals":"18","isBasePoolLpToken":false,"symbol":"BREAD","poolBalance":"11106804154002572808483"},{"address":"0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d","usdPrice":0.999591,"decimals":"18","isBasePoolLpToken":false,"symbol":"WXDAI","poolBalance":"8397070119065964178265"}],"poolUrls":{"swap":["https://curve.fi/#/gnosis/pools/factory-stable-ng-15/swap","https://xdai.curve.fi/factory-stable-ng-15"],"deposit":["https://curve.fi/#/gnosis/pools/factory-stable-ng-15/deposit","https://xdai.curve.fi/factory-stable-ng-15/deposit"],"withdraw":["https://curve.fi/#/gnosis/pools/factory-stable-ng-15/withdraw","https://xdai.curve.fi/factory-stable-ng-15/withdraw"]},"lpTokenAddress":"0xf3D8F3dE71657D342db60dd714c8a2aE37Eac6B4","usdTotal":19488.20930551352,"isMetaPool":false,"usdTotalExcludingBasePool":19488.20930551352,"usesRateOracle":false,"isBroken":false,"hasMethods":{"exchange_received":true,"exchange_extended":false},"blockchainId":"xdai","registryId":"factory-stable-ng","factory":true}],"tvl":9283095.777696654},"generatedTimeMs":1720962342597}'
-    headers:
-      Cache-Control:
-      - max-age=60, s-maxage=334, stale-while-revalidate
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Sun, 14 Jul 2024 13:05:42 GMT
-      ETag:
-      - W/"5268-ALk/00pJcQIfcYz+30t8CICJcYs"
-      Server:
-      - nginx
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Accept-Encoding
-      - Origin
-      Via:
-      - 1.1 273f753732c8ee2013849369c70cfbb0.cloudfront.net (CloudFront)
-      X-Amz-Cf-Id:
-      - ss_w_Qzn5xBdwO5OFJe1Z_MwIAvflDrsrevUdwQwQPb71yKArYKorQ==
-      X-Amz-Cf-Pop:
-      - BCN50-P1
-      X-Cache:
-      - Miss from cloudfront
-      X-Powered-By:
-      - Express
+      - '{"requestCID":"0xe43291b4cf339d665c901da6ac12d09084c87bc945155f315d9a8b22a968eed5","responseCID":"0x5203e3c2b2aa9f25ce5bbdcfad3e78b4781d49c7810c393f47f402fae6389302","subgraphDeploymentID":"0xeaeca6c79e186959a7d28d8333848093047630ffcb605232066d029e77466c24","r":"0x7bce9914c92d15ac5229a7f3592d0658f36fb25c6d98d0243437f30d7f46f790","s":"0x3789d80b623569023ee6b713b4b9f4c1bbf5460a4439c997ac0bf13746b1c09b","v":27}'
     status:
       code: 200
       message: OK
@@ -453,11 +393,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Sun, 14 Jul 2024 13:05:43 GMT
+      - Mon, 15 Jul 2024 11:58:05 GMT
       ETag:
       - W/"1552a9833ef725cba4c35419b1ff67b9800e66f2179ffe8cdd12efe9059225a0"
       Expires:
-      - Sun, 14 Jul 2024 13:10:43 GMT
+      - Mon, 15 Jul 2024 12:03:05 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -473,15 +413,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 321e512962a88dc7983c6a097f49f3922950fcd0
+      - d0a0537e0c91e803a8ee4c4ceadca6f76a858b43
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 7837:31568A:D15BE5:DE749E:6693CD26
+      - 9860:31BE7E:2D73DD:2F531A:66950ECC
       X-Served-By:
-      - cache-lis1490050-LIS
+      - cache-lis1490046-LIS
       X-Timer:
-      - S1720962343.183788,VS0,VE176
+      - S1721044685.244709,VS0,VE181
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -740,11 +680,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Sun, 14 Jul 2024 13:05:44 GMT
+      - Mon, 15 Jul 2024 11:58:06 GMT
       ETag:
       - W/"8ba8cc87a85fb2b7f5e6869f54e189aaa710db61659cbaa0b8ed36e88029b03e"
       Expires:
-      - Sun, 14 Jul 2024 13:10:44 GMT
+      - Mon, 15 Jul 2024 12:03:06 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -760,15 +700,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 0d18eb5425c6049edc8a6dba69142b2a2f694ac8
+      - 2b30f05e1c52dacf9bdcedab04c99fac838dae71
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 3512:1189B9:D45966:E1B8BC:6693CD27
+      - 461C:383E22:10300B:10D591:66950ECD
       X-Served-By:
-      - cache-lis1490054-LIS
+      - cache-lis1490043-LIS
       X-Timer:
-      - S1720962344.827390,VS0,VE302
+      - S1721044686.895842,VS0,VE138
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -1946,7 +1886,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '1978742'
+      - '2061084'
       Cache-Control:
       - public, max-age=0, must-revalidate
       Connection:
@@ -1958,7 +1898,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 14 Jul 2024 13:05:44 GMT
+      - Mon, 15 Jul 2024 11:58:06 GMT
       Etag:
       - W/"6f9eefd28cc335c7f3332b4f8096112e"
       Server:
@@ -1970,7 +1910,7 @@ interactions:
       X-Vercel-Cache:
       - HIT
       X-Vercel-Id:
-      - fra1::qj2n4-1720962344923-af3804dcbf23
+      - fra1::qhp2n-1721044686742-a847ab17bd61
     status:
       code: 200
       message: OK
@@ -2411,7 +2351,7 @@ interactions:
         \   }\n  ]\n}"
     headers:
       Age:
-      - '7'
+      - '6'
       Connection:
       - keep-alive
       Content-Encoding:
@@ -2419,7 +2359,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Sun, 14 Jul 2024 13:05:39 GMT
+      - Mon, 15 Jul 2024 11:58:02 GMT
       ETag:
       - W/"b101598fce8ef83bffff31c6fd14dd90"
       Last-Modified:
@@ -2432,9 +2372,9 @@ interactions:
       - Accept-Encoding
       - Origin
       Via:
-      - 1.1 09aa0e446827601eeb0eba04c1249f50.cloudfront.net (CloudFront)
+      - 1.1 26f9a94e9be2a827a3f2e1cdb64a8fa6.cloudfront.net (CloudFront)
       X-Amz-Cf-Id:
-      - kh5YxFH_Cg_dNjxYPY49F8MYLb3j_CEFlVyrsQRmpJbuh49jcdlPCA==
+      - t4_KLsmyxQpjVJKGyfxlwWaCJZKX--NkNN_mvo0DXMDp_pWZ-eSqAg==
       X-Amz-Cf-Pop:
       - BCN50-P2
       X-Cache:

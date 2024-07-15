@@ -41,7 +41,7 @@ def test_list_ethereum_strategies_options():
 
     strategies = response.json()["strategies"]
 
-    __import__("pprint").pprint(strategies)
+    # __import__("pprint").pprint(strategies)
 
     cowswap = next(s for s in strategies if s["protocol"] == "cowswap")
     assert next(
@@ -84,7 +84,6 @@ def test_list_ethereum_strategies_options():
     balancerWithdrawSingle = next(
         s for s in strategies if s["id"] == "balancer__withdraw_single"
     )
-    print(balancerWithdrawSingle)
     assert next(
         o
         for o in balancerWithdrawSingle["options"]["bpt_address"]
@@ -133,7 +132,6 @@ def test_list_gnosis_strategies_options():
     }
 
     auraWithdraw = next(s for s in strategies if s["id"] == "aura__withdraw")
-    print(auraWithdraw)
     assert next(
         o
         for o in auraWithdraw["options"]["rewards_address"]
@@ -146,7 +144,6 @@ def test_list_gnosis_strategies_options():
     balancerUnP = next(
         s for s in strategies if s["id"] == "balancer__unstake_withdraw_proportional"
     )
-    print(balancerUnP)
     assert next(
         o
         for o in balancerUnP["options"]["gauge_address"]
