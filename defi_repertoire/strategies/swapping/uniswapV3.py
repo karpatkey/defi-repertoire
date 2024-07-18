@@ -2,11 +2,9 @@ import os
 from decimal import Decimal
 
 from defabipedia.tokens import NATIVE
-from defabipedia.types import Blockchain
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.swap_pools import swap_methods
 
-from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
 from defi_repertoire.strategies.base import GenericTxContext, SwapArguments, register
 from defi_repertoire.strategies.swapping.swapper import (
     get_quote,

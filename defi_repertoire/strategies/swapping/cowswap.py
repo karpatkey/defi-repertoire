@@ -8,7 +8,7 @@ from roles_royce.protocols import cowswap
 from roles_royce.protocols.cowswap.utils import requests
 from roles_royce.protocols.swap_pools.swap_methods import WrapNativeToken
 
-from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
+from defi_repertoire.stale_while_revalidate import cache_af
 from defi_repertoire.strategies.base import (
     GenericTxContext,
     OptSwapArguments,
@@ -36,7 +36,7 @@ ETHEREUM_LISTS = [
 ]
 
 
-@stale_while_revalidate_cache()
+@cache_af()
 async def fetch_tokens(blockchain: Blockchain):
     lists = {"ethereum": ETHEREUM_LISTS, "gnosis": GNOSIS_LISTS}[blockchain]
     chainId = {"ethereum": 1, "gnosis": 100}[blockchain]

@@ -11,7 +11,7 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols import balancer
 from web3.exceptions import ContractLogicError
 
-from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
+from defi_repertoire.stale_while_revalidate import cache_af
 
 from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, register
 
@@ -61,7 +61,7 @@ def get_bpt_amount_to_redeem(
     )
 
 
-@stale_while_revalidate_cache()
+@cache_af()
 async def fetch_pools(blockchain: Blockchain):
     logger.debug(f"\nFETCHING BALANCER POOLS {blockchain.name}\n")
 
@@ -95,7 +95,7 @@ async def fetch_pools(blockchain: Blockchain):
     return response.json()["data"]["pools"]
 
 
-@stale_while_revalidate_cache()
+@cache_af()
 async def fetch_gauges(blockchain: Blockchain):
     logger.debug(f"\nFETCHING BALANCER GAUGES {blockchain.name}\n")
 

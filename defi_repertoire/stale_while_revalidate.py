@@ -54,7 +54,14 @@ class StaleWhileRevalidateCache:
                     del self.pending_updates[key]
 
 
-def stale_while_revalidate_cache(ttl: int = 30 * 60, use_stale_ttl: int = 120 * 60):
+def cache_af(ttl: int = 30 * 60, use_stale_ttl: int = 120 * 60):
+    """
+    Cache Async F in a stale while revalidate manner
+
+    ttl is the time cache is considered fresh and not udpdated
+    use_stale_ttl is the time to use stale cached data and refresh it in the background. Not blocking the request
+    """
+
     def decorator(func):
         return StaleWhileRevalidateCache(func, ttl, use_stale_ttl)
 

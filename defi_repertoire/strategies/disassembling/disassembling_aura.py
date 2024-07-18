@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.eth import aura
 
-from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
+from defi_repertoire.stale_while_revalidate import cache_af
 from defi_repertoire.strategies import register
 
 from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage
@@ -53,7 +53,7 @@ def aura_to_bpt_address(
     return aura_rewards_contract.functions.asset().call()
 
 
-@stale_while_revalidate_cache()
+@cache_af()
 async def fetch_pools(blockchain: Blockchain):
     logger.debug(f"\nFETCHING AURA POOLS {blockchain.name}\n")
     req = """

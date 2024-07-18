@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols.swap_pools.swap_methods import ApproveCurve, SwapCurve
 
-from defi_repertoire.stale_while_revalidate import stale_while_revalidate_cache
+from defi_repertoire.stale_while_revalidate import cache_af
 from defi_repertoire.strategies.base import (
     ChecksumAddress,
     GenericTxContext,
@@ -20,7 +20,7 @@ from defi_repertoire.utils import flatten, uniqBy
 from .swapper import find_reachable_tokens, get_quote, get_swap_pools
 
 
-@stale_while_revalidate_cache()
+@cache_af()
 async def fetch_pools(blockchain: Blockchain):
     chain = {"ethereum": "ethereum", "gnosis": "xdai"}[blockchain]
     url = f"https://api.curve.fi/v1/getPools/big/{chain}"
