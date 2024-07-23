@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import Tuple
 
 from defabipedia.balancer import Abis
 from pydantic import BaseModel
@@ -73,7 +74,7 @@ def get_bpt_amount_to_redeem(
     )
 
 
-def get_contract_mode(ctx: GenericTxContext, bpt_address: ChecksumAddress) -> bool:
+def get_contract_mode(ctx: GenericTxContext, bpt_address: ChecksumAddress) -> Tuple[bool, bool]:
     bpt_contract = ctx.w3.eth.contract(
         address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
     )
@@ -84,7 +85,7 @@ def get_contract_mode(ctx: GenericTxContext, bpt_address: ChecksumAddress) -> bo
     except ContractLogicError:
         recovery = False
 
-    return paused, recovery
+    return paused[0], recovery
 
 
 @register
@@ -116,7 +117,7 @@ class WithdrawAllAssetsProportional:
 
         paused, recovery = get_contract_mode(ctx, bpt_address)
 
-        if paused[0]:
+        if paused:
             raise ValueError("Pool is in paused state, no withdrawing is accepted.")
 
         if recovery:
@@ -171,7 +172,7 @@ class WithdrawSingle:
         bpt_pool_id = "0x" + bpt_contract.functions.getPoolId().call().hex()
         paused, recovery = get_contract_mode(ctx, bpt_address)
 
-        if paused[0]:
+        if paused:
             raise ValueError("Pool is in paused state, no withdrawing is accepted.")
         if recovery:
             raise ValueError(
