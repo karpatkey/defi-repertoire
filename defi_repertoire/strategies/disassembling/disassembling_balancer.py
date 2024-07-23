@@ -74,7 +74,9 @@ def get_bpt_amount_to_redeem(
     )
 
 
-def get_contract_mode(ctx: GenericTxContext, bpt_address: ChecksumAddress) -> Tuple[bool, bool]:
+def get_contract_mode(
+    ctx: GenericTxContext, bpt_address: ChecksumAddress
+) -> Tuple[bool, bool]:
     bpt_contract = ctx.w3.eth.contract(
         address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
     )

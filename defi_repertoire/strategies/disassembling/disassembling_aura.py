@@ -167,4 +167,3 @@ class Exit22:
             txns.append(transactable)
 
         return txns
-
