@@ -14,7 +14,7 @@ async def test_balancer_options_gnosis():
 
     opts = await balancer.WithdrawSingle.get_base_options(blockchain)
 
-    assert len(opts["bpt_address"]) == 13
+    assert len(opts["bpt_address"]) == 15
 
     assert next(o for o in opts["bpt_address"] if o["label"] == "50COW-50GNO") == {
         "address": bpt_address,

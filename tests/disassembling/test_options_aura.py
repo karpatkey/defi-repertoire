@@ -11,7 +11,7 @@ async def test_aura_options_gnosis():
     blockchain = Chain.get_blockchain_by_chain_id(100)
 
     opts = await aura.Withdraw.get_base_options(blockchain)
-    assert len(opts["rewards_address"]) == 18
+    assert len(opts["rewards_address"]) == 20
 
 
 @my_vcr.use_cassette()

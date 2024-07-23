@@ -28,7 +28,7 @@ interactions:
       CF-Cache-Status:
       - DYNAMIC
       CF-Ray:
-      - 8a39941d9ef34891-LIS
+      - 8a721d3ddd6594fb-LIS
       Connection:
       - keep-alive
       Content-Encoding:
@@ -36,12 +36,12 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 15 Jul 2024 11:58:04 GMT
+      - Mon, 22 Jul 2024 08:38:23 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=RtPvloWB8GTjEXU604EsoYMrF1_t0EDesZpYIzTR.1Y-1721044684-1.0.1.1-VoiZLQt5oQ8OYE7PB8BKERFv.KrsM4BuOm6Yf5VNv6lYHSEN2_CiP4RINM1u3IexDmC7lT.M528_nt4r71BluQ;
-        path=/; expires=Mon, 15-Jul-24 12:28:04 GMT; domain=.thegraph.com; HttpOnly;
+      - __cf_bm=4osgK8ZpKtuK.kevMK0OA4rAA5UU2XcymBcP.i36UMk-1721637503-1.0.1.1-XM8ImLFSbrRY5QSB6I0fnJYJgYkUWWKfHeo0fSkvMgYLUBqDfWvAvB8l57GH8otlw.ClLSE0tQSFVnY4CDIJ2w;
+        path=/; expires=Mon, 22-Jul-24 09:08:23 GMT; domain=.thegraph.com; HttpOnly;
         Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
@@ -58,7 +58,7 @@ interactions:
       access-control-max-age:
       - '3600'
       graph-attestation:
-      - '{"requestCID":"0xe43291b4cf339d665c901da6ac12d09084c87bc945155f315d9a8b22a968eed5","responseCID":"0x5203e3c2b2aa9f25ce5bbdcfad3e78b4781d49c7810c393f47f402fae6389302","subgraphDeploymentID":"0xeaeca6c79e186959a7d28d8333848093047630ffcb605232066d029e77466c24","r":"0x7bce9914c92d15ac5229a7f3592d0658f36fb25c6d98d0243437f30d7f46f790","s":"0x3789d80b623569023ee6b713b4b9f4c1bbf5460a4439c997ac0bf13746b1c09b","v":27}'
+      - '{"requestCID":"0xe43291b4cf339d665c901da6ac12d09084c87bc945155f315d9a8b22a968eed5","responseCID":"0x4abfc9a92e405f4b68b6795ca1343803af7da02ee3a49a579547264117c1bb11","subgraphDeploymentID":"0xeaeca6c79e186959a7d28d8333848093047630ffcb605232066d029e77466c24","r":"0xa5de3c1c3968001c567f33ca5c8427412ce6c38e03cc6b07ebb7cbe64c20538d","s":"0x059a113db539dff562bb9e5bcc2337b162fbd6ba933e4937ab2403233eded6ad","v":28}'
     status:
       code: 200
       message: OK
@@ -393,11 +393,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 15 Jul 2024 11:58:05 GMT
+      - Mon, 22 Jul 2024 08:38:24 GMT
       ETag:
       - W/"1552a9833ef725cba4c35419b1ff67b9800e66f2179ffe8cdd12efe9059225a0"
       Expires:
-      - Mon, 15 Jul 2024 12:03:05 GMT
+      - Mon, 22 Jul 2024 08:43:24 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -413,15 +413,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - d0a0537e0c91e803a8ee4c4ceadca6f76a858b43
+      - ca6c380383e32390af92edb1133ff170b7f50595
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 9860:31BE7E:2D73DD:2F531A:66950ECC
+      - 4492:0E65:E55EDD:F32339:669E1A7F
       X-Served-By:
-      - cache-lis1490046-LIS
+      - cache-lis1490024-LIS
       X-Timer:
-      - S1721044685.244709,VS0,VE181
+      - S1721637504.933685,VS0,VE236
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -680,11 +680,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 15 Jul 2024 11:58:06 GMT
+      - Mon, 22 Jul 2024 08:38:24 GMT
       ETag:
       - W/"8ba8cc87a85fb2b7f5e6869f54e189aaa710db61659cbaa0b8ed36e88029b03e"
       Expires:
-      - Mon, 15 Jul 2024 12:03:06 GMT
+      - Mon, 22 Jul 2024 08:43:24 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -700,15 +700,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 2b30f05e1c52dacf9bdcedab04c99fac838dae71
+      - 3fa9135e86fbeab95d4e862efb2e0815549ec5b1
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 461C:383E22:10300B:10D591:66950ECD
+      - F2B5:375BA5:3A715E8:3D80CAC:669E1A7F
       X-Served-By:
-      - cache-lis1490043-LIS
+      - cache-lis1490040-LIS
       X-Timer:
-      - S1721044686.895842,VS0,VE138
+      - S1721637504.263794,VS0,VE224
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -1886,7 +1886,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '2061084'
+      - '2305945'
       Cache-Control:
       - public, max-age=0, must-revalidate
       Connection:
@@ -1898,7 +1898,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 15 Jul 2024 11:58:06 GMT
+      - Mon, 22 Jul 2024 08:38:24 GMT
       Etag:
       - W/"6f9eefd28cc335c7f3332b4f8096112e"
       Server:
@@ -1910,7 +1910,7 @@ interactions:
       X-Vercel-Cache:
       - HIT
       X-Vercel-Id:
-      - fra1::qhp2n-1721044686742-a847ab17bd61
+      - cdg1::5v4k9-1721637504924-9183123bb25f
     status:
       code: 200
       message: OK
@@ -1929,8 +1929,8 @@ interactions:
     uri: https://files.cow.fi/tokens/CowSwap.json
   response:
     body:
-      string: "{\n  \"name\": \"CoW Swap\",\n  \"timestamp\": \"2024-07-08T16:00:00+00:00\",\n
-        \ \"version\": {\n    \"major\": 2,\n    \"minor\": 36,\n    \"patch\": 0\n
+      string: "{\n  \"name\": \"CoW Swap\",\n  \"timestamp\": \"2024-07-17T07:00:00+00:00\",\n
+        \ \"version\": {\n    \"major\": 2,\n    \"minor\": 37,\n    \"patch\": 0\n
         \ },\n  \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/list-logo.png\",\n
         \ \"keywords\": [\n    \"default\",\n    \"list\",\n    \"cowswap\"\n  ],\n
         \ \"tokens\": [\n    {\n      \"symbol\": \"SPELL\",\n      \"name\": \"Spell
@@ -2253,6 +2253,9 @@ interactions:
         \   },\n    {\n      \"symbol\": \"VISR\",\n      \"name\": \"VISOR\",\n      \"address\":
         \"0xf938424f7210f31df2aee3011291b658f872e91e\",\n      \"decimals\": 18,\n
         \     \"chainId\": 1,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xf938424f7210f31df2aee3011291b658f872e91e/logo.png\"\n
+        \   },\n    {\n      \"address\": \"0xf939e0a03fb07f59a73314e73794be0e57ac1b4e\",\n
+        \     \"symbol\": \"crvUSD\",\n      \"name\": \"Curve.Fi USD Stablecoin\",\n
+        \     \"decimals\": 18,\n      \"chainId\": 1,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xf939e0a03fb07f59a73314e73794be0e57ac1b4e/logo.png\"\n
         \   },\n    {\n      \"address\": \"0xf951e335afb289353dc249e82926178eac7ded78\",\n
         \     \"symbol\": \"swETH\",\n      \"name\": \"Swell Eth\",\n      \"decimals\":
         18,\n      \"chainId\": 1,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xf951e335afb289353dc249e82926178eac7ded78/logo.png\"\n
@@ -2315,6 +2318,10 @@ interactions:
         \   },\n    {\n      \"address\": \"0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445\",\n
         \     \"chainId\": 100,\n      \"name\": \"StakeWise Staked GNO (sGNO)\",\n
         \     \"symbol\": \"sGNO\",\n      \"decimals\": 18,\n      \"logoURI\": \"https://app.stakewise.io/static/images/currencies/sgno.png\"\n
+        \   },\n    {\n      \"address\": \"0xabef652195f98a91e490f047a5006b71c85f058d\",\n
+        \     \"symbol\": \"crvUSD\",\n      \"name\": \"Curve.Fi USD Stablecoin from
+        Mainnet\",\n      \"decimals\": 18,\n      \"chainId\": 100,\n      \"logoURI\":
+        \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/100/0xabef652195f98a91e490f047a5006b71c85f058d/logo.png\"\n
         \   },\n    {\n      \"address\": \"0xaf204776c7245bf4147c2612bf6e5972ee483701\",\n
         \     \"symbol\": \"sDAI\",\n      \"name\": \"Savings xDAI\",\n      \"decimals\":
         18,\n      \"chainId\": 100,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/100/0xaf204776c7245bf4147c2612bf6e5972ee483701/logo.png\"\n
@@ -2345,13 +2352,16 @@ interactions:
         \   },\n    {\n      \"address\": \"0x1b896893dfc86bb67cf57767298b9073d2c1ba2c\",\n
         \     \"symbol\": \"CAKE\",\n      \"name\": \"PancakeSwap Token\",\n      \"decimals\":
         18,\n      \"chainId\": 42161,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/42161/0x1b896893dfc86bb67cf57767298b9073d2c1ba2c/logo.png\"\n
+        \   },\n    {\n      \"address\": \"0x498bf2b1e120fed3ad3d42ea2165e9b73f99c1e5\",\n
+        \     \"symbol\": \"crvUSD\",\n      \"name\": \"Curve.Fi USD Stablecoin\",\n
+        \     \"decimals\": 18,\n      \"chainId\": 42161,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/42161/0x498bf2b1e120fed3ad3d42ea2165e9b73f99c1e5/logo.png\"\n
         \   },\n    {\n      \"address\": \"0xcb8b5cd20bdcaea9a010ac1f8d835824f5c87a04\",\n
         \     \"symbol\": \"COW\",\n      \"name\": \"CoW Protocol Token\",\n      \"decimals\":
         18,\n      \"chainId\": 42161,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/42161/0xcb8b5cd20bdcaea9a010ac1f8d835824f5c87a04/logo.png\"\n
         \   }\n  ]\n}"
     headers:
       Age:
-      - '6'
+      - '4'
       Connection:
       - keep-alive
       Content-Encoding:
@@ -2359,11 +2369,11 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 15 Jul 2024 11:58:02 GMT
+      - Mon, 22 Jul 2024 08:38:22 GMT
       ETag:
-      - W/"b101598fce8ef83bffff31c6fd14dd90"
+      - W/"057b1e87465a3055005494fe1789f1b5"
       Last-Modified:
-      - Mon, 08 Jul 2024 16:09:20 GMT
+      - Wed, 17 Jul 2024 07:19:05 GMT
       Server:
       - AmazonS3
       Transfer-Encoding:
@@ -2372,17 +2382,17 @@ interactions:
       - Accept-Encoding
       - Origin
       Via:
-      - 1.1 26f9a94e9be2a827a3f2e1cdb64a8fa6.cloudfront.net (CloudFront)
+      - 1.1 4c13f73e83aaf9d7bee2c3b379c641d6.cloudfront.net (CloudFront)
       X-Amz-Cf-Id:
-      - t4_KLsmyxQpjVJKGyfxlwWaCJZKX--NkNN_mvo0DXMDp_pWZ-eSqAg==
+      - B_lBZPQIfd6-6RlBJ6QfjIySIfWqOcNKswzgTopoAxgqpt7ZnSU1gg==
       X-Amz-Cf-Pop:
-      - BCN50-P2
+      - LIS50-P1
       X-Cache:
       - Hit from cloudfront
       x-amz-server-side-encryption:
       - AES256
       x-amz-version-id:
-      - 0MN3vZCOAkCG..j3sJ9kwP9MJhUjZ8.J
+      - yiNnwhwEwvZ3lwnk_.qhldYtM0rKfAzV
     status:
       code: 200
       message: OK
