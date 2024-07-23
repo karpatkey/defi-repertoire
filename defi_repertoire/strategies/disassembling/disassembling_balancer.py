@@ -1,7 +1,7 @@
 import logging
 import os
 from decimal import Decimal
-from typing import Dict
+from typing import Dict, Tuple
 
 import requests
 from defabipedia.balancer import Abis
@@ -13,7 +13,8 @@ from web3.exceptions import ContractLogicError
 
 from defi_repertoire.stale_while_revalidate import cache_af
 
-from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, register
+from ..base import (Amount, ChecksumAddress, GenericTxContext, Percentage,
+                    register)
 
 logger = logging.getLogger(__name__)
 
@@ -120,10 +121,26 @@ async def fetch_gauges(blockchain: Blockchain):
     return [g for f in factories for g in f["gauges"]]
 
 
+def get_contract_mode(
+    ctx: GenericTxContext, bpt_address: ChecksumAddress
+) -> Tuple[bool, bool]:
+    bpt_contract = ctx.w3.eth.contract(
+        address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
+    )
+    paused = bpt_contract.functions.getPausedState().call()
+
+    try:
+        recovery = bpt_contract.functions.inRecoveryMode().call()
+    except ContractLogicError:
+        recovery = False
+
+    return paused[0], recovery
+
+
 @register
 class WithdrawAllAssetsProportional:
     """
-    Withdraw funds from the Balancer pool withdrawing all assets in proportional way (not used for pools in recovery mode!).
+    Withdraw funds from the Balancer pool withdrawing all assets in proportional way (checks if pool is in recovery mode and acts accordingly).
     """
 
     kind = "disassembly"
@@ -148,28 +165,31 @@ class WithdrawAllAssetsProportional:
         )
 
         bpt_pool_id = "0x" + bpt_contract.functions.getPoolId().call().hex()
-        bpt_pool_paused_state = bpt_contract.functions.getPausedState().call()
-        # TODO: Not all pools have recovery mode, the following has to be improved
-        try:
-            bpt_pool_recovery_mode = bpt_contract.functions.inRecoveryMode().call()
-        except ContractLogicError:
-            bpt_pool_recovery_mode = False
 
-        if bpt_pool_paused_state[0]:
+        paused, recovery = get_contract_mode(ctx, bpt_address)
+
+        if paused:
             raise ValueError("Pool is in paused state, no withdrawing is accepted.")
-        if bpt_pool_recovery_mode:
-            raise ValueError(
-                "This pool is in recovery mode, only proportional recovery mode exit possible, try that option."
+
+        if recovery:
+            withdraw_balancer = balancer.ExactBptRecoveryModeExit(
+                w3=ctx.w3,
+                pool_id=bpt_pool_id,
+                avatar=ctx.avatar_safe_address,
+                bpt_amount_in=amount,
             )
 
-        withdraw_balancer = balancer.ExactBptProportionalExitSlippage(
-            w3=ctx.w3,
-            pool_id=bpt_pool_id,
-            avatar=ctx.avatar_safe_address,
-            bpt_amount_in=amount,
-            max_slippage=max_slippage,
-        )
-        return [withdraw_balancer]
+        else:
+            withdraw_balancer = balancer.ExactBptProportionalExitSlippage(
+                w3=ctx.w3,
+                pool_id=bpt_pool_id,
+                avatar=ctx.avatar_safe_address,
+                bpt_amount_in=amount,
+                max_slippage=max_slippage,
+            )
+
+        txns.append(withdraw_balancer)
+        return txns
 
 
 @register
@@ -241,16 +261,11 @@ class WithdrawSingle:
         )
 
         bpt_pool_id = "0x" + bpt_contract.functions.getPoolId().call().hex()
-        bpt_pool_paused_state = bpt_contract.functions.getPausedState().call()
-        # TODO: Not all pools have recovery mode, the following has to be improved
-        try:
-            bpt_pool_recovery_mode = bpt_contract.functions.inRecoveryMode().call()
-        except ContractLogicError:
-            bpt_pool_recovery_mode = False
+        paused, recovery = get_contract_mode(ctx, bpt_address)
 
-        if bpt_pool_paused_state[0]:
+        if paused:
             raise ValueError("Pool is in paused state, no withdrawing is accepted.")
-        if bpt_pool_recovery_mode:
+        if recovery:
             raise ValueError(
                 "This pool is in recovery mode, only proportional exit possible, try that option."
             )
@@ -266,7 +281,7 @@ class WithdrawSingle:
 
 
 @register
-class WithdrawProportionalRecovery:
+class WithdrawProportional:
     """
     Withdraw funds from the Balancer pool withdrawing all assets in proportional way for pools in recovery mode.
     """
@@ -317,7 +332,7 @@ class WithdrawProportionalRecovery:
 class UnstakeAndWithdrawProportional:
     """
     Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets
-    in proportional way (not used for pools in recovery mode!).
+    in proportional way (checks if pool is in recovery mode and acts accordingly).
     """
 
     kind = "disassembly"
@@ -429,52 +444,6 @@ class UnstakeAndWithdrawSingleToken:
                     "max_slippage": max_slippage,
                     "amount": amount,
                 }
-            ),
-        )
-        for transactable in withdraw_balancer:
-            txns.append(transactable)
-
-        return txns
-
-
-@register
-class UnstakeAndWithdrawProportionalRecovery:
-    """
-    Unstake from gauge and withdraw funds from the Balancer pool withdrawing all assets
-    in proportional way for pools in recovery mode.
-    """
-
-    kind = "disassembly"
-    protocol = "balancer"
-    id = "unstake_withdraw_proportional_recovery"
-    name = "Unstake + Withdraw (proportional) (Rocovery)"
-
-    class Args(BaseModel):
-        gauge_address: ChecksumAddress
-        amount: Amount
-        max_slippage: Percentage
-
-    @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
-        txns = []
-
-        gauge_address = arguments.gauge_address
-        amount = arguments.amount
-
-        unstake_gauge = balancer.Unstake(
-            w3=ctx.w3, gauge_address=gauge_address, amount=amount
-        )
-        txns.append(unstake_gauge)
-
-        gauge_contract = ctx.w3.eth.contract(
-            address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi
-        )
-        bpt_address = gauge_contract.functions.lp_token().call()
-
-        withdraw_balancer = WithdrawProportionalRecovery.get_txns(
-            ctx=ctx,
-            arguments=WithdrawProportionalRecovery.Args(
-                **{"bpt_address": bpt_address, "amount": amount}
             ),
         )
         for transactable in withdraw_balancer:

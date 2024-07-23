@@ -134,7 +134,7 @@ class Withdraw:
 @register
 class WithdrawProportional:
     """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way
-    (not used for pools in recovery mode!).
+    (checks for recovery mode and acts accordingly).
     """
 
     kind = "disassembly"
@@ -247,47 +247,6 @@ class WithdrawSingle:
                     "token_out_address": token_out_address,
                     "amount": amount,
                 }
-            ),
-        )
-
-        txns.append(withdraw_aura)
-        for transactable in withdraw_balancer:
-            txns.append(transactable)
-
-        return txns
-
-
-@register
-class WithdrawProportionalRecovery:
-    """Withdraw funds from Aura and then from the Balancer pool withdrawing all assets in proportional way when
-    pool is in recovery mode.
-    """
-
-    kind = "disassembly"
-    protocol = "aura"
-    id = "withdraw_proportional_recovery"
-    name = "Withdraw proportional (Recovery)"
-
-    class Args(BaseModel):
-        rewards_address: ChecksumAddress
-        amount: Amount
-
-    @classmethod
-    def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
-        txns = []
-
-        aura_rewards_address = arguments.rewards_address
-
-        bpt_address = aura_to_bpt_address(ctx, aura_rewards_address)
-
-        withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
-            reward_address=aura_rewards_address, amount=arguments.amount
-        )
-
-        withdraw_balancer = balancer.WithdrawProportionalRecovery.get_txns(
-            ctx=ctx,
-            arguments=balancer.WithdrawProportionalRecovery.Args(
-                **{"bpt_address": bpt_address, "amount": arguments.amount}
             ),
         )
 
