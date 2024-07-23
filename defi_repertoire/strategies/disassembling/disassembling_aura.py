@@ -147,6 +147,14 @@ class WithdrawProportional:
         max_slippage: Percentage
         amount: Amount
 
+    class OptArgs(BaseModel):
+        rewards_address: ChecksumAddress
+
+    @classmethod
+    async def get_base_options(cls, blockchain: Blockchain):
+        pools = await fetch_pools(blockchain)
+        return {"rewards_address": pools_to_options(pools)}
+
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
         txns = []

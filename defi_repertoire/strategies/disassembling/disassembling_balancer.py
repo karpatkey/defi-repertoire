@@ -13,8 +13,7 @@ from web3.exceptions import ContractLogicError
 
 from defi_repertoire.stale_while_revalidate import cache_af
 
-from ..base import (Amount, ChecksumAddress, GenericTxContext, Percentage,
-                    register)
+from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, register
 
 logger = logging.getLogger(__name__)
 
@@ -288,12 +287,24 @@ class WithdrawProportional:
 
     kind = "disassembly"
     protocol = "balancer"
-    id = "withdraw_all_assets_proportional_pools_in_recovery"
-    name = "Withdraw Proportionally (Recovery mode)"
+    id = "withdraw_proportional"
+    name = "Withdraw Proportionally"
 
     class Args(BaseModel):
         bpt_address: ChecksumAddress
         amount: Amount
+
+    @classmethod
+    async def get_base_options(
+        cls,
+        blockchain: Blockchain,
+    ):
+        pools = await fetch_pools(blockchain)
+        return {
+            "bpt_address": [
+                {"address": p["address"], "label": p["symbol"]} for p in pools
+            ]
+        }
 
     @classmethod
     def get_txns(
@@ -413,6 +424,23 @@ class UnstakeAndWithdrawSingleToken:
         amount: Amount
         max_slippage: Percentage
         token_out_address: ChecksumAddress
+
+    @classmethod
+    async def get_base_options(
+        cls,
+        blockchain: Blockchain,
+    ):
+        gauges = await fetch_gauges(blockchain)
+        return {
+            "gauge_address": [
+                {
+                    "label": p["symbol"],
+                    "address": p["id"],
+                    # "poolAddress": p["poolAddress"],
+                }
+                for p in gauges
+            ]
+        }
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
