@@ -1,9 +1,18 @@
 from collections import defaultdict
-from typing import Annotated, Any, NewType, Protocol, TypedDict, get_type_hints
+from typing import (
+    Annotated,
+    Any,
+    Dict,
+    Optional,
+    Protocol,
+    Type,
+    TypeVar,
+    get_type_hints,
+)
 
 from defabipedia import Chain
 from eth_utils.address import is_checksum_formatted_address
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, create_model
 from pydantic.functional_validators import AfterValidator
 from roles_royce import Transactable
 from roles_royce.utils import to_checksum_address
@@ -41,6 +50,7 @@ class Strategy(Protocol):
 
     kind: str
     protocol: str
+    id: str
     name: str
 
     @classmethod
@@ -60,6 +70,7 @@ class StrategyDefinitionModel(BaseModel):
     id: str
     description: str
     arguments: dict[str, Any]
+    options: dict[str, Any]
 
 
 class StrategyAmountArguments(BaseModel):
@@ -78,11 +89,22 @@ class SwapArguments(BaseModel):
     max_slippage: Percentage
 
 
-STRATEGIES = {}
+class OptSwapArguments(BaseModel):
+    token_in_address: ChecksumAddress | None
+    token_out_address: ChecksumAddress | None
 
 
-def _register_strategy(strategy):
-    STRATEGIES[get_strategy_id(strategy)] = strategy
+T = TypeVar("T", bound=BaseModel)
+
+
+STRATEGIES: Dict[str, Strategy] = {}
+
+
+def _register_strategy(strategy: Strategy):
+    id = get_strategy_id(strategy)
+    if STRATEGIES.get(id):
+        raise ValueError(f"Already registered {id}. Duplicated?")
+    STRATEGIES[id] = strategy
 
 
 def register(cls):
@@ -95,21 +117,26 @@ def get_strategy_arguments_type(strategy):
 
 
 def get_strategy_id(strategy):
-    return f"{strategy.protocol}__{strategy.name}"
+    return f"{strategy.protocol}__{strategy.id}"
 
 
-def get_strategy_by_id(strategy_id):
+def get_strategy_by_id(strategy_id: str):
+    return STRATEGIES[strategy_id]
 
-    return
 
-
-def strategy_as_dict(strategy):
+async def strategy_as_dict(blockchain, strategy):
+    options = (
+        hasattr(strategy, "get_base_options")
+        and await strategy.get_base_options(blockchain)
+        or {}
+    )
     data = StrategyDefinitionModel(
         kind=strategy.kind,
         protocol=strategy.protocol,
         name=strategy.name,
         id=get_strategy_id(strategy),
         arguments=get_strategy_arguments_type(strategy).model_json_schema(),
+        options=options,
         description=str.strip(strategy.__doc__),
     )
     return data

@@ -14,19 +14,14 @@ from ..base import (
 )
 
 
-def get_amount_to_redeem_sdai(ctx: GenericTxContext, fraction: Decimal | float) -> int:
-    sdai = ContractSpecs[ctx.blockchain].sDAI.contract(ctx.w3)
-    balance = sdai.functions.balanceOf(ctx.avatar_safe_address).call()
-    return int(Decimal(balance) * Decimal(fraction))
-
-
 @register
-class Exit1:
+class WithdrawWithProxy:
     """Withdraw funds from Spark with proxy."""
 
     kind = "disassembly"
     protocol = "spark"
-    name = "exit_1"
+    id = "withdraw_with_proxy"
+    name = "Withdraw with Proxy"
 
     @classmethod
     def get_txns(
@@ -41,7 +36,7 @@ class Exit1:
 
 
 @register
-class Exit2:
+class CowSwapSDAIToUSDC:
     """
     Swaps sDAI for USDC. Approves the Cowswap relayer to spend the sDAI if needed, then creates the order using
     the Cow's order API and creates the sign_order transaction.
@@ -49,7 +44,8 @@ class Exit2:
 
     kind = "disassembly"
     protocol = "spark"
-    name = "exit_2"
+    id = "cowswap_sdai_to_usdc"
+    name = "Cowswap sDAI for USDC"
 
     @classmethod
     def get_txns(

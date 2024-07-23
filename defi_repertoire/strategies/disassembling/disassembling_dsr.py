@@ -8,27 +8,14 @@ from roles_royce.protocols.eth import maker
 from ..base import GenericTxContext, StrategyAmountArguments, register
 
 
-def get_amount_to_redeem(
-    ctx: GenericTxContext, fraction: Decimal | float, proxy_address: Address = None
-) -> int:
-    pot_contract = ContractSpecs[ctx.blockchain].Pot.contract(ctx.w3)
-    dsr_contract = ContractSpecs[ctx.blockchain].DsrManager.contract(ctx.w3)
-    if proxy_address:
-        pie = pot_contract.functions.pie(proxy_address).call()
-    else:
-        pie = dsr_contract.functions.pieOf(ctx.avatar_safe_address).call()
-    chi = pot_contract.functions.chi().call() / (10**27)
-    amount_to_redeem = pie * chi
-    return int(Decimal(amount_to_redeem) * Decimal(fraction))
-
-
 @register
 class WithdrawWithProxy:
     """Withdraw DSR tokens from DSR with proxy."""
 
     kind = "disassembly"
     protocol = "dsr"
-    name = "withdraw_with_proxy"
+    id = "withdraw_with_proxy"
+    name = "Withdraw with Proxy"
 
     @classmethod
     def get_txns(
@@ -53,7 +40,8 @@ class WithdrawWithoutProxy:
 
     kind = "disassembly"
     protocol = "dsr"
-    name = "withdraw_without_proxy"
+    id = "withdraw_without_proxy"
+    name = "Withdraw without Proxy"
 
     @classmethod
     def get_txns(

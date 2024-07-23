@@ -15,32 +15,6 @@ from ..base import (
 )
 
 
-def get_amount_to_redeem(
-    ctx: GenericTxContext, address: Address, fraction: float | Decimal
-) -> int:
-    """
-    Calculates the amount of tokens to redeem based on the percentage of the total holdings.
-
-    Args:
-        address (Address): Token address; can be stETH or wstETH.
-        fraction (float): Percentage of the total holdings to redeem.
-
-    Returns:
-        int: Amount of tokens to redeem.
-    """
-    if address == ContractSpecs[ctx.blockchain].wstETH.address:
-        contract = ContractSpecs[ctx.blockchain].wstETH.contract(ctx.w3)
-    elif address == ContractSpecs[ctx.blockchain].stETH.address:
-        contract = ContractSpecs[ctx.blockchain].stETH.contract(ctx.w3)
-    else:
-        raise ValueError("Invalid token address")
-
-    return int(
-        Decimal(contract.functions.balanceOf(ctx.avatar_safe_address).call())
-        * Decimal(fraction)
-    )
-
-
 @register
 class LidoUnstakeStETH:
     """
@@ -49,7 +23,8 @@ class LidoUnstakeStETH:
 
     kind = "disassembly"
     protocol = "lido"
-    name = "unstake_stETH"
+    id = "unstake_stETH"
+    name = "Unstake stETH"
 
     @classmethod
     def get_txns(
@@ -94,7 +69,8 @@ class LidoUnwrapAndUnstakeWstETH:
 
     kind = "disassembly"
     protocol = "lido"
-    name = "unwrap_and_unstake_wstETH"
+    id = "unwrap_and_unstake_wstETH"
+    name = "Unwrap + Unstake wstETH"
 
     @classmethod
     def get_txns(
@@ -141,7 +117,8 @@ class SwapStETHforETH:  # TODO: why to have a specific class ?
 
     kind = "disassembly"
     protocol = "lido"
-    name = "swap_stETH_for_ETH"
+    id = "swap_stETH_for_ETH"
+    name = "Swap stETH for ETH"
 
     @classmethod
     def get_txns(
