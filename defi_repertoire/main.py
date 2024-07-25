@@ -122,7 +122,7 @@ async def status():
 async def list_strategies(blockchain: BlockchainOption):
     coroutines = [strategy_as_dict(blockchain, s) for s in STRATEGIES.values()]
     strategies = await asyncio.gather(*coroutines)
-    return {"strategies": strategies}
+    return {"strategies": list(filter(lambda v: v is not None, strategies))}
 
 
 @app.post(f"/strategies-to-transactions")

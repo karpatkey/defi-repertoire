@@ -25,6 +25,7 @@ class LidoUnstakeStETH:
     protocol = "lido"
     id = "unstake_stETH"
     name = "Unstake stETH"
+    chains = ["ethereum"]
 
     @classmethod
     def get_txns(
@@ -71,6 +72,7 @@ class LidoUnwrapAndUnstakeWstETH:
     protocol = "lido"
     id = "unwrap_and_unstake_wstETH"
     name = "Unwrap + Unstake wstETH"
+    chains = ["ethereum"]
 
     @classmethod
     def get_txns(

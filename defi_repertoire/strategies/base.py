@@ -125,6 +125,9 @@ def get_strategy_by_id(strategy_id: str):
 
 
 async def strategy_as_dict(blockchain, strategy):
+    if hasattr(strategy, "chains") and not blockchain in strategy.chains:
+        return None
+
     options = (
         hasattr(strategy, "get_base_options")
         and await strategy.get_base_options(blockchain)
