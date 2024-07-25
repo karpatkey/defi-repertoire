@@ -116,6 +116,10 @@ def get_strategy_arguments_type(strategy):
     return get_type_hints(strategy.get_txns)["arguments"]
 
 
+def get_strategy_opt_arguments_type(strategy):
+    return get_type_hints(strategy.get_options)["arguments"]
+
+
 def get_strategy_id(strategy):
     return f"{strategy.protocol}__{strategy.id}"
 
