@@ -211,7 +211,6 @@ def generate_strategy_endpoints():
             #
             # For the time being the option 3) is implemented
             url = f"/txns/{id}"
-            print(url)
 
             @app.post(url, description=strategy.__doc__)
             def transaction_data(
