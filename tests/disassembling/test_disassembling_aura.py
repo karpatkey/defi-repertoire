@@ -3,19 +3,20 @@ from decimal import Decimal
 from defabipedia.aura import Abis as AuraAbis
 from defabipedia.balancer import Abis as BalancerAbis
 from defabipedia.types import Chain
-
-from roles_royce.protocols.aura.contract_methods import DepositBPT, ApproveForBooster, WithdrawAndUnwrap
 from roles_royce import roles
+from roles_royce.protocols.aura.contract_methods import (
+    ApproveForBooster,
+    DepositBPT,
+    WithdrawAndUnwrap,
+)
 from roles_royce.roles_modifier import GasStrategies, set_gas_strategy
 
+from defi_repertoire.strategies.base import GenericTxContext
 from defi_repertoire.strategies.disassembling import disassembler
 from defi_repertoire.strategies.disassembling import disassembling_aura as aura
-from defi_repertoire.strategies.base import GenericTxContext
-
 from tests.fork_fixtures import accounts, local_node_eth
 from tests.roles import apply_presets, deploy_roles, setup_common_roles
 from tests.utils import create_simple_safe, steal_token
-
 
 presets = """{
   "version": "1.0",
@@ -60,6 +61,7 @@ presets = """{
 ]
 }"""
 
+
 def test_integration_exit_1(local_node_eth, accounts):
     w3 = local_node_eth.w3
     block = 20406694
@@ -94,25 +96,44 @@ def test_integration_exit_1(local_node_eth, accounts):
         amount=1_000_000_000_000_000_000,
     )
 
-    approve_BPT = ApproveForBooster(token= AURA_WETH_BPT_address, amount=1_000_000_000_000_000_000)
-    roles.send([approve_BPT], role=4, private_key=accounts[4].key, roles_mod_address=roles_contract.address, web3=w3)
+    approve_BPT = ApproveForBooster(
+        token=AURA_WETH_BPT_address, amount=1_000_000_000_000_000_000
+    )
+    roles.send(
+        [approve_BPT],
+        role=4,
+        private_key=accounts[4].key,
+        roles_mod_address=roles_contract.address,
+        web3=w3,
+    )
     deposit_BPT = DepositBPT(pool_id=100, amount=1_000_000_000_000_000_000)
-    roles.send([deposit_BPT], role=4, private_key=accounts[4].key, roles_mod_address=roles_contract.address, web3=w3)
-
-    aura_rewards_contract = w3.eth.contract(
-        address=AURA_WETH_aura_rewards_address, abi=AuraAbis[blockchain].BaseRewardPool.abi
+    roles.send(
+        [deposit_BPT],
+        role=4,
+        private_key=accounts[4].key,
+        roles_mod_address=roles_contract.address,
+        web3=w3,
     )
 
-    aura_token_balance = aura_rewards_contract.functions.balanceOf(avatar_safe.address).call()
+    aura_rewards_contract = w3.eth.contract(
+        address=AURA_WETH_aura_rewards_address,
+        abi=AuraAbis[blockchain].BaseRewardPool.abi,
+    )
+
+    aura_token_balance = aura_rewards_contract.functions.balanceOf(
+        avatar_safe.address
+    ).call()
     assert aura_token_balance == 1_000_000_000_000_000_000
 
     txn_transactable = aura.Withdraw.get_txns(
         ctx=ctx,
-        arguments=aura.Withdraw.Args(rewards_address=AURA_WETH_aura_rewards_address, amount=1_000_000_000_000_000_000)
-
+        arguments=aura.Withdraw.Args(
+            rewards_address=AURA_WETH_aura_rewards_address,
+            amount=1_000_000_000_000_000_000,
+        ),
     )
     set_gas_strategy(GasStrategies.AGGRESIVE)
-    
+
     disassembler_instance = disassembler.Disassembler()
     disassembler_instance.send(
         ctx=ctx,
@@ -122,8 +143,14 @@ def test_integration_exit_1(local_node_eth, accounts):
         private_key=private_key,
     )
 
-    aura_token_balance_after = aura_rewards_contract.functions.balanceOf(avatar_safe.address).call()
+    aura_token_balance_after = aura_rewards_contract.functions.balanceOf(
+        avatar_safe.address
+    ).call()
     assert aura_token_balance_after == 0
-    bpt_token_contract = w3.eth.contract(address=AURA_WETH_BPT_address, abi=BalancerAbis[blockchain].UniversalBPT.abi)
-    bpt_token_balance_after = bpt_token_contract.functions.balanceOf(avatar_safe.address).call()
+    bpt_token_contract = w3.eth.contract(
+        address=AURA_WETH_BPT_address, abi=BalancerAbis[blockchain].UniversalBPT.abi
+    )
+    bpt_token_balance_after = bpt_token_contract.functions.balanceOf(
+        avatar_safe.address
+    ).call()
     assert bpt_token_balance_after == 1_000_000_000_000_000_000
