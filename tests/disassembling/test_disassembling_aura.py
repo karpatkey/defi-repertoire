@@ -1,17 +1,21 @@
 from decimal import Decimal
 
-from defabipedia.aura import Abis
+from defabipedia.aura import Abis as AuraAbis
+from defabipedia.balancer import Abis as BalancerAbis
 from defabipedia.types import Chain
 
-from roles_royce.protocols.aura.contract_methods import DepositBPT, ApproveForBooster
+from roles_royce.protocols.aura.contract_methods import DepositBPT, ApproveForBooster, WithdrawAndUnwrap
 from roles_royce import roles
+from roles_royce.roles_modifier import GasStrategies, set_gas_strategy
 
 from defi_repertoire.strategies.disassembling import disassembler
 from defi_repertoire.strategies.disassembling import disassembling_aura as aura
 from defi_repertoire.strategies.base import GenericTxContext
+
 from tests.fork_fixtures import accounts, local_node_eth
 from tests.roles import apply_presets, deploy_roles, setup_common_roles
 from tests.utils import create_simple_safe, steal_token
+
 
 presets = """{
   "version": "1.0",
@@ -30,7 +34,7 @@ presets = """{
                 },
                 {
                 "to": "0x1ffAdc16726dd4F91fF275b4bF50651801B06a86",
-                "data": "0x2fcf52d10000000000000000000000000000000000000000000000000000000000000004000000000000000000000000CfCA23cA9CA720B6E98E3Eb9B6aa0fFC4a5C08B9095ea7b3000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002",
+                "data": "0x2fcf52d10000000000000000000000000000000000000000000000000000000000000004000000000000000000000000CfCA23cA9CA720B6E98E3Eb9B6aa0fFC4a5C08B9095ea7b3000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                 "value": "0"
                 },
                 {
@@ -40,7 +44,7 @@ presets = """{
                 },
                 {
                 "to": "0x1ffAdc16726dd4F91fF275b4bF50651801B06a86",
-                "data": "0x2fcf52d10000000000000000000000000000000000000000000000000000000000000004000000000000000000000000A57b8d98dAE62B26Ec3bcC4a365338157060B23443a0d066000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002",
+                "data": "0x2fcf52d10000000000000000000000000000000000000000000000000000000000000004000000000000000000000000A57b8d98dAE62B26Ec3bcC4a365338157060B23443a0d066000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                 "value": "0"
                 },
                 {
@@ -50,7 +54,7 @@ presets = """{
                 },
                 {
                 "to": "0x1ffAdc16726dd4F91fF275b4bF50651801B06a86",
-                "data": "0x2fcf52d100000000000000000000000000000000000000000000000000000000000000040000000000000000000000001204f5060be8b716f5a62b4df4ce32acd01a69f5c32e7202000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002",
+                "data": "0x2fcf52d100000000000000000000000000000000000000000000000000000000000000040000000000000000000000001204f5060be8b716f5a62b4df4ce32acd01a69f5c32e7202000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                 "value": "0"
                 }
 ]
@@ -58,7 +62,7 @@ presets = """{
 
 def test_integration_exit_1(local_node_eth, accounts):
     w3 = local_node_eth.w3
-    block = 18193307
+    block = 20406694
     local_node_eth.set_block(block)
 
     avatar_safe = create_simple_safe(w3=w3, owner=accounts[0])
@@ -77,7 +81,6 @@ def test_integration_exit_1(local_node_eth, accounts):
     private_key = accounts[4].key
     role = 4
 
-    disassembler_instance = disassembler.Disassembler()
     blockchain = Chain.get_blockchain_from_web3(w3)
     ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe.address)
     AURA_WETH_BPT_address = "0xCfCA23cA9CA720B6E98E3Eb9B6aa0fFC4a5C08B9"
@@ -97,7 +100,7 @@ def test_integration_exit_1(local_node_eth, accounts):
     roles.send([deposit_BPT], role=4, private_key=accounts[4].key, roles_mod_address=roles_contract.address, web3=w3)
 
     aura_rewards_contract = w3.eth.contract(
-        address=AURA_WETH_aura_rewards_address, abi=Abis[blockchain].BaseRewardPool.abi
+        address=AURA_WETH_aura_rewards_address, abi=AuraAbis[blockchain].BaseRewardPool.abi
     )
 
     aura_token_balance = aura_rewards_contract.functions.balanceOf(avatar_safe.address).call()
@@ -108,10 +111,19 @@ def test_integration_exit_1(local_node_eth, accounts):
         arguments=aura.Withdraw.Args(rewards_address=AURA_WETH_aura_rewards_address, amount=1_000_000_000_000_000_000)
 
     )
-    # Since we don't have the private key of the disassembler, we need to build the transaction and send it "manually"
-    txn = disassembler_instance.build(txn_transactable, from_address=disassembler_address)
-    w3.eth.send_transaction(txn)
+    set_gas_strategy(GasStrategies.AGGRESIVE)
+    
+    disassembler_instance = disassembler.Disassembler()
+    disassembler_instance.send(
+        ctx=ctx,
+        roles_mod_address=roles_contract.address,
+        role=role,
+        txns=txn_transactable,
+        private_key=private_key,
+    )
 
     aura_token_balance_after = aura_rewards_contract.functions.balanceOf(avatar_safe.address).call()
     assert aura_token_balance_after == 0
-    assert aura_token_balance_after == int(Decimal(aura_token_balance) / Decimal(2))
+    bpt_token_contract = w3.eth.contract(address=AURA_WETH_BPT_address, abi=BalancerAbis[blockchain].UniversalBPT.abi)
+    bpt_token_balance_after = bpt_token_contract.functions.balanceOf(avatar_safe.address).call()
+    assert bpt_token_balance_after == 1_000_000_000_000_000_000
