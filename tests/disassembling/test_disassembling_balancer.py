@@ -6,6 +6,7 @@ from defabipedia.types import Chain
 from pytest import approx
 
 from defi_repertoire.strategies.base import GenericTxContext
+from defi_repertoire.strategies.disassembling.disassembler import Disassembler
 from defi_repertoire.strategies.disassembling import disassembling_balancer as balancer
 from tests.fork_fixtures import accounts, local_node_eth
 from tests.roles import apply_presets, deploy_roles, setup_common_roles
@@ -20,7 +21,7 @@ preset = (
 )
 
 
-@pytest.mark.skip("Not working yet")
+#@pytest.mark.skip("Not working yet")
 def test_integration_proportional(local_node_eth, accounts):
     w3 = local_node_eth.w3
     block = 18421437
@@ -47,7 +48,7 @@ def test_integration_proportional(local_node_eth, accounts):
     role = 1
 
     ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe.address)
-    disassembler = Disassembler()
+    disassembler_instance = Disassembler()
     # ----------------------------------------------------------------------------------------------------------------
     # Composable
     GHO_USDT_USDC_bpt_address = "0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF"
@@ -67,12 +68,10 @@ def test_integration_proportional(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
         ctx=ctx,
-        percentage=25,
-        arguments=[{"bpt_address": GHO_USDT_USDC_bpt_address, "max_slippage": 0.01}],
-        amount_to_redeem=int(Decimal(bpt_token_balance) / Decimal(2)),
+        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=GHO_USDT_USDC_bpt_address, max_slippage=0.01, amount=int(Decimal(bpt_token_balance) / Decimal(2))),
     )
 
-    disassembler.send(
+    disassembler_instance.send(
         ctx=ctx,
         roles_mod_address=roles_contract.address,
         role=role,
@@ -106,12 +105,10 @@ def test_integration_proportional(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
         ctx=ctx,
-        percentage=100,
-        arguments=[{"bpt_address": rETH_WETH_bpt_address, "max_slippage": 1}],
-        amount_to_redeem=int(Decimal(bpt_token_balance) / Decimal(2)),
+        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=rETH_WETH_bpt_address, max_slippage=1, amount=int(Decimal(bpt_token_balance) / Decimal(2)))
     )
 
-    disassembler.send(
+    disassembler_instance.send(
         ctx=ctx,
         roles_mod_address=roles_contract.address,
         role=role,
@@ -145,18 +142,15 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = disassembler.exact_bpt_proportional(
-        arguments=[
-            {
-                "bpt_address": BAL_WETH_bpt_address,
-                "amount_to_redeem": int(Decimal(bpt_token_balance) / Decimal(2)),
-                "max_slippage": 1,
-            }
-        ]
+    txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
+        ctx=ctx,
+        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=BAL_WETH_bpt_address, max_slippage=1, amount=int(Decimal(bpt_token_balance) / Decimal(2)))
     )
 
-    disassembler.send(
+    disassembler_instance.send(
+        ctx=ctx,
         roles_mod_address=roles_contract.address,
+        role=role,
         txns=txn_transactable,
         private_key=private_key,
     )
@@ -187,18 +181,15 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = disassembler.exact_bpt_proportional(
-        arguments=[
-            {
-                "bpt_address": DAI_USDC_USDT_bpt_address,
-                "amount_to_redeem": int(Decimal(bpt_token_balance) / Decimal(2)),
-                "max_slippage": 1,
-            }
-        ]
+    txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
+        ctx=ctx,
+        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=DAI_USDC_USDT_bpt_address, max_slippage=1, amount=int(Decimal(bpt_token_balance) / Decimal(2)))
     )
 
-    disassembler.send(
+    disassembler_instance.send(
+        ctx=ctx,
         roles_mod_address=roles_contract.address,
+        role=role,
         txns=txn_transactable,
         private_key=private_key,
     )
@@ -229,18 +220,15 @@ def test_integration_proportional(local_node_eth, accounts):
     bpt_token_balance = bpt_contract.functions.balanceOf(avatar_safe.address).call()
     assert bpt_token_balance == 80_999_999
 
-    txn_transactable = disassembler.exact_bpt_proportional(
-        arguments=[
-            {
-                "bpt_address": auraBAL_STABLE_bpt_address,
-                "amount_to_redeem": int(Decimal(bpt_token_balance) / Decimal(2)),
-                "max_slippage": 1,
-            }
-        ]
+    txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
+        ctx=ctx,
+        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=auraBAL_STABLE_bpt_address, max_slippage=1, amount=int(Decimal(bpt_token_balance) / Decimal(2)))
     )
 
-    disassembler.send(
+    disassembler_instance.send(
+        ctx=ctx,
         roles_mod_address=roles_contract.address,
+        role=role,
         txns=txn_transactable,
         private_key=private_key,
     )
@@ -311,7 +299,7 @@ def test_integration_proportional(local_node_eth, accounts):
 #         ],
 #     )
 #
-#     balancer_disassembler.send(txns=txn_transactable, private_key=private_key)
+#     balancer_disassembler_instance.send(txns=txn_transactable, private_key=private_key)
 #
 #     bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
 #     assert bpt_token_balance_after == 6299999999999300100

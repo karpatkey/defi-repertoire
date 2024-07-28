@@ -158,7 +158,7 @@ class WithdrawAllAssetsProportional:
         bpt_address = arguments.bpt_address
         max_slippage = arguments.max_slippage / 100
         amount = arguments.amount
-
+        
         bpt_contract = ctx.w3.eth.contract(
             address=bpt_address, abi=Abis[ctx.blockchain].UniversalBPT.abi
         )
@@ -187,8 +187,7 @@ class WithdrawAllAssetsProportional:
                 max_slippage=max_slippage,
             )
 
-        txns.append(withdraw_balancer)
-        return txns
+        return [withdraw_balancer]
 
 
 @register
