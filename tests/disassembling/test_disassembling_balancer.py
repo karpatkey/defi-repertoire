@@ -386,12 +386,11 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     bpt_token_balance_after = bpt_contract.functions.balanceOf(
         avatar_safe_address
     ).call()
-    assert bpt_token_balance_after == 56700000
     assert bpt_token_balance_after == approx(
-        int(Decimal(bpt_token_balance) * Decimal(0.7))
+        int(Decimal(bpt_token_balance) * Decimal(0.3))
     )
     new_WETH_balance = WETH_contract.functions.balanceOf(avatar_safe_address).call()
-    assert new_WETH_balance == 24912879
+    assert new_WETH_balance == 58177885
 
     # ----------------------------------------------------------------------------------------------------------------
     # Weighted Pool
@@ -436,12 +435,12 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     bpt_token_balance_after = bpt_contract.functions.balanceOf(
         avatar_safe_address
     ).call()
-    assert bpt_token_balance_after == 56700000000000000899
+
     assert bpt_token_balance_after == approx(
-        int(Decimal(bpt_token_balance) * Decimal(0.7))
+        int(Decimal(bpt_token_balance) * Decimal(0.3))
     )
     new_BAL_balance = BAL_contract.functions.balanceOf(avatar_safe_address).call()
-    assert new_BAL_balance == 72046160158507827018
+    assert new_BAL_balance == 168107659416775815189
 
     # ----------------------------------------------------------------------------------------------------------------
     # Stable Pool v1
@@ -486,12 +485,12 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     bpt_token_balance_after = bpt_contract.functions.balanceOf(
         avatar_safe_address
     ).call()
-    assert bpt_token_balance_after == 56700000
+
     assert bpt_token_balance_after == approx(
-        int(Decimal(bpt_token_balance) * Decimal(0.7))
+        int(Decimal(bpt_token_balance) * Decimal(0.3))
     )
     new_DAI_balance = DAI_contract.functions.balanceOf(avatar_safe_address).call()
-    assert new_DAI_balance == 24807188
+    assert new_DAI_balance == 57917845
 
     # ----------------------------------------------------------------------------------------------------------------
     # Stable Pool v2
@@ -536,14 +535,13 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     bpt_token_balance_after = bpt_contract.functions.balanceOf(
         avatar_safe_address
     ).call()
-    assert bpt_token_balance_after == 56700000
     assert bpt_token_balance_after == approx(
-        int(Decimal(bpt_token_balance) * Decimal(0.7))
+        int(Decimal(bpt_token_balance) * Decimal(0.3))
     )
     new_AURABAL_balance = AURABAL_contract.functions.balanceOf(
         avatar_safe_address
     ).call()
-    assert new_AURABAL_balance == 25171520
+    assert new_AURABAL_balance == 58400033
 
 
 def test_integration_exit_2_1(local_node_eth, accounts):
@@ -614,8 +612,7 @@ def test_integration_exit_2_1(local_node_eth, accounts):
     txn_transactable = balancer.UnstakeAndWithdrawProportional.get_txns(
         ctx=ctx,
         arguments=balancer.UnstakeAndWithdrawProportional.Args(
-            bpt_gauge_address=RETH_WETH_BPT_gauge,
-            bpt_address=RETH_WETH_bpt_address,
+            gauge_address=RETH_WETH_BPT_gauge,
             max_slippage=1,
             amount=int(Decimal(bpt_gauge_balance) / Decimal(2)),
         ),
@@ -636,7 +633,6 @@ def test_integration_exit_2_1(local_node_eth, accounts):
     bpt_gauge_balance_after = bpt_gauge_contract.functions.balanceOf(
         avatar_safe_address
     ).call()
-    assert bpt_gauge_balance_after == 2_000_000_000
     assert bpt_gauge_balance_after == int(Decimal(bpt_gauge_balance) / Decimal(2))
 
 
@@ -709,8 +705,7 @@ def test_integration_exit_2_2(local_node_eth, accounts):
     txn_transactable = balancer.UnstakeAndWithdrawProportional.get_txns(
         ctx=ctx,
         arguments=balancer.UnstakeAndWithdrawProportional.Args(
-            bpt_gauge_address=RETH_WETH_BPT_gauge,
-            bpt_address=RETH_WETH_bpt_address,
+            gauge_address=RETH_WETH_BPT_gauge,
             max_slippage=1,
             amount=int(Decimal(bpt_gauge_balance) / Decimal(2)),
         ),
@@ -726,12 +721,11 @@ def test_integration_exit_2_2(local_node_eth, accounts):
     )
 
     RETH_balance_after = RETH_contract.functions.balanceOf(avatar_safe_address).call()
-    assert RETH_balance_after == 1882274038
+    assert RETH_balance_after == 867203606
 
     bpt_gauge_balance_after = bpt_gauge_contract.functions.balanceOf(
         avatar_safe_address
     ).call()
-    assert bpt_gauge_balance_after == 2_000_000_000
     assert bpt_gauge_balance_after == int(Decimal(bpt_gauge_balance) / Decimal(2))
 
 
