@@ -2,15 +2,15 @@ from decimal import Decimal
 
 import pytest
 from defabipedia.balancer import Abis
-from defabipedia.types import Chain
 from defabipedia.tokens import EthereumTokenAddr as EthTokAdd
 from defabipedia.tokens import erc20_contract
+from defabipedia.types import Chain
 from pytest import approx
 from roles_royce.roles_modifier import GasStrategies, set_gas_strategy
 
 from defi_repertoire.strategies.base import GenericTxContext
-from defi_repertoire.strategies.disassembling.disassembler import Disassembler
 from defi_repertoire.strategies.disassembling import disassembling_balancer as balancer
+from defi_repertoire.strategies.disassembling.disassembler import Disassembler
 from tests.fork_fixtures import accounts, local_node_eth
 from tests.roles import apply_presets, deploy_roles, setup_common_roles
 from tests.utils import create_simple_safe, steal_token
@@ -24,7 +24,7 @@ preset = (
 )
 
 
-#@pytest.mark.skip("Not working yet")
+# @pytest.mark.skip("Not working yet")
 def test_integration_proportional(local_node_eth, accounts):
     w3 = local_node_eth.w3
     block = 18421437
@@ -71,7 +71,11 @@ def test_integration_proportional(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
         ctx=ctx,
-        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=GHO_USDT_USDC_bpt_address, max_slippage=0.01, amount=int(Decimal(bpt_token_balance) / Decimal(2))),
+        arguments=balancer.WithdrawAllAssetsProportional.Args(
+            bpt_address=GHO_USDT_USDC_bpt_address,
+            max_slippage=0.01,
+            amount=int(Decimal(bpt_token_balance) / Decimal(2)),
+        ),
     )
 
     disassembler_instance.send(
@@ -108,7 +112,11 @@ def test_integration_proportional(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
         ctx=ctx,
-        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=rETH_WETH_bpt_address, max_slippage=1, amount=int(Decimal(bpt_token_balance) / Decimal(2)))
+        arguments=balancer.WithdrawAllAssetsProportional.Args(
+            bpt_address=rETH_WETH_bpt_address,
+            max_slippage=1,
+            amount=int(Decimal(bpt_token_balance) / Decimal(2)),
+        ),
     )
 
     disassembler_instance.send(
@@ -147,7 +155,11 @@ def test_integration_proportional(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
         ctx=ctx,
-        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=BAL_WETH_bpt_address, max_slippage=1, amount=int(Decimal(bpt_token_balance) / Decimal(2)))
+        arguments=balancer.WithdrawAllAssetsProportional.Args(
+            bpt_address=BAL_WETH_bpt_address,
+            max_slippage=1,
+            amount=int(Decimal(bpt_token_balance) / Decimal(2)),
+        ),
     )
 
     disassembler_instance.send(
@@ -186,7 +198,11 @@ def test_integration_proportional(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
         ctx=ctx,
-        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=DAI_USDC_USDT_bpt_address, max_slippage=1, amount=int(Decimal(bpt_token_balance) / Decimal(2)))
+        arguments=balancer.WithdrawAllAssetsProportional.Args(
+            bpt_address=DAI_USDC_USDT_bpt_address,
+            max_slippage=1,
+            amount=int(Decimal(bpt_token_balance) / Decimal(2)),
+        ),
     )
 
     disassembler_instance.send(
@@ -225,7 +241,11 @@ def test_integration_proportional(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawAllAssetsProportional.get_txns(
         ctx=ctx,
-        arguments=balancer.WithdrawAllAssetsProportional.Args(bpt_address=auraBAL_STABLE_bpt_address, max_slippage=1, amount=int(Decimal(bpt_token_balance) / Decimal(2)))
+        arguments=balancer.WithdrawAllAssetsProportional.Args(
+            bpt_address=auraBAL_STABLE_bpt_address,
+            max_slippage=1,
+            amount=int(Decimal(bpt_token_balance) / Decimal(2)),
+        ),
     )
 
     disassembler_instance.send(
@@ -257,7 +277,9 @@ def test_integration_exit_1_2(local_node_eth, accounts):
         avatar_safe,
         roles_contract,
         json_data=preset,
-        replaces=[("c01318bab7ee1f5ba734172bf7718b5dc6ec90e1", avatar_safe.address[2:])],
+        replaces=[
+            ("c01318bab7ee1f5ba734172bf7718b5dc6ec90e1", avatar_safe.address[2:])
+        ],
     )
 
     blockchain = Chain.get_blockchain_from_web3(w3)
@@ -275,7 +297,9 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     # Composable
     GHO_USDT_USDC_bpt_address = "0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF"
 
-    bpt_contract = w3.eth.contract(address=GHO_USDT_USDC_bpt_address, abi=Abis[blockchain].UniversalBPT.abi)
+    bpt_contract = w3.eth.contract(
+        address=GHO_USDT_USDC_bpt_address, abi=Abis[blockchain].UniversalBPT.abi
+    )
     steal_token(
         w3=w3,
         token=GHO_USDT_USDC_bpt_address,
@@ -292,7 +316,12 @@ def test_integration_exit_1_2(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawSingle.get_txns(
         ctx=ctx,
-        arguments=balancer.WithdrawSingle.Args(bpt_address=GHO_USDT_USDC_bpt_address, token_out_address=EthTokAdd.USDT, max_slippage=1, amount=int(Decimal(bpt_token_balance) * Decimal(0.7))),
+        arguments=balancer.WithdrawSingle.Args(
+            bpt_address=GHO_USDT_USDC_bpt_address,
+            token_out_address=EthTokAdd.USDT,
+            max_slippage=1,
+            amount=int(Decimal(bpt_token_balance) * Decimal(0.7)),
+        ),
     )
 
     disassembler_instance.send(
@@ -303,9 +332,13 @@ def test_integration_exit_1_2(local_node_eth, accounts):
         private_key=private_key,
     )
 
-    bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
+    bpt_token_balance_after = bpt_contract.functions.balanceOf(
+        avatar_safe_address
+    ).call()
     assert bpt_token_balance_after == 2699999999999700400
-    assert bpt_token_balance_after == approx(int(Decimal(bpt_token_balance) * Decimal(0.3)))
+    assert bpt_token_balance_after == approx(
+        int(Decimal(bpt_token_balance) * Decimal(0.3))
+    )
 
     new_USDT_balance = USDT_contract.functions.balanceOf(avatar_safe_address).call()
     assert new_USDT_balance == 6163899
@@ -314,7 +347,9 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     # Metastable
     rETH_WETH_bpt_address = "0x1E19CF2D73a72Ef1332C882F20534B6519Be0276"
     # Initial data
-    bpt_contract = w3.eth.contract(address=rETH_WETH_bpt_address, abi=Abis[blockchain].UniversalBPT.abi)
+    bpt_contract = w3.eth.contract(
+        address=rETH_WETH_bpt_address, abi=Abis[blockchain].UniversalBPT.abi
+    )
 
     steal_token(
         w3=w3,
@@ -330,7 +365,15 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     WETH_balance = WETH_contract.functions.balanceOf(avatar_safe_address).call()
     assert WETH_balance == 0
 
-    txn_transactable = balancer.WithdrawSingle.get_txns(ctx=ctx, arguments=balancer.WithdrawSingle.Args(bpt_address=rETH_WETH_bpt_address, token_out_address=EthTokAdd.WETH, max_slippage=1, amount=int(Decimal(bpt_token_balance) * Decimal(0.7))))
+    txn_transactable = balancer.WithdrawSingle.get_txns(
+        ctx=ctx,
+        arguments=balancer.WithdrawSingle.Args(
+            bpt_address=rETH_WETH_bpt_address,
+            token_out_address=EthTokAdd.WETH,
+            max_slippage=1,
+            amount=int(Decimal(bpt_token_balance) * Decimal(0.7)),
+        ),
+    )
 
     disassembler_instance.send(
         ctx=ctx,
@@ -340,9 +383,13 @@ def test_integration_exit_1_2(local_node_eth, accounts):
         private_key=private_key,
     )
 
-    bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
+    bpt_token_balance_after = bpt_contract.functions.balanceOf(
+        avatar_safe_address
+    ).call()
     assert bpt_token_balance_after == 56700000
-    assert bpt_token_balance_after == approx(int(Decimal(bpt_token_balance) * Decimal(0.7)))
+    assert bpt_token_balance_after == approx(
+        int(Decimal(bpt_token_balance) * Decimal(0.7))
+    )
     new_WETH_balance = WETH_contract.functions.balanceOf(avatar_safe_address).call()
     assert new_WETH_balance == 24912879
 
@@ -350,7 +397,9 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     # Weighted Pool
     BAL_WETH_bpt_address = "0x5c6Ee304399DBdB9C8Ef030aB642B10820DB8F56"
     # Initial data
-    bpt_contract = w3.eth.contract(address=BAL_WETH_bpt_address, abi=Abis[blockchain].UniversalBPT.abi)
+    bpt_contract = w3.eth.contract(
+        address=BAL_WETH_bpt_address, abi=Abis[blockchain].UniversalBPT.abi
+    )
 
     steal_token(
         w3=w3,
@@ -368,10 +417,14 @@ def test_integration_exit_1_2(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawSingle.get_txns(
         ctx=ctx,
-        arguments=balancer.WithdrawSingle.Args(bpt_address=BAL_WETH_bpt_address, token_out_address=EthTokAdd.BAL, max_slippage=1, amount=int(Decimal(bpt_token_balance) * Decimal(0.7))
-        ))
+        arguments=balancer.WithdrawSingle.Args(
+            bpt_address=BAL_WETH_bpt_address,
+            token_out_address=EthTokAdd.BAL,
+            max_slippage=1,
+            amount=int(Decimal(bpt_token_balance) * Decimal(0.7)),
+        ),
+    )
 
- 
     disassembler_instance.send(
         ctx=ctx,
         roles_mod_address=roles_contract.address,
@@ -380,9 +433,13 @@ def test_integration_exit_1_2(local_node_eth, accounts):
         private_key=private_key,
     )
 
-    bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
+    bpt_token_balance_after = bpt_contract.functions.balanceOf(
+        avatar_safe_address
+    ).call()
     assert bpt_token_balance_after == 56700000000000000899
-    assert bpt_token_balance_after == approx(int(Decimal(bpt_token_balance) * Decimal(0.7)))
+    assert bpt_token_balance_after == approx(
+        int(Decimal(bpt_token_balance) * Decimal(0.7))
+    )
     new_BAL_balance = BAL_contract.functions.balanceOf(avatar_safe_address).call()
     assert new_BAL_balance == 72046160158507827018
 
@@ -390,7 +447,9 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     # Stable Pool v1
     DAI_USDC_USDT_bpt_address = "0x06Df3b2bbB68adc8B0e302443692037ED9f91b42"
     # Initial data
-    bpt_contract = w3.eth.contract(address=DAI_USDC_USDT_bpt_address, abi=Abis[blockchain].UniversalBPT.abi)
+    bpt_contract = w3.eth.contract(
+        address=DAI_USDC_USDT_bpt_address, abi=Abis[blockchain].UniversalBPT.abi
+    )
 
     steal_token(
         w3=w3,
@@ -408,9 +467,13 @@ def test_integration_exit_1_2(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawSingle.get_txns(
         ctx=ctx,
-        arguments=balancer.WithdrawSingle.Args(bpt_address=DAI_USDC_USDT_bpt_address, token_out_address=EthTokAdd.DAI, max_slippage=1, amount=int(Decimal(bpt_token_balance) * Decimal(0.7))
-        ))
-
+        arguments=balancer.WithdrawSingle.Args(
+            bpt_address=DAI_USDC_USDT_bpt_address,
+            token_out_address=EthTokAdd.DAI,
+            max_slippage=1,
+            amount=int(Decimal(bpt_token_balance) * Decimal(0.7)),
+        ),
+    )
 
     disassembler_instance.send(
         ctx=ctx,
@@ -420,9 +483,13 @@ def test_integration_exit_1_2(local_node_eth, accounts):
         private_key=private_key,
     )
 
-    bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
+    bpt_token_balance_after = bpt_contract.functions.balanceOf(
+        avatar_safe_address
+    ).call()
     assert bpt_token_balance_after == 56700000
-    assert bpt_token_balance_after == approx(int(Decimal(bpt_token_balance) * Decimal(0.7)))
+    assert bpt_token_balance_after == approx(
+        int(Decimal(bpt_token_balance) * Decimal(0.7))
+    )
     new_DAI_balance = DAI_contract.functions.balanceOf(avatar_safe_address).call()
     assert new_DAI_balance == 24807188
 
@@ -430,7 +497,9 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     # Stable Pool v2
     auraBAL_STABLE_bpt_address = "0x3dd0843A028C86e0b760b1A76929d1C5Ef93a2dd"
     # Initial data
-    bpt_contract = w3.eth.contract(address=auraBAL_STABLE_bpt_address, abi=Abis[blockchain].UniversalBPT.abi)
+    bpt_contract = w3.eth.contract(
+        address=auraBAL_STABLE_bpt_address, abi=Abis[blockchain].UniversalBPT.abi
+    )
 
     steal_token(
         w3=w3,
@@ -448,10 +517,14 @@ def test_integration_exit_1_2(local_node_eth, accounts):
 
     txn_transactable = balancer.WithdrawSingle.get_txns(
         ctx=ctx,
-        arguments=balancer.WithdrawSingle.Args(bpt_address=auraBAL_STABLE_bpt_address, token_out_address=EthTokAdd.AURABAL, max_slippage=1, amount=int(Decimal(bpt_token_balance) * Decimal(0.7))
-        ))  
+        arguments=balancer.WithdrawSingle.Args(
+            bpt_address=auraBAL_STABLE_bpt_address,
+            token_out_address=EthTokAdd.AURABAL,
+            max_slippage=1,
+            amount=int(Decimal(bpt_token_balance) * Decimal(0.7)),
+        ),
+    )
 
- 
     disassembler_instance.send(
         ctx=ctx,
         roles_mod_address=roles_contract.address,
@@ -460,10 +533,16 @@ def test_integration_exit_1_2(local_node_eth, accounts):
         private_key=private_key,
     )
 
-    bpt_token_balance_after = bpt_contract.functions.balanceOf(avatar_safe_address).call()
+    bpt_token_balance_after = bpt_contract.functions.balanceOf(
+        avatar_safe_address
+    ).call()
     assert bpt_token_balance_after == 56700000
-    assert bpt_token_balance_after == approx(int(Decimal(bpt_token_balance) * Decimal(0.7)))
-    new_AURABAL_balance = AURABAL_contract.functions.balanceOf(avatar_safe_address).call()
+    assert bpt_token_balance_after == approx(
+        int(Decimal(bpt_token_balance) * Decimal(0.7))
+    )
+    new_AURABAL_balance = AURABAL_contract.functions.balanceOf(
+        avatar_safe_address
+    ).call()
     assert new_AURABAL_balance == 25171520
 
 
@@ -487,7 +566,10 @@ def test_integration_exit_2_1(local_node_eth, accounts):
         json_data=presets,
         replaces=[
             ("c01318bab7ee1f5ba734172bf7718b5dc6ec90e1", avatar_safe.address[2:]),
-            ("5c0f23a5c1be65fa710d385814a7fd1bda480b1c", "79eF6103A513951a3b25743DB509E267685726B7"),
+            (
+                "5c0f23a5c1be65fa710d385814a7fd1bda480b1c",
+                "79eF6103A513951a3b25743DB509E267685726B7",
+            ),
             (
                 "ff4ce5aaab5a627bf82f4a571ab1ce94aa365ea60000000000000000000005d9",
                 "1e19cf2d73a72ef1332c882f20534b6519be0276000200000000000000000112",
@@ -509,7 +591,9 @@ def test_integration_exit_2_1(local_node_eth, accounts):
     RETH_WETH_BPT_gauge = "0x79eF6103A513951a3b25743DB509E267685726B7"
     RETH_WETH_bpt_address = "0x1E19CF2D73a72Ef1332C882F20534B6519Be0276"
 
-    bpt_gauge_contract = w3.eth.contract(address=RETH_WETH_BPT_gauge, abi=Abis[blockchain].Gauge.abi)
+    bpt_gauge_contract = w3.eth.contract(
+        address=RETH_WETH_BPT_gauge, abi=Abis[blockchain].Gauge.abi
+    )
     steal_token(
         w3=w3,
         token=RETH_WETH_BPT_gauge,
@@ -522,7 +606,9 @@ def test_integration_exit_2_1(local_node_eth, accounts):
     RETH_balance_before = RETH_contract.functions.balanceOf(avatar_safe_address).call()
     assert RETH_balance_before == 0
 
-    bpt_gauge_balance = bpt_gauge_contract.functions.balanceOf(avatar_safe.address).call()
+    bpt_gauge_balance = bpt_gauge_contract.functions.balanceOf(
+        avatar_safe.address
+    ).call()
     assert bpt_gauge_balance == 4_000_000_000
 
     txn_transactable = balancer.UnstakeAndWithdrawProportional.get_txns(
@@ -547,7 +633,9 @@ def test_integration_exit_2_1(local_node_eth, accounts):
     RETH_balance_after = RETH_contract.functions.balanceOf(avatar_safe_address).call()
     assert RETH_balance_after == 867203606
 
-    bpt_gauge_balance_after = bpt_gauge_contract.functions.balanceOf(avatar_safe_address).call()
+    bpt_gauge_balance_after = bpt_gauge_contract.functions.balanceOf(
+        avatar_safe_address
+    ).call()
     assert bpt_gauge_balance_after == 2_000_000_000
     assert bpt_gauge_balance_after == int(Decimal(bpt_gauge_balance) / Decimal(2))
 
@@ -572,7 +660,10 @@ def test_integration_exit_2_2(local_node_eth, accounts):
         json_data=presets,
         replaces=[
             ("c01318bab7ee1f5ba734172bf7718b5dc6ec90e1", avatar_safe.address[2:]),
-            ("5c0f23a5c1be65fa710d385814a7fd1bda480b1c", "79eF6103A513951a3b25743DB509E267685726B7"),
+            (
+                "5c0f23a5c1be65fa710d385814a7fd1bda480b1c",
+                "79eF6103A513951a3b25743DB509E267685726B7",
+            ),
             (
                 "ff4ce5aaab5a627bf82f4a571ab1ce94aa365ea60000000000000000000005d9",
                 "1e19cf2d73a72ef1332c882f20534b6519be0276000200000000000000000112",
@@ -595,7 +686,9 @@ def test_integration_exit_2_2(local_node_eth, accounts):
     RETH_WETH_BPT_gauge = "0x79eF6103A513951a3b25743DB509E267685726B7"
     RETH_WETH_bpt_address = "0x1E19CF2D73a72Ef1332C882F20534B6519Be0276"
 
-    bpt_gauge_contract = w3.eth.contract(address=RETH_WETH_BPT_gauge, abi=Abis[blockchain].Gauge.abi)
+    bpt_gauge_contract = w3.eth.contract(
+        address=RETH_WETH_BPT_gauge, abi=Abis[blockchain].Gauge.abi
+    )
     steal_token(
         w3=w3,
         token=RETH_WETH_BPT_gauge,
@@ -608,7 +701,9 @@ def test_integration_exit_2_2(local_node_eth, accounts):
     RETH_balance_before = RETH_contract.functions.balanceOf(avatar_safe_address).call()
     assert RETH_balance_before == 0
 
-    bpt_gauge_balance = bpt_gauge_contract.functions.balanceOf(avatar_safe.address).call()
+    bpt_gauge_balance = bpt_gauge_contract.functions.balanceOf(
+        avatar_safe.address
+    ).call()
     assert bpt_gauge_balance == 4_000_000_000
 
     txn_transactable = balancer.UnstakeAndWithdrawProportional.get_txns(
@@ -633,11 +728,14 @@ def test_integration_exit_2_2(local_node_eth, accounts):
     RETH_balance_after = RETH_contract.functions.balanceOf(avatar_safe_address).call()
     assert RETH_balance_after == 1882274038
 
-    bpt_gauge_balance_after = bpt_gauge_contract.functions.balanceOf(avatar_safe_address).call()
+    bpt_gauge_balance_after = bpt_gauge_contract.functions.balanceOf(
+        avatar_safe_address
+    ).call()
     assert bpt_gauge_balance_after == 2_000_000_000
     assert bpt_gauge_balance_after == int(Decimal(bpt_gauge_balance) / Decimal(2))
 
-#possible use for testing recovery mode:
+
+# possible use for testing recovery mode:
 # def test_integration_exit_1_3(local_node_eth, accounts):
 #     w3 = local_node_eth.w3
 #     block = 18193307
