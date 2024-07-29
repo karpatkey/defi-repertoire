@@ -1,5 +1,5 @@
 fastapi<=0.111.0
 uvicorn[standard]
 async_lru
-rolesroyce @ git+https://github.com/Karpatkey/roles_royce.git@14f5ec880ad5bdced51f6fb27c16196467bd7122
+rolesroyce @ git+https://github.com/Karpatkey/roles_royce.git@20c38b570792daf12cefbae68e7590b02a67b242
 karpatkit @ git+https://github.com/karpatkey/karpatkit.git@3336551ba20a5170e632c94cf91e452b41179db0
