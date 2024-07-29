@@ -92,7 +92,8 @@ async def fetch_pools(blockchain: Blockchain):
         raise ValueError(f"Blockchain not supported: {blockchain}")
 
     response = requests.post(url=graph_url, json={"query": req})
-    return response.json()["data"]["pools"]
+    res = response.json()
+    return res["data"]["pools"]
 
 
 @cache_af()
@@ -116,7 +117,9 @@ async def fetch_gauges(blockchain: Blockchain):
         raise ValueError(f"Blockchain not supported: {blockchain}")
 
     response = requests.post(url=graph_url, json={"query": req})
-    factories = response.json()["data"]["gaugeFactories"]
+
+    res = response.json()
+    factories = res["data"]["gaugeFactories"]
     return [g for f in factories for g in f["gauges"]]
 
 
@@ -425,6 +428,9 @@ class UnstakeAndWithdrawSingleToken:
         max_slippage: Percentage
         token_out_address: ChecksumAddress
 
+    class OptArgs(BaseModel):
+        gauge_address: ChecksumAddress
+
     @classmethod
     async def get_base_options(
         cls,
@@ -436,11 +442,28 @@ class UnstakeAndWithdrawSingleToken:
                 {
                     "label": p["symbol"],
                     "address": p["id"],
-                    # "poolAddress": p["poolAddress"],
                 }
                 for p in gauges
             ]
         }
+
+    @classmethod
+    async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
+        gauges = await fetch_gauges(blockchain)
+        gauge = next(
+            (
+                g
+                for g in gauges
+                if str.lower(g["id"]) == str.lower(arguments.gauge_address)
+            ),
+            None,
+        )
+        if not gauge:
+            raise ValueError("Gauge not found")
+
+        return await WithdrawSingle.get_options(
+            blockchain, WithdrawSingle.OptArgs(bpt_address=gauge["poolAddress"])
+        )
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:

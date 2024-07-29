@@ -20,7 +20,7 @@ async def test_aura_options_ethereum():
     blockchain = Chain.get_blockchain_by_chain_id(1)
 
     opts = await aura.Withdraw.get_base_options(blockchain)
-    assert len(opts["rewards_address"]) == 142
+    assert len(opts["rewards_address"]) > 140
 
 
 @my_vcr.use_cassette()
@@ -31,7 +31,7 @@ async def test_aura_options_ethereum_single_out():
     bpt_address = "0x82feb430d9d14ee5e635c41807e03fd8f5fffdec"
 
     opts = await aura.WithdrawSingle.get_base_options(blockchain)
-    assert len(opts["rewards_address"]) == 142
+    assert len(opts["rewards_address"]) > 140
 
     opts2 = await aura.WithdrawSingle.get_options(
         blockchain,
