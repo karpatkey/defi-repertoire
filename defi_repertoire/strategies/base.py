@@ -117,7 +117,10 @@ def get_strategy_arguments_type(strategy):
 
 
 def get_strategy_opt_arguments_type(strategy):
-    return get_type_hints(strategy.get_options)["arguments"]
+    if hasattr(strategy, "get_options"):
+        return get_type_hints(strategy.get_options)["arguments"]
+    else:
+        return None
 
 
 def get_strategy_id(strategy):

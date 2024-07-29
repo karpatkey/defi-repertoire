@@ -21,6 +21,7 @@ from defi_repertoire.strategies.base import (
     ChecksumAddress,
     GenericTxContext,
     get_strategy_arguments_type,
+    get_strategy_opt_arguments_type,
     strategy_as_dict,
 )
 
@@ -200,7 +201,7 @@ def generate_strategy_endpoints():
     # Endpoints for each strategy
     for strategy_id, strategy in STRATEGIES.items():
 
-        def make_closure(id, arg_type):
+        def make_closure(id, arg_type, opt_arg_type):
             # As exit arguments is a custom type (a dict) and FastAPI does not support complex types
             # in the querystring (https://github.com/tiangolo/fastapi/discussions/7919)
             # We have mainly two options:
@@ -212,7 +213,7 @@ def generate_strategy_endpoints():
             # For the time being the option 3) is implemented
             url = f"/txns/{id}"
 
-            @app.post(url, description=strategy.__doc__)
+            @app.post(url, name=strategy.name, description=strategy.__doc__)
             def transaction_data(
                 blockchain: BlockchainOption,
                 avatar_safe_address: ChecksumAddress,
@@ -230,25 +231,35 @@ def generate_strategy_endpoints():
                     "txns": [TransactableData.from_transactable(txn) for txn in txns]
                 }
 
-            @app.post(url + "/options", description=strategy.__doc__)
-            def transaction_options(
-                blockchain: BlockchainOption,
-                arguments: arg_type,
-            ):
-                blockchain = Chain.get_blockchain_by_name(blockchain)
-                strategy = STRATEGIES.get(id)
-                if not strategy:
-                    raise ValueError("Strategy not found")
-                if not hasattr(strategy, "get_options"):
-                    return {"options": {}}
-                else:
-                    options = strategy.get_options(
-                        blockchain=blockchain, arguments=arguments
-                    )
+            if hasattr(strategy, "get_options"):
 
-                    return {"options": options}
+                @app.post(
+                    url + "/options",
+                    name=strategy.name + " Options",
+                    description=strategy.__doc__,
+                )
+                def transaction_options(
+                    blockchain: BlockchainOption,
+                    arguments: opt_arg_type,
+                ):
+                    blockchain = Chain.get_blockchain_by_name(blockchain)
+                    strategy = STRATEGIES.get(id)
+                    if not strategy:
+                        raise ValueError("Strategy not found")
+                    if not hasattr(strategy, "get_options"):
+                        return {"options": {}}
+                    else:
+                        options = strategy.get_options(
+                            blockchain=blockchain, arguments=arguments
+                        )
 
-        make_closure(strategy_id, get_strategy_arguments_type(strategy))
+                        return {"options": options}
+
+        make_closure(
+            strategy_id,
+            get_strategy_arguments_type(strategy),
+            get_strategy_opt_arguments_type(strategy),
+        )
 
 
 generate_strategy_endpoints()
