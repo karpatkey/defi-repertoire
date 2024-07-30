@@ -102,13 +102,10 @@ async def fetch_gauges(blockchain: Blockchain):
 
     req = """
     {
-      gaugeFactories {
+      liquidityGauges(first: 1000, orderBy: totalSupply) {
         id
-        gauges {
-          id
-          symbol
-          poolAddress
-        }
+        symbol
+        poolAddress
       }
     }
     """
@@ -119,8 +116,7 @@ async def fetch_gauges(blockchain: Blockchain):
     response = requests.post(url=graph_url, json={"query": req})
 
     res = response.json()
-    factories = res["data"]["gaugeFactories"]
-    return [g for f in factories for g in f["gauges"]]
+    return res["data"]["liquidityGauges"]
 
 
 def get_contract_mode(
@@ -370,7 +366,6 @@ class UnstakeAndWithdrawProportional:
                 {
                     "label": p["symbol"],
                     "address": p["id"],
-                    # "poolAddress": p["poolAddress"],
                 }
                 for p in gauges
             ]
