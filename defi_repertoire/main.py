@@ -5,7 +5,7 @@ import os
 from collections import defaultdict
 
 from defabipedia.types import Blockchain, Chain
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, field_serializer
 from roles_royce.generic_method import Operation
 from roles_royce.protocols import ContractMethod
@@ -238,22 +238,25 @@ def generate_strategy_endpoints():
                     name=strategy.name + " Options",
                     description=strategy.__doc__,
                 )
-                def transaction_options(
+                async def transaction_options(
                     blockchain: BlockchainOption,
                     arguments: opt_arg_type,
                 ):
-                    blockchain = Chain.get_blockchain_by_name(blockchain)
-                    strategy = STRATEGIES.get(id)
-                    if not strategy:
-                        raise ValueError("Strategy not found")
-                    if not hasattr(strategy, "get_options"):
-                        return {"options": {}}
-                    else:
-                        options = strategy.get_options(
-                            blockchain=blockchain, arguments=arguments
-                        )
+                    try:
+                        blockchain = Chain.get_blockchain_by_name(blockchain)
+                        strategy = STRATEGIES.get(id)
+                        if not strategy:
+                            raise ValueError("Strategy not found")
+                        if not hasattr(strategy, "get_options"):
+                            return {"options": {}}
+                        else:
+                            options = await strategy.get_options(
+                                blockchain=blockchain, arguments=arguments
+                            )
 
-                        return {"options": options}
+                            return {"options": options}
+                    except Exception as error:
+                        raise HTTPException(status_code=500, detail=error)
 
         make_closure(
             strategy_id,
