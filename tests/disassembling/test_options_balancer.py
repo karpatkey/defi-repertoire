@@ -74,7 +74,6 @@ async def test_balancer_unstake_withdraw_single_options_gnosis():
     opts = await balancer.UnstakeAndWithdrawSingleToken.get_base_options(blockchain)
 
     assert len(opts["gauge_address"]) > 40
-    print(opts)
 
     assert next(
         o for o in opts["gauge_address"] if o["label"] == "stEUR/EURe-gauge"

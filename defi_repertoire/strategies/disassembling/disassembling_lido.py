@@ -1,18 +1,9 @@
-from decimal import Decimal
-
+from defabipedia import Chain
 from defabipedia.lido import ContractSpecs
-from defabipedia.tokens import EthereumTokenAddr
 from roles_royce.generic_method import Transactable
-from roles_royce.protocols import cowswap
-from roles_royce.protocols.base import Address
 from roles_royce.protocols.eth import lido
 
-from ..base import (
-    GenericTxContext,
-    StrategyAmountArguments,
-    StrategyAmountWithSlippageArguments,
-    register,
-)
+from ..base import GenericTxContext, StrategyAmountArguments, register
 
 
 @register
@@ -25,7 +16,7 @@ class LidoUnstakeStETH:
     protocol = "lido"
     id = "unstake_stETH"
     name = "Unstake stETH"
-    chains = ["ethereum"]
+    chains = [Chain.ETHEREUM]
 
     @classmethod
     def get_txns(
@@ -72,7 +63,7 @@ class LidoUnwrapAndUnstakeWstETH:
     protocol = "lido"
     id = "unwrap_and_unstake_wstETH"
     name = "Unwrap + Unstake wstETH"
-    chains = ["ethereum"]
+    chains = [Chain.ETHEREUM]
 
     @classmethod
     def get_txns(
