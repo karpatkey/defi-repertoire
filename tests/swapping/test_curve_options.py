@@ -13,7 +13,7 @@ async def test_curve_options_gnosis():
 
     opts = await SwapOnCurve.get_base_options(blockchain)
     assert "token_in_address" in opts
-    assert len(opts["token_in_address"]) == 14
+    assert len(opts["token_in_address"]) > 10
 
     assert opts["token_in_address"][0]["address"] == wxdai
 

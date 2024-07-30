@@ -116,6 +116,13 @@ def get_strategy_arguments_type(strategy):
     return get_type_hints(strategy.get_txns)["arguments"]
 
 
+def get_strategy_opt_arguments_type(strategy):
+    if hasattr(strategy, "get_options"):
+        return get_type_hints(strategy.get_options)["arguments"]
+    else:
+        return None
+
+
 def get_strategy_id(strategy):
     return f"{strategy.protocol}__{strategy.id}"
 
@@ -125,6 +132,9 @@ def get_strategy_by_id(strategy_id: str):
 
 
 async def strategy_as_dict(blockchain, strategy):
+    if hasattr(strategy, "chains") and not blockchain in strategy.chains:
+        return None
+
     options = (
         hasattr(strategy, "get_base_options")
         and await strategy.get_base_options(blockchain)

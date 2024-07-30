@@ -21,6 +21,7 @@ from defi_repertoire.strategies.base import (
     ChecksumAddress,
     GenericTxContext,
     get_strategy_arguments_type,
+    get_strategy_opt_arguments_type,
     strategy_as_dict,
 )
 
@@ -122,7 +123,7 @@ async def status():
 async def list_strategies(blockchain: BlockchainOption):
     coroutines = [strategy_as_dict(blockchain, s) for s in STRATEGIES.values()]
     strategies = await asyncio.gather(*coroutines)
-    return {"strategies": strategies}
+    return {"strategies": list(filter(lambda v: v is not None, strategies))}
 
 
 @app.post(f"/strategies-to-transactions")
@@ -198,15 +199,9 @@ def multisend_transactions(blockchain: BlockchainOption, txns: list[Transactable
 
 def generate_strategy_endpoints():
     # Endpoints for each strategy
-    STRATEGIES_BY_PROTOCOL_AND_NAME = defaultdict(dict)
-
     for strategy_id, strategy in STRATEGIES.items():
-        id = strategy.id
-        kind = strategy.kind
-        arguments_type = get_strategy_arguments_type(strategy)
-        STRATEGIES_BY_PROTOCOL_AND_NAME[strategy.protocol][id] = strategy
 
-        def make_closure(kind, protocol, id, arg_type):
+        def make_closure(id, arg_type, opt_arg_type):
             # As exit arguments is a custom type (a dict) and FastAPI does not support complex types
             # in the querystring (https://github.com/tiangolo/fastapi/discussions/7919)
             # We have mainly two options:
@@ -216,17 +211,16 @@ def generate_strategy_endpoints():
             #  3) Just use POST.
             #
             # For the time being the option 3) is implemented
-            url = f"/txns/{kind}/{protocol}/{id}"
+            url = f"/txns/{id}"
 
-            # @app.get(url)
-            @app.post(url, description=strategy.__doc__)
+            @app.post(url, name=strategy.name, description=strategy.__doc__)
             def transaction_data(
                 blockchain: BlockchainOption,
                 avatar_safe_address: ChecksumAddress,
                 arguments: arg_type,
             ):
                 blockchain = Chain.get_blockchain_by_name(blockchain)
-                strategy = STRATEGIES_BY_PROTOCOL_AND_NAME.get(protocol).get(id)
+                strategy = STRATEGIES.get(id)
                 if not strategy:
                     raise ValueError("Strategy not found")
                 w3 = get_endpoint_for_blockchain(blockchain)
@@ -237,22 +231,35 @@ def generate_strategy_endpoints():
                     "txns": [TransactableData.from_transactable(txn) for txn in txns]
                 }
 
-            @app.post(url + "/options", description=strategy.__doc__)
-            def transaction_options(
-                blockchain: BlockchainOption,
-                arguments: arg_type,
-            ):
-                blockchain = Chain.get_blockchain_by_name(blockchain)
-                strategy = STRATEGIES_BY_PROTOCOL_AND_NAME.get(protocol).get(id)
-                if not strategy:
-                    raise ValueError("Strategy not found")
-                options = strategy.get_options(
-                    blockchain=blockchain, arguments=arguments
+            if hasattr(strategy, "get_options"):
+
+                @app.post(
+                    url + "/options",
+                    name=strategy.name + " Options",
+                    description=strategy.__doc__,
                 )
+                def transaction_options(
+                    blockchain: BlockchainOption,
+                    arguments: opt_arg_type,
+                ):
+                    blockchain = Chain.get_blockchain_by_name(blockchain)
+                    strategy = STRATEGIES.get(id)
+                    if not strategy:
+                        raise ValueError("Strategy not found")
+                    if not hasattr(strategy, "get_options"):
+                        return {"options": {}}
+                    else:
+                        options = strategy.get_options(
+                            blockchain=blockchain, arguments=arguments
+                        )
 
-                return {"options": options}
+                        return {"options": options}
 
-        make_closure(kind, strategy.protocol, strategy.id, arguments_type)
+        make_closure(
+            strategy_id,
+            get_strategy_arguments_type(strategy),
+            get_strategy_opt_arguments_type(strategy),
+        )
 
 
 generate_strategy_endpoints()
