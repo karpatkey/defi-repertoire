@@ -13,7 +13,14 @@ from web3.exceptions import ContractLogicError
 
 from defi_repertoire.stale_while_revalidate import cache_af
 
-from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage, register
+from ..base import (
+    AddressOption,
+    Amount,
+    ChecksumAddress,
+    GenericTxContext,
+    Percentage,
+    register,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -102,13 +109,10 @@ async def fetch_gauges(blockchain: Blockchain):
 
     req = """
     {
-      gaugeFactories {
+      liquidityGauges(first: 1000, orderBy: totalSupply) {
         id
-        gauges {
-          id
-          symbol
-          poolAddress
-        }
+        symbol
+        poolAddress
       }
     }
     """
@@ -119,8 +123,7 @@ async def fetch_gauges(blockchain: Blockchain):
     response = requests.post(url=graph_url, json={"query": req})
 
     res = response.json()
-    factories = res["data"]["gaugeFactories"]
-    return [g for f in factories for g in f["gauges"]]
+    return res["data"]["liquidityGauges"]
 
 
 def get_contract_mode(
@@ -210,6 +213,12 @@ class WithdrawSingle:
         max_slippage: Percentage
         token_out_address: ChecksumAddress
 
+    class BaseOptions(BaseModel):
+        bpt_address: list[AddressOption]
+
+    class Options(BaseModel):
+        token_out_address: list[AddressOption]
+
     class OptArgs(BaseModel):
         bpt_address: ChecksumAddress
 
@@ -217,20 +226,20 @@ class WithdrawSingle:
     async def get_base_options(
         cls,
         blockchain: Blockchain,
-    ):
+    ) -> BaseOptions:
         pools = await fetch_pools(blockchain)
-        return {
-            "bpt_address": [
-                {"address": p["address"], "label": p["symbol"]} for p in pools
+        return cls.BaseOptions(
+            bpt_address=[
+                AddressOption(address=p["address"], label=p["symbol"]) for p in pools
             ]
-        }
+        )
 
     @classmethod
     async def get_options(
         cls,
         blockchain: Blockchain,
         arguments: OptArgs,
-    ):
+    ) -> Options:
         pools = await fetch_pools(blockchain)
         bpt_address = str.lower(arguments.bpt_address)
         pool = next(
@@ -239,11 +248,12 @@ class WithdrawSingle:
         )
         if not pool:
             raise ValueError("Pool not found")
-        return {
-            "token_out_address": [
-                {"address": t["address"], "label": t["symbol"]} for t in pool["tokens"]
+        return cls.Options(
+            token_out_address=[
+                AddressOption(address=t["address"], label=t["symbol"])
+                for t in pool["tokens"]
             ]
-        }
+        )
 
     @classmethod
     def get_txns(
@@ -296,17 +306,20 @@ class WithdrawProportional:
         bpt_address: ChecksumAddress
         amount: Amount
 
+    class BaseOptions(BaseModel):
+        bpt_address: list[AddressOption]
+
     @classmethod
     async def get_base_options(
         cls,
         blockchain: Blockchain,
-    ):
+    ) -> BaseOptions:
         pools = await fetch_pools(blockchain)
-        return {
-            "bpt_address": [
-                {"address": p["address"], "label": p["symbol"]} for p in pools
+        return cls.BaseOptions(
+            bpt_address=[
+                AddressOption(address=p["address"], label=p["symbol"]) for p in pools
             ]
-        }
+        )
 
     @classmethod
     def get_txns(
@@ -358,22 +371,24 @@ class UnstakeAndWithdrawProportional:
         amount: Amount
         max_slippage: Percentage
 
+    class BaseOptions(BaseModel):
+        gauge_address: list[AddressOption]
+
     @classmethod
     async def get_base_options(
         cls,
         blockchain: Blockchain,
-    ):
+    ) -> BaseOptions:
         gauges = await fetch_gauges(blockchain)
-        return {
-            "gauge_address": [
-                {
-                    "label": p["symbol"],
-                    "address": p["id"],
-                    # "poolAddress": p["poolAddress"],
-                }
+        return cls.BaseOptions(
+            gauge_address=[
+                AddressOption(
+                    label=p["symbol"],
+                    address=p["id"],
+                )
                 for p in gauges
             ]
-        }
+        )
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
@@ -427,6 +442,9 @@ class UnstakeAndWithdrawSingleToken:
         max_slippage: Percentage
         token_out_address: ChecksumAddress
 
+    class BaseOptions(BaseModel):
+        gauge_address: list[AddressOption]
+
     class OptArgs(BaseModel):
         gauge_address: ChecksumAddress
 
@@ -434,17 +452,17 @@ class UnstakeAndWithdrawSingleToken:
     async def get_base_options(
         cls,
         blockchain: Blockchain,
-    ):
+    ) -> BaseOptions:
         gauges = await fetch_gauges(blockchain)
-        return {
-            "gauge_address": [
-                {
-                    "label": p["symbol"],
-                    "address": p["id"],
-                }
+        return cls.BaseOptions(
+            gauge_address=[
+                AddressOption(
+                    label=p["symbol"],
+                    address=p["id"],
+                )
                 for p in gauges
             ]
-        }
+        )
 
     @classmethod
     async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
@@ -466,9 +484,6 @@ class UnstakeAndWithdrawSingleToken:
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
-
-        txns = []
-
         gauge_address = arguments.gauge_address
         token_out_address = arguments.token_out_address
         amount = arguments.amount
@@ -478,7 +493,6 @@ class UnstakeAndWithdrawSingleToken:
         unstake_gauge = balancer.Unstake(
             w3=ctx.w3, gauge_address=gauge_address, amount=amount
         )
-        txns.append(unstake_gauge)
 
         gauge_contract = ctx.w3.eth.contract(
             address=gauge_address, abi=Abis[ctx.blockchain].Gauge.abi
@@ -488,15 +502,10 @@ class UnstakeAndWithdrawSingleToken:
         withdraw_balancer = WithdrawSingle.get_txns(
             ctx=ctx,
             arguments=WithdrawSingle.Args(
-                **{
-                    "bpt_address": bpt_address,
-                    "token_out_address": token_out_address,
-                    "max_slippage": max_slippage,
-                    "amount": amount,
-                }
+                bpt_address=bpt_address,
+                token_out_address=token_out_address,
+                max_slippage=max_slippage,
+                amount=amount,
             ),
         )
-        for transactable in withdraw_balancer:
-            txns.append(transactable)
-
-        return txns
+        return [unstake_gauge, *withdraw_balancer]
