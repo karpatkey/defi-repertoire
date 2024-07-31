@@ -10,7 +10,12 @@ from roles_royce.generic_method import Transactable
 from roles_royce.protocols.swap_pools import swap_methods
 
 from defi_repertoire.stale_while_revalidate import cache_af
-from defi_repertoire.strategies.base import GenericTxContext, SwapArguments, register
+from defi_repertoire.strategies.base import (
+    AddressOption,
+    GenericTxContext,
+    SwapArguments,
+    register,
+)
 from defi_repertoire.strategies.swapping.swapper import (
     get_quote,
     get_swap_pools,
@@ -56,11 +61,16 @@ class SwapUniswapV3:
     id = "swap_on_uniswapv3"
     name = "Swap on UniswapV3"
 
+    class BaseOptions(BaseModel):
+        token_in_address: list[AddressOption]
+
     @classmethod
-    async def get_base_options(cls, blockchain: Blockchain):
+    async def get_base_options(cls, blockchain: Blockchain) -> BaseOptions:
         tokens = await fetch_tokens(blockchain)
-        token_options = [{"label": p["symbol"], "address": p["id"]} for p in tokens]
-        return {"token_in_address": token_options}
+        token_options = [
+            AddressOption(label=p["symbol"], address=p["id"]) for p in tokens
+        ]
+        return cls.BaseOptions(token_in_address=token_options)
 
     @classmethod
     def get_txns(

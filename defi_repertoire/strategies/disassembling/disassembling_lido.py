@@ -22,7 +22,6 @@ class LidoUnstakeStETH:
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountArguments
     ) -> list[Transactable]:
-        txns = []
         amount_to_redeem = arguments.amount
         chunk_amount = amount_to_redeem
         if chunk_amount > 1000_000_000_000_000_000_000:
@@ -48,9 +47,7 @@ class LidoUnstakeStETH:
                 amounts=[amount_to_redeem], avatar=ctx.avatar_safe_address
             )
 
-        txns.append(set_allowance)
-        txns.append(request_withdrawal)
-        return txns
+        return [set_allowance, request_withdrawal]
 
 
 @register
@@ -69,7 +66,6 @@ class LidoUnwrapAndUnstakeWstETH:
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountArguments
     ) -> list[Transactable]:
-        txns = []
 
         contract = ContractSpecs[ctx.blockchain].wstETH.contract(ctx.w3)
         amount_for_list = contract.functions.getWstETHByStETH(
@@ -96,6 +92,4 @@ class LidoUnwrapAndUnstakeWstETH:
                 amounts=[amount_to_redeem], avatar=ctx.avatar_safe_address
             )
 
-        txns.append(set_allowance)
-        txns.append(request_withdrawal)
-        return txns
+        return [set_allowance, request_withdrawal]

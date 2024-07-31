@@ -22,6 +22,7 @@ from defi_repertoire.strategies.base import (
     GenericTxContext,
     get_strategy_arguments_type,
     get_strategy_opt_arguments_type,
+    get_strategy_opt_types,
     strategy_as_dict,
 )
 
@@ -197,11 +198,15 @@ def multisend_transactions(blockchain: BlockchainOption, txns: list[Transactable
     return {"txn": TransactableData.from_transactable(txn)}
 
 
+class TransactionResponse(BaseModel):
+    txns: list[TransactableData]
+
+
 def generate_strategy_endpoints():
     # Endpoints for each strategy
     for strategy_id, strategy in STRATEGIES.items():
 
-        def make_closure(id, arg_type, opt_arg_type):
+        def make_closure(id, arg_type, opt_arg_type, opt_return_type):
             # As exit arguments is a custom type (a dict) and FastAPI does not support complex types
             # in the querystring (https://github.com/tiangolo/fastapi/discussions/7919)
             # We have mainly two options:
@@ -218,7 +223,7 @@ def generate_strategy_endpoints():
                 blockchain: BlockchainOption,
                 avatar_safe_address: ChecksumAddress,
                 arguments: arg_type,
-            ):
+            ) -> TransactionResponse:
                 blockchain = Chain.get_blockchain_by_name(blockchain)
                 strategy = STRATEGIES.get(id)
                 if not strategy:
@@ -227,9 +232,9 @@ def generate_strategy_endpoints():
                 ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
                 txns = strategy.get_txns(ctx=ctx, arguments=arguments)
 
-                return {
-                    "txns": [TransactableData.from_transactable(txn) for txn in txns]
-                }
+                return TransactionResponse(
+                    txns=[TransactableData.from_transactable(txn) for txn in txns]
+                )
 
             if hasattr(strategy, "get_options"):
 
@@ -241,14 +246,13 @@ def generate_strategy_endpoints():
                 async def transaction_options(
                     blockchain: BlockchainOption,
                     arguments: opt_arg_type,
-                ):
+                ) -> opt_return_type:
                     try:
                         blockchain = Chain.get_blockchain_by_name(blockchain)
                         strategy = STRATEGIES.get(id)
                         if not strategy:
                             raise ValueError("Strategy not found")
-                        if not hasattr(strategy, "get_options"):
-                            return {"options": {}}
+
                         else:
                             options = await strategy.get_options(
                                 blockchain=blockchain, arguments=arguments
@@ -261,7 +265,8 @@ def generate_strategy_endpoints():
         make_closure(
             strategy_id,
             get_strategy_arguments_type(strategy),
-            get_strategy_opt_arguments_type(strategy),
+            get_strategy_opt_types(strategy).get("arguments"),
+            get_strategy_opt_types(strategy).get("return"),
         )
 
 

@@ -9,6 +9,7 @@ from roles_royce.protocols.swap_pools.swap_methods import ApproveCurve, SwapCurv
 
 from defi_repertoire.stale_while_revalidate import cache_af
 from defi_repertoire.strategies.base import (
+    AddressOption,
     ChecksumAddress,
     GenericTxContext,
     OptSwapArguments,
@@ -28,8 +29,8 @@ async def fetch_pools(blockchain: Blockchain):
     return response.json()["data"]["poolData"]
 
 
-def tokens_to_options(tokens):
-    return [{"address": t["address"], "label": t["symbol"]} for t in tokens]
+def tokens_to_options(tokens) -> list[AddressOption]:
+    return [AddressOption(address=t["address"], label=t["symbol"]) for t in tokens]
 
 
 @register
@@ -44,18 +45,24 @@ class SwapOnCurve:
     class OptArgs(BaseModel):
         token_in_address: ChecksumAddress
 
-    @classmethod
-    async def get_base_options(cls, blockchain: Blockchain):
-        pools = await fetch_pools(blockchain)
-        tokens = uniqBy(flatten([p["coins"] for p in pools]), "address")
-        return {"token_in_address": tokens_to_options(tokens)}
+    class BaseOptions(BaseModel):
+        token_in_address: list[AddressOption]
+
+    class Options(BaseModel):
+        token_out_address: list[AddressOption]
 
     @classmethod
-    async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
+    async def get_base_options(cls, blockchain: Blockchain) -> BaseOptions:
+        pools = await fetch_pools(blockchain)
+        tokens = uniqBy(flatten([p["coins"] for p in pools]), "address")
+        return cls.BaseOptions(token_in_address=tokens_to_options(tokens))
+
+    @classmethod
+    async def get_options(cls, blockchain: Blockchain, arguments: OptArgs) -> Options:
         pools = await fetch_pools(blockchain)
         poolPairs = [p["coins"] for p in pools]
         outs = find_reachable_tokens(poolPairs, arguments.token_in_address, 3)
-        return {"token_out_address": tokens_to_options(outs)}
+        return cls.Options(token_out_address=tokens_to_options(outs))
 
     @classmethod
     def get_txns(
