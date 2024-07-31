@@ -190,8 +190,7 @@ class WithdrawAllAssetsProportional:
                 max_slippage=max_slippage,
             )
 
-        txns.append(withdraw_balancer)
-        return txns
+        return [withdraw_balancer]
 
 
 @register
