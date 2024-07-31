@@ -13,7 +13,7 @@ from karpatkit.test_utils.fork import (
 )
 from pytest import approx
 from roles_royce.roles_modifier import GasStrategies, set_gas_strategy
-from roles_royce.toolshed.test_utils.roles_utils import (
+from roles_royce.toolshed.test_utils.roles_fork_utils import (
     apply_roles_presets,
     deploy_roles,
     setup_common_roles,
