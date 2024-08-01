@@ -251,15 +251,10 @@ def generate_strategy_endpoints():
                     try:
                         blockchain = Chain.get_blockchain_by_name(blockchain)
                         strategy = STRATEGIES.get(id)
-                        if not strategy:
-                            raise ValueError("Strategy not found")
+                        return await strategy.get_options(
+                            blockchain=blockchain, arguments=arguments
+                        )
 
-                        else:
-                            options = await strategy.get_options(
-                                blockchain=blockchain, arguments=arguments
-                            )
-
-                            return {"options": options}
                     except Exception as error:
                         raise HTTPException(status_code=500, detail=error)
 
