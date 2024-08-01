@@ -36,9 +36,10 @@ BlockchainOption = enum.StrEnum(
     "BlockchainOption", {name: name for name in Chain._by_name.values()}
 )
 
-ENDPOINTS = {Chain.ETHEREUM: [os.getenv("RPC_MAINNET_URL")]}
-
-ENDPOINTS = {Chain.ETHEREUM: [os.getenv("RPC_MAINNET_URL")]}
+ENDPOINTS = {
+    Chain.ETHEREUM: [os.getenv("RPC_MAINNET_URL")],
+    Chain.GNOSIS: [os.getenv("RPC_GNOSIS_URL")],
+}
 
 
 class StrategyCall(BaseModel):
@@ -83,11 +84,11 @@ class DecodeNode(BaseModel):
 
 
 def get_endpoint_for_blockchain(blockchain: Blockchain):
-    if blockchain == Chain.ETHEREUM:
-        url = ENDPOINTS[blockchain][0]
+    endpoints = ENDPOINTS.get(blockchain)
+    if endpoints and len(endpoints) > 0:
+        return Web3(Web3.HTTPProvider(endpoints[0]))
     else:
         raise NotImplementedError("Blockchain not supported.")
-    return Web3(Web3.HTTPProvider(url))
 
 
 def strategies_to_contract_methods(
