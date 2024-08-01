@@ -74,7 +74,7 @@ async def fetch_pools(blockchain: Blockchain):
 
     req = """
     {
-      pools(where: { totalLiquidity_gt: "500000" }, orderBy: totalLiquidity) {
+      pools(first: 1000, where: { totalLiquidity_gt: "100000" }, orderBy: totalLiquidity, orderDirection: desc) {
         name
         address
         poolType

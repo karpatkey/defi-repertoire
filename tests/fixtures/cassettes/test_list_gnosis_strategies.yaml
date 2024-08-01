@@ -330,11 +330,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 29 Jul 2024 11:07:23 GMT
+      - Wed, 31 Jul 2024 18:04:46 GMT
       ETag:
       - W/"1552a9833ef725cba4c35419b1ff67b9800e66f2179ffe8cdd12efe9059225a0"
       Expires:
-      - Mon, 29 Jul 2024 11:12:23 GMT
+      - Wed, 31 Jul 2024 18:09:46 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -346,19 +346,19 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 226674317cb0424d05533d9b87d7c249879159ab
+      - 7172f06923d4997c39956bf71c0e984ba38abc67
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6357:10B607:218DB82:235BF0B:66A76934
+      - 2973:1425A2:1167D8C:12220F7:66AA73DF
       X-Served-By:
-      - cache-lis1490048-LIS
+      - cache-lis1490052-LIS
       X-Timer:
-      - S1722251244.604112,VS0,VE337
+      - S1722449086.834536,VS0,VE206
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -617,11 +617,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 29 Jul 2024 11:07:24 GMT
+      - Wed, 31 Jul 2024 18:04:46 GMT
       ETag:
       - W/"8ba8cc87a85fb2b7f5e6869f54e189aaa710db61659cbaa0b8ed36e88029b03e"
       Expires:
-      - Mon, 29 Jul 2024 11:12:24 GMT
+      - Wed, 31 Jul 2024 18:09:46 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -637,15 +637,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 763a668214f9908665327425892b4d8b667e1102
+      - 476fd4e0170d99100a22c526cf9d7471562c7a51
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - A17D:0E80:202AAAF:21E3B2F:66A76934
+      - 7A99:306318:16D7FB:17B91A:66AA73E0
       X-Served-By:
-      - cache-lis1490047-LIS
+      - cache-lis1490051-LIS
       X-Timer:
-      - S1722251244.042003,VS0,VE186
+      - S1722449086.083010,VS0,VE170
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -1823,7 +1823,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '2919684'
+      - '3117526'
       Cache-Control:
       - public, max-age=0, must-revalidate
       Connection:
@@ -1835,7 +1835,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 29 Jul 2024 11:07:24 GMT
+      - Wed, 31 Jul 2024 18:04:46 GMT
       Etag:
       - W/"6f9eefd28cc335c7f3332b4f8096112e"
       Server:
@@ -1847,7 +1847,7 @@ interactions:
       X-Vercel-Cache:
       - HIT
       X-Vercel-Id:
-      - cdg1::m69wn-1722251244352-200a1670254e
+      - cdg1::dw72p-1722449086548-44a5cf0b1815
     status:
       code: 200
       message: OK
@@ -1866,8 +1866,8 @@ interactions:
     uri: https://files.cow.fi/tokens/CowSwap.json
   response:
     body:
-      string: "{\n  \"name\": \"CoW Swap\",\n  \"timestamp\": \"2024-07-17T07:00:00+00:00\",\n
-        \ \"version\": {\n    \"major\": 2,\n    \"minor\": 37,\n    \"patch\": 0\n
+      string: "{\n  \"name\": \"CoW Swap\",\n  \"timestamp\": \"2024-07-30T16:00:00+00:00\",\n
+        \ \"version\": {\n    \"major\": 2,\n    \"minor\": 38,\n    \"patch\": 0\n
         \ },\n  \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/list-logo.png\",\n
         \ \"keywords\": [\n    \"default\",\n    \"list\",\n    \"cowswap\"\n  ],\n
         \ \"tokens\": [\n    {\n      \"symbol\": \"SPELL\",\n      \"name\": \"Spell
@@ -2027,6 +2027,9 @@ interactions:
         \   },\n    {\n      \"symbol\": \"GNO\",\n      \"name\": \"Gnosis\",\n      \"address\":
         \"0x6810e776880c02933d47db1b9fc05908e5386b96\",\n      \"decimals\": 18,\n
         \     \"chainId\": 1,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x6810e776880c02933d47db1b9fc05908e5386b96/logo.png\"\n
+        \   },\n    {\n      \"address\": \"0x6982508145454ce325ddbe47a25d4ec3d2311933\",\n
+        \     \"symbol\": \"PEPE\",\n      \"name\": \"PEPE\",\n      \"decimals\":
+        18,\n      \"chainId\": 1,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x6982508145454ce325ddbe47a25d4ec3d2311933/logo.png\"\n
         \   },\n    {\n      \"symbol\": \"DAI\",\n      \"name\": \"Dai Stablecoin\",\n
         \     \"address\": \"0x6b175474e89094c44da98b954eedeac495271d0f\",\n      \"decimals\":
         18,\n      \"chainId\": 1,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x6b175474e89094c44da98b954eedeac495271d0f/logo.png\"\n
@@ -2058,6 +2061,9 @@ interactions:
         \   },\n    {\n      \"symbol\": \"AAVE\",\n      \"name\": \"Aave Token\",\n
         \     \"address\": \"0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9\",\n      \"decimals\":
         18,\n      \"chainId\": 1,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9/logo.png\"\n
+        \   },\n    {\n      \"address\": \"0x808507121b80c02388fad14726482e061b8da827\",\n
+        \     \"symbol\": \"PENDLE\",\n      \"name\": \"PENDLE\",\n      \"decimals\":
+        18,\n      \"chainId\": 1,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x808507121b80c02388fad14726482e061b8da827/logo.png\"\n
         \   },\n    {\n      \"address\": \"0x81994b9607e06ab3d5cf3afff9a67374f05f27d7\",\n
         \     \"symbol\": \"fUSDT\",\n      \"name\": \"Flux USDT\",\n      \"decimals\":
         8,\n      \"chainId\": 1,\n      \"logoURI\": \"https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x81994b9607e06ab3d5cf3afff9a67374f05f27d7/logo.png\"\n
@@ -2298,7 +2304,7 @@ interactions:
         \   }\n  ]\n}"
     headers:
       Age:
-      - '1858'
+      - '1883'
       Connection:
       - keep-alive
       Content-Encoding:
@@ -2306,11 +2312,11 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 29 Jul 2024 10:36:27 GMT
+      - Wed, 31 Jul 2024 17:33:24 GMT
       ETag:
-      - W/"057b1e87465a3055005494fe1789f1b5"
+      - W/"43327d2b3f5cac4153d5628da2c3c68e"
       Last-Modified:
-      - Wed, 17 Jul 2024 07:19:05 GMT
+      - Tue, 30 Jul 2024 16:13:43 GMT
       Server:
       - AmazonS3
       Transfer-Encoding:
@@ -2319,9 +2325,9 @@ interactions:
       - Accept-Encoding
       - Origin
       Via:
-      - 1.1 dadbd3993b5303886df72c2fdce172ca.cloudfront.net (CloudFront)
+      - 1.1 4ddf42f206fdf10afe67b89baac28c46.cloudfront.net (CloudFront)
       X-Amz-Cf-Id:
-      - AbAScCbrrPQQkEveCSUWJo2A3vCz5qu0xXvue4YqoIyl3tDYRdj-vg==
+      - G_x612QiNCr3_ubcTVIxpxYW1Agc-WOWp5cGUubbmD-r3652KEetTA==
       X-Amz-Cf-Pop:
       - MAD51-C2
       X-Cache:
@@ -2329,7 +2335,7 @@ interactions:
       x-amz-server-side-encryption:
       - AES256
       x-amz-version-id:
-      - yiNnwhwEwvZ3lwnk_.qhldYtM0rKfAzV
+      - LNVa1tSwink3rMweIuTEzuK2b9pXnY.T
     status:
       code: 200
       message: OK
