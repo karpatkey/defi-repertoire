@@ -12,7 +12,7 @@ from roles_royce.protocols import ContractMethod
 from roles_royce.protocols.roles_modifier.contract_methods import (
     get_exec_transaction_with_role_method,
 )
-from roles_royce.utils import multi_or_one
+from roles_royce.utils import logging, multi_or_one
 from web3 import Web3
 
 from defi_repertoire.strategies import disassembling, swapping
@@ -21,10 +21,11 @@ from defi_repertoire.strategies.base import (
     ChecksumAddress,
     GenericTxContext,
     get_strategy_arguments_type,
-    get_strategy_opt_arguments_type,
     get_strategy_opt_types,
     strategy_as_dict,
 )
+
+logger = logging.getLogger(__name__)
 
 Protocols = enum.StrEnum(
     "Protocols", {s.protocol: s.protocol for s in STRATEGIES.values()}
@@ -225,17 +226,23 @@ def generate_strategy_endpoints():
                 avatar_safe_address: ChecksumAddress,
                 arguments: arg_type,
             ) -> TransactionResponse:
-                blockchain = Chain.get_blockchain_by_name(blockchain)
-                strategy = STRATEGIES.get(id)
-                if not strategy:
-                    raise ValueError("Strategy not found")
-                w3 = get_endpoint_for_blockchain(blockchain)
-                ctx = GenericTxContext(w3=w3, avatar_safe_address=avatar_safe_address)
-                txns = strategy.get_txns(ctx=ctx, arguments=arguments)
+                try:
+                    blockchain = Chain.get_blockchain_by_name(blockchain)
+                    strategy = STRATEGIES.get(id)
+                    if not strategy:
+                        raise ValueError("Strategy not found")
+                    w3 = get_endpoint_for_blockchain(blockchain)
+                    ctx = GenericTxContext(
+                        w3=w3, avatar_safe_address=avatar_safe_address
+                    )
+                    txns = strategy.get_txns(ctx=ctx, arguments=arguments)
 
-                return TransactionResponse(
-                    txns=[TransactableData.from_transactable(txn) for txn in txns]
-                )
+                    return TransactionResponse(
+                        txns=[TransactableData.from_transactable(txn) for txn in txns]
+                    )
+                except Exception as error:
+                    logger.error(error)
+                    raise HTTPException(status_code=500, detail=str(error))
 
             if hasattr(strategy, "get_options"):
 
@@ -256,7 +263,8 @@ def generate_strategy_endpoints():
                         )
 
                     except Exception as error:
-                        raise HTTPException(status_code=500, detail=error)
+                        logger.error(error)
+                        raise HTTPException(status_code=500, detail=str(error))
 
         make_closure(
             strategy_id,
