@@ -42,6 +42,9 @@ class Disassembler:
         txns: list[Transactable],
         block: int | str = "latest",
         from_address: Address | ChecksumAddress | str | None = None,
+        role: int = None,
+        roles_mod_address: str = None,
+        w3: Web3 = None,
     ) -> bool:
         """Checks whether the multisend batched transaction built from the transactables is successfully executed with static call.
 
@@ -54,18 +57,16 @@ class Disassembler:
         """
         if from_address:
             account = from_address
-        elif self.signer_address:
-            account = self.signer_address
         else:
             raise ValueError(
                 "Either from_address or self.signer_address must be provided."
             )
         return roles.check(
             txns,
-            role=self.role,
+            role=role,
             account=account,
-            roles_mod_address=self.roles_mod_address,
-            web3=self.w3,
+            roles_mod_address=roles_mod_address,
+            web3=w3,
             block=block,
         )
 
@@ -73,6 +74,9 @@ class Disassembler:
         self,
         txns: list[Transactable],
         from_address: Address | ChecksumAddress | str | None = None,
+        role: int = None,
+        roles_mod_address: str = None,
+        w3: Web3 = None,
     ) -> TxParams:
         """Builds a multisend batched transaction from the transactables.
 
@@ -84,18 +88,16 @@ class Disassembler:
         """
         if from_address is not None:
             account = from_address
-        elif self.signer_address is not None:
-            account = self.signer_address
         else:
             raise ValueError(
                 "Either from_address or self.signer_address must be provided."
             )
         return roles.build(
             txns,
-            role=self.role,
+            role=role,
             account=account,
-            roles_mod_address=self.roles_mod_address,
-            web3=self.w3,
+            roles_mod_address=roles_mod_address,
+            web3=w3,
         )
 
 

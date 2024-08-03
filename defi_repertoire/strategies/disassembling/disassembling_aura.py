@@ -122,9 +122,6 @@ class Withdraw:
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
-        bpt_address = aura_to_bpt_address(ctx, arguments.rewards_address)
-        ctx.ctx["aura"]["aura_to_bpt"][arguments.rewards_address] = bpt_address
-
         withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
             reward_address=arguments.rewards_address, amount=arguments.amount
         )
