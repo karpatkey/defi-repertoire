@@ -1,22 +1,24 @@
-from decimal import Decimal
-
 from defabipedia.aura import Abis as AuraAbis
 from defabipedia.balancer import Abis as BalancerAbis
 from defabipedia.types import Chain
-from roles_royce import roles
-from roles_royce.protocols.aura.contract_methods import (
-    ApproveForBooster,
-    DepositBPT,
-    WithdrawAndUnwrap,
+from karpatkit.test_utils.fork import (
+    accounts,
+    create_simple_safe,
+    local_node_eth,
+    steal_token,
 )
+from roles_royce import roles
+from roles_royce.protocols.aura.contract_methods import ApproveForBooster, DepositBPT
 from roles_royce.roles_modifier import GasStrategies, set_gas_strategy
+from roles_royce.toolshed.test_utils.roles_fork_utils import (
+    apply_roles_presets,
+    deploy_roles,
+    setup_common_roles,
+)
 
 from defi_repertoire.strategies.base import GenericTxContext
 from defi_repertoire.strategies.disassembling import disassembler
 from defi_repertoire.strategies.disassembling import disassembling_aura as aura
-from tests.fork_fixtures import accounts, local_node_eth
-from tests.roles import apply_presets, deploy_roles, setup_common_roles
-from tests.utils import create_simple_safe, steal_token
 
 presets = """{
   "version": "1.0",
@@ -71,7 +73,7 @@ def test_integration_exit_1(local_node_eth, accounts):
     roles_contract = deploy_roles(avatar=avatar_safe.address, w3=w3)
     setup_common_roles(avatar_safe, roles_contract)
 
-    apply_presets(
+    apply_roles_presets(
         avatar_safe,
         roles_contract,
         json_data=presets,
@@ -79,7 +81,7 @@ def test_integration_exit_1(local_node_eth, accounts):
             ("c01318bab7ee1f5ba734172bf7718b5dc6ec90e1", avatar_safe.address[2:])
         ],
     )
-    disassembler_address = accounts[4].address
+
     private_key = accounts[4].key
     role = 4
 
