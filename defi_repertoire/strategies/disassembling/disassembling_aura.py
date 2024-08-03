@@ -12,7 +12,7 @@ from roles_royce.protocols.eth import aura
 from defi_repertoire.stale_while_revalidate import cache_af
 from defi_repertoire.strategies import register
 
-from ..base import Amount, ChecksumAddress, GenericTxContext, Percentage
+from ..base import AddressOption, Amount, ChecksumAddress, GenericTxContext, Percentage
 from . import disassembling_balancer as balancer
 
 logger = logging.getLogger(__name__)
@@ -89,9 +89,9 @@ async def fetch_pools(blockchain: Blockchain):
     return response.json()["data"]["pools"]
 
 
-def pools_to_options(pools):
+def pools_to_options(pools) -> list[AddressOption]:
     return [
-        {"address": p["rewardPool"], "label": p["depositToken"]["symbol"]}
+        AddressOption(address=p["rewardPool"], label=p["depositToken"]["symbol"])
         for p in pools
     ]
 
@@ -112,21 +112,20 @@ class Withdraw:
     class OptArgs(BaseModel):
         rewards_address: ChecksumAddress
 
+    class BaseOptions(BaseModel):
+        rewards_address: list[AddressOption]
+
     @classmethod
-    async def get_base_options(cls, blockchain: Blockchain):
+    async def get_base_options(cls, blockchain: Blockchain) -> BaseOptions:
         pools = await fetch_pools(blockchain)
-        return {"rewards_address": pools_to_options(pools)}
+        return cls.BaseOptions(rewards_address=pools_to_options(pools))
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
-        txns = []
-
         withdraw_aura = aura.WithdrawAndUndwrapStakedBPT(
             reward_address=arguments.rewards_address, amount=arguments.amount
         )
-        txns.append(withdraw_aura)
-
-        return txns
+        return [withdraw_aura]
 
 
 @register
@@ -148,10 +147,13 @@ class WithdrawProportional:
     class OptArgs(BaseModel):
         rewards_address: ChecksumAddress
 
+    class BaseOptions(BaseModel):
+        rewards_address: list[AddressOption]
+
     @classmethod
-    async def get_base_options(cls, blockchain: Blockchain):
+    async def get_base_options(cls, blockchain: Blockchain) -> BaseOptions:
         pools = await fetch_pools(blockchain)
-        return {"rewards_address": pools_to_options(pools)}
+        return cls.BaseOptions(rewards_address=pools_to_options(pools))
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
@@ -170,11 +172,9 @@ class WithdrawProportional:
         bal_txns = balancer.WithdrawAllAssetsProportional.get_txns(
             ctx=ctx,
             arguments=balancer.WithdrawAllAssetsProportional.Args(
-                **{
-                    "bpt_address": bpt_address,
-                    "max_slippage": arguments.max_slippage,
-                    "amount": amount,
-                }
+                bpt_address=bpt_address,
+                max_slippage=arguments.max_slippage,
+                amount=amount,
             ),
         )
         txns.extend(bal_txns)
@@ -202,13 +202,19 @@ class WithdrawSingle:
     class OptArgs(BaseModel):
         rewards_address: ChecksumAddress
 
-    @classmethod
-    async def get_base_options(cls, blockchain: Blockchain):
-        pools = await fetch_pools(blockchain)
-        return {"rewards_address": pools_to_options(pools)}
+    class BaseOptions(BaseModel):
+        rewards_address: list[AddressOption]
+
+    class Options(BaseModel):
+        token_out_address: list[AddressOption]
 
     @classmethod
-    async def get_options(cls, blockchain: Blockchain, arguments: OptArgs):
+    async def get_base_options(cls, blockchain: Blockchain) -> BaseOptions:
+        pools = await fetch_pools(blockchain)
+        return cls.BaseOptions(rewards_address=pools_to_options(pools))
+
+    @classmethod
+    async def get_options(cls, blockchain: Blockchain, arguments: OptArgs) -> Options:
         pools = await fetch_pools(blockchain)
         address = str.lower(arguments.rewards_address)
         pool = next(
@@ -225,13 +231,12 @@ class WithdrawSingle:
                 bpt_address=bpt_address,
             ),
         )
-        return {
-            "token_out_address": balancer_options["token_out_address"],
-        }
+        return cls.Options(
+            token_out_address=balancer_options.token_out_address,
+        )
 
     @classmethod
     def get_txns(cls, ctx: GenericTxContext, arguments: Args) -> list[Transactable]:
-        txns = []
 
         aura_rewards_address = arguments.rewards_address
         max_slippage = arguments.max_slippage
@@ -247,17 +252,11 @@ class WithdrawSingle:
         withdraw_balancer = balancer.WithdrawSingle.get_txns(
             ctx=ctx,
             arguments=balancer.WithdrawSingle.Args(
-                **{
-                    "bpt_address": bpt_address,
-                    "max_slippage": max_slippage,
-                    "token_out_address": token_out_address,
-                    "amount": amount,
-                }
+                bpt_address=bpt_address,
+                max_slippage=max_slippage,
+                token_out_address=token_out_address,
+                amount=amount,
             ),
         )
 
-        txns.append(withdraw_aura)
-        for transactable in withdraw_balancer:
-            txns.append(transactable)
-
-        return txns
+        return [withdraw_aura, *withdraw_balancer]

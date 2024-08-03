@@ -14,14 +14,20 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
+      - name: Try anvil
+        run: anvil --version
+
       - name: Run tests
-        run: pytest -v --cov --durations=10
+        run: KKIT_ETH_FORK_URL=${{ secrets.NODE_ETH }} KKIT_GC_FORK_URL=${{ secrets.NODE_XDAI }} KKIT_RUN_LOCAL_NODE=1 pytest -v --cov --durations=10
 
       - name: Coverage report
         run: coverage report

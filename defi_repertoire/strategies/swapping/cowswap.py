@@ -3,6 +3,7 @@ import asyncio
 from defabipedia.balancer import Chain
 from defabipedia.tokens import NATIVE
 from defabipedia.types import Blockchain
+from pydantic import BaseModel
 from roles_royce.generic_method import Transactable
 from roles_royce.protocols import cowswap
 from roles_royce.protocols.cowswap.utils import requests
@@ -10,6 +11,7 @@ from roles_royce.protocols.swap_pools.swap_methods import WrapNativeToken
 
 from defi_repertoire.stale_while_revalidate import cache_af
 from defi_repertoire.strategies.base import (
+    AddressOption,
     GenericTxContext,
     OptSwapArguments,
     SwapArguments,
@@ -51,8 +53,8 @@ async def fetch_tokens(blockchain: Blockchain):
     return uniqBy(flatten(tokens), "address")
 
 
-def tokens_to_options(tokens):
-    return [{"address": t["address"], "label": t["symbol"]} for t in tokens]
+def tokens_to_options(tokens) -> list[AddressOption]:
+    return [AddressOption(address=t["address"], label=t["symbol"]) for t in tokens]
 
 
 @register
@@ -64,10 +66,13 @@ class SwapCowswap:
     id = "swap_on_cowswap"
     name = "Swap on CoWswap"
 
+    class BaseOptions(BaseModel):
+        token_in_address: list[AddressOption]
+
     @classmethod
-    async def get_base_options(cls, blockchain: Blockchain):
+    async def get_base_options(cls, blockchain: Blockchain) -> BaseOptions:
         tokens = await fetch_tokens(blockchain)
-        return {"token_in_address": tokens_to_options(tokens)}
+        return cls.BaseOptions(token_in_address=tokens_to_options(tokens))
 
     @classmethod
     def get_txns(

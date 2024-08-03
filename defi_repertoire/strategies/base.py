@@ -11,6 +11,7 @@ from typing import (
 )
 
 from defabipedia import Chain
+from defabipedia.types import Blockchain
 from eth_utils.address import is_checksum_formatted_address
 from pydantic import BaseModel, Field, create_model
 from pydantic.functional_validators import AfterValidator
@@ -70,7 +71,7 @@ class StrategyDefinitionModel(BaseModel):
     id: str
     description: str
     arguments: dict[str, Any]
-    options: dict[str, Any]
+    options: dict[str, Any] | None
 
 
 class StrategyAmountArguments(BaseModel):
@@ -92,6 +93,11 @@ class SwapArguments(BaseModel):
 class OptSwapArguments(BaseModel):
     token_in_address: ChecksumAddress | None
     token_out_address: ChecksumAddress | None
+
+
+class AddressOption(BaseModel):
+    address: str
+    label: str
 
 
 T = TypeVar("T", bound=BaseModel)
@@ -116,6 +122,20 @@ def get_strategy_arguments_type(strategy):
     return get_type_hints(strategy.get_txns)["arguments"]
 
 
+def get_strategy_opt_arguments_type(strategy):
+    if hasattr(strategy, "get_options"):
+        return get_type_hints(strategy.get_options)["arguments"]
+    else:
+        return None
+
+
+def get_strategy_opt_types(strategy):
+    if hasattr(strategy, "get_options"):
+        return get_type_hints(strategy.get_options)
+    else:
+        return {}
+
+
 def get_strategy_id(strategy):
     return f"{strategy.protocol}__{strategy.id}"
 
@@ -125,10 +145,13 @@ def get_strategy_by_id(strategy_id: str):
 
 
 async def strategy_as_dict(blockchain, strategy):
+    if hasattr(strategy, "chains") and not blockchain in strategy.chains:
+        return None
+
     options = (
         hasattr(strategy, "get_base_options")
         and await strategy.get_base_options(blockchain)
-        or {}
+        or None
     )
     data = StrategyDefinitionModel(
         kind=strategy.kind,
@@ -136,7 +159,7 @@ async def strategy_as_dict(blockchain, strategy):
         name=strategy.name,
         id=get_strategy_id(strategy),
         arguments=get_strategy_arguments_type(strategy).model_json_schema(),
-        options=options,
+        options=options and options.model_dump(mode="json"),
         description=str.strip(strategy.__doc__),
     )
     return data

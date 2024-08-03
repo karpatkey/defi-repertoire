@@ -322,7 +322,7 @@ def test_disassembly_balancer():
             ]
 
             response = client.post(
-                "/txns/disassembly/balancer/withdraw_all_assets_proportional?"
+                "/txns/balancer__withdraw_all_assets_proportional?"
                 "blockchain=ethereum&"
                 "avatar_safe_address=0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF&",
                 json={
@@ -355,7 +355,7 @@ def test_disassembly_balancer():
             }
 
             response = client.post(
-                "/txns/disassembly/balancer/withdraw_all_assets_proportional/?"
+                "/txns/balancer__withdraw_all_assets_proportional/?"
                 "blockchain=ethereum&"
                 "avatar_safe_address=0x8353157092ED8Be69a9DF8F95af097bbF33Cb2aF&",
                 json={
