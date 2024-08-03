@@ -21,17 +21,13 @@ class WithdrawWithProxy:
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountArguments
     ) -> list[Transactable]:
-        txns = []
         proxy_registry = ContractSpecs[ctx.blockchain].ProxyRegistry.contract(ctx.w3)
         proxy_address = proxy_registry.functions.proxies(ctx.avatar_safe_address).call()
 
         approve_dai = maker.ApproveDAI(spender=proxy_address, amount=arguments.amount)
         exit_dai = maker.ProxyActionExitDsr(proxy=proxy_address, wad=arguments.amount)
 
-        txns.append(approve_dai)
-        txns.append(exit_dai)
-
-        return txns
+        return [approve_dai, exit_dai]
 
 
 @register
@@ -47,7 +43,6 @@ class WithdrawWithoutProxy:
     def get_txns(
         cls, ctx: GenericTxContext, arguments: StrategyAmountArguments
     ) -> list[Transactable]:
-        txns = []
         dsr_manager_address = (
             ContractSpecs[ctx.blockchain].DsrManager.contract(ctx.w3).address
         )
@@ -56,7 +51,4 @@ class WithdrawWithoutProxy:
         )
         exit_dai = maker.ExitDsr(avatar=ctx.avatar_safe_address, wad=arguments.amount)
 
-        txns.append(approve_dai)
-        txns.append(exit_dai)
-
-        return txns
+        return [approve_dai, exit_dai]
