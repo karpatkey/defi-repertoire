@@ -3,20 +3,24 @@ from decimal import Decimal
 
 from defabipedia.spark import ContractSpecs
 from defabipedia.types import Chain
+from karpatkit.test_utils.fork import (
+    accounts,
+    create_simple_safe,
+    local_node_eth,
+    steal_token,
+)
 from roles_royce.constants import ETHAddr
 from roles_royce.protocols.eth import spark as rr_spark
-from roles_royce.roles_modifier import GasStrategies, set_gas_strategy
-from roles_royce.toolshed.disassembling import SparkDisassembler
 from roles_royce.toolshed.protocol_utils.spark.utils import SparkUtils
+from roles_royce.toolshed.test_utils.roles_fork_utils import (
+    apply_roles_presets,
+    deploy_roles,
+    setup_common_roles,
+)
 
 from defi_repertoire.strategies.base import GenericTxContext
 from defi_repertoire.strategies.disassembling import disassembling_spark as spark
 from defi_repertoire.strategies.disassembling.disassembler import Disassembler
-from tests.fork_fixtures import accounts
-from tests.fork_fixtures import local_node_eth_replay as local_node_eth
-from tests.fork_fixtures import local_node_gc
-from tests.roles import apply_presets, deploy_roles, setup_common_roles
-from tests.utils import create_simple_safe, get_balance, steal_token, top_up_address
 
 
 def test_integration_1(local_node_eth, accounts):
@@ -37,7 +41,7 @@ def test_integration_1(local_node_eth, accounts):
         "value": "0"}
     ]}"""
 
-    apply_presets(
+    apply_roles_presets(
         avatar_safe,
         roles_contract,
         json_data=presets,
@@ -56,14 +60,13 @@ def test_integration_1(local_node_eth, accounts):
             ),
         ]
     )
-    assert get_balance(w3, ETHAddr.DAI, avatar_safe.address) == 0
+
+    sdai_contract = ContractSpecs[blockchain].sDAI.contract(w3)
     chi = SparkUtils.get_chi(w3)
-    assert get_balance(w3, ETHAddr.sDAI, avatar_safe.address) == int(
+    assert sdai_contract.functions.balanceOf(avatar_safe.address).call() == int(
         Decimal(1_000) / (Decimal(chi) / Decimal(1e27))
     )  # 976
 
-    avatar_safe_address = avatar_safe.address
-    disassembler_address = accounts[4].address
     private_key = accounts[4].key
     role = 4
 
@@ -83,4 +86,4 @@ def test_integration_1(local_node_eth, accounts):
         private_key=private_key,
     )
 
-    assert get_balance(w3, ETHAddr.sDAI, avatar_safe.address) == 434
+    assert sdai_contract.functions.balanceOf(avatar_safe.address).call() == 434

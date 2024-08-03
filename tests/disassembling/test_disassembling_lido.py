@@ -1,21 +1,26 @@
-import json
 from decimal import Decimal
 
-import pytest
-import requests
 from defabipedia.lido import ContractSpecs
 from defabipedia.types import Chain
+from karpatkit.test_utils.fork import (
+    accounts,
+    create_simple_safe,
+    local_node_eth,
+    steal_token,
+)
 from roles_royce.protocols.eth import lido as rr_lido
-from roles_royce.roles_modifier import GasStrategies, set_gas_strategy
-from roles_royce.toolshed.disassembling import LidoDisassembler
+from roles_royce.toolshed.test_utils.roles_fork_utils import (
+    apply_roles_presets,
+    deploy_roles,
+    setup_common_roles,
+)
 
-from defi_repertoire.strategies.base import GenericTxContext
+from defi_repertoire.strategies.base import (
+    GenericTxContext,
+    StrategyAmountWithSlippageArguments,
+)
 from defi_repertoire.strategies.disassembling import disassembling_lido as lido
 from defi_repertoire.strategies.disassembling.disassembler import Disassembler
-from tests.fork_fixtures import accounts
-from tests.fork_fixtures import local_node_eth_replay as local_node_eth
-from tests.roles import apply_presets, deploy_roles, setup_common_roles
-from tests.utils import create_simple_safe, steal_token
 
 presets = """{
   "version": "1.0",
@@ -84,7 +89,7 @@ def test_integration_exit_1(local_node_eth, accounts):
     avatar_safe = create_simple_safe(w3=w3, owner=accounts[0])
     roles_contract = deploy_roles(avatar=avatar_safe.address, w3=w3)
     setup_common_roles(avatar_safe, roles_contract)
-    apply_presets(
+    apply_roles_presets(
         avatar_safe,
         roles_contract,
         json_data=presets,
@@ -103,7 +108,6 @@ def test_integration_exit_1(local_node_eth, accounts):
     )
 
     avatar_safe_address = avatar_safe.address
-    disassembler_address = accounts[4].address
     private_key = accounts[4].key
     role = 4
 
@@ -116,7 +120,7 @@ def test_integration_exit_1(local_node_eth, accounts):
 
     txn_transactable = lido.LidoUnstakeStETH.get_txns(
         ctx=ctx,
-        arguments=lido.StrategyAmountWithSlippageArguments(
+        arguments=StrategyAmountWithSlippageArguments(
             amount=int(Decimal(8999999999998999998) / Decimal(2)), max_slippage=1
         ),
     )
@@ -145,7 +149,7 @@ def test_integration_exit_2(local_node_eth, accounts):
     roles_contract = deploy_roles(avatar=avatar_safe.address, w3=w3)
     setup_common_roles(avatar_safe, roles_contract)
 
-    apply_presets(
+    apply_roles_presets(
         avatar_safe,
         roles_contract,
         json_data=presets,
@@ -164,7 +168,6 @@ def test_integration_exit_2(local_node_eth, accounts):
     )
 
     avatar_safe_address = avatar_safe.address
-    disassembler_address = accounts[4].address
     private_key = accounts[4].key
     role = 4
 
@@ -177,7 +180,7 @@ def test_integration_exit_2(local_node_eth, accounts):
 
     txn_transactable = lido.LidoUnwrapAndUnstakeWstETH.get_txns(
         ctx=ctx,
-        arguments=lido.StrategyAmountWithSlippageArguments(
+        arguments=StrategyAmountWithSlippageArguments(
             amount=int(Decimal(8999999999998999998) / Decimal(2)), max_slippage=1
         ),
     )

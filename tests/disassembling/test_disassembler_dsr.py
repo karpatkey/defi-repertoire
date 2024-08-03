@@ -2,20 +2,26 @@ from decimal import Decimal
 
 from defabipedia.maker import Abis, ContractSpecs
 from defabipedia.types import Chain
+from karpatkit.test_utils.fork import (
+    accounts,
+    create_simple_safe,
+    local_node_eth,
+    steal_token,
+)
 from pytest import approx
 from roles_royce import roles
 from roles_royce.constants import ETHAddr
 from roles_royce.protocols.eth import maker
-from roles_royce.toolshed.disassembling import DSRDisassembler
+from roles_royce.toolshed.test_utils.roles_fork_utils import (
+    apply_roles_presets,
+    deploy_roles,
+    setup_common_roles,
+)
 from roles_royce.utils import to_checksum_address
 
 from defi_repertoire.strategies.base import GenericTxContext
 from defi_repertoire.strategies.disassembling import disassembling_dsr as dsr
 from defi_repertoire.strategies.disassembling.disassembler import Disassembler
-from tests.fork_fixtures import accounts
-from tests.fork_fixtures import local_node_eth_replay as local_node_eth
-from tests.roles import apply_presets, deploy_roles, setup_common_roles
-from tests.utils import create_simple_safe, get_balance, steal_token, top_up_address
 
 
 def test_integration_exit_1(local_node_eth, accounts):
@@ -52,7 +58,7 @@ def test_integration_exit_1(local_node_eth, accounts):
         "value": "0"}
     ]}"""
 
-    apply_presets(
+    apply_roles_presets(
         avatar_safe,
         roles_contract,
         json_data=presets,
@@ -72,9 +78,6 @@ def test_integration_exit_1(local_node_eth, accounts):
     )
 
     pot_contract = ContractSpecs[Chain.ETHEREUM].Pot.contract(w3)
-
-    avatar_safe_address = avatar_safe.address
-    disassembler_address = accounts[4].address
     private_key = accounts[4].key
     role = 4
 
@@ -156,7 +159,7 @@ def test_integration_exit_2(local_node_eth, accounts):
         "value": "0"}
     ]}"""
 
-    apply_presets(
+    apply_roles_presets(
         avatar_safe,
         roles_contract,
         json_data=presets,
@@ -176,7 +179,6 @@ def test_integration_exit_2(local_node_eth, accounts):
     pot_contract = ContractSpecs[Chain.ETHEREUM].Pot.contract(w3)
 
     avatar_safe_address = avatar_safe.address
-    disassembler_address = accounts[4].address
     private_key = accounts[4].key
     role = 4
 
