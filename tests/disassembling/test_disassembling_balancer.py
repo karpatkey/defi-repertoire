@@ -33,6 +33,7 @@ preset = (
 
 
 # @pytest.mark.skip("Not working yet")
+@pytest.mark.slow
 def test_integration_proportional(local_node_eth, accounts):
     w3 = local_node_eth.w3
     block = 18421437
@@ -273,6 +274,7 @@ def test_integration_proportional(local_node_eth, accounts):
     )
 
 
+@pytest.mark.slow
 def test_integration_exit_1_2(local_node_eth, accounts):
     w3 = local_node_eth.w3
     block = 18421437
@@ -552,6 +554,7 @@ def test_integration_exit_1_2(local_node_eth, accounts):
     assert new_AURABAL_balance == 58400033
 
 
+@pytest.mark.slow
 def test_integration_exit_2_1(local_node_eth, accounts):
     w3 = local_node_eth.w3
     block = 18612383
@@ -644,6 +647,7 @@ def test_integration_exit_2_1(local_node_eth, accounts):
     assert bpt_gauge_balance_after == int(Decimal(bpt_gauge_balance) / Decimal(2))
 
 
+@pytest.mark.slow
 def test_integration_exit_2_2(local_node_eth, accounts):
     w3 = local_node_eth.w3
     block = 18612383

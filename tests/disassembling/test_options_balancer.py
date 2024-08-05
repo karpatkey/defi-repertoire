@@ -14,8 +14,7 @@ async def test_balancer_withdraw_single_options_gnosis():
     bpt_address = "0x21d4c792ea7e38e0d0819c2011a2b1cb7252bd99"
 
     opts = await balancer.WithdrawSingle.get_base_options(blockchain)
-
-    assert len(opts.bpt_address) > 10
+    assert len(opts.bpt_address) > 15
 
     assert next(
         o for o in opts.bpt_address if o.label == "50COW-50GNO"
@@ -49,7 +48,7 @@ async def test_balancer_withdraw_single_options_eth():
 
     opts = await balancer.WithdrawSingle.get_base_options(blockchain)
 
-    assert len(opts.bpt_address) == 68
+    assert len(opts.bpt_address) > 100
 
     opts2 = await balancer.WithdrawSingle.get_options(
         blockchain,

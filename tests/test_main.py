@@ -393,7 +393,7 @@ def test_multisend():
         ctract = "0xCB664132622f29943f67FA56CCfD1e24CC8B4995"
 
         response = client.post(
-            "/multisend-transactions/?" "blockchain=ethereum",
+            "/multisend-transactions/?blockchain=ethereum",
             json=[
                 {
                     "contract_address": ctract,
